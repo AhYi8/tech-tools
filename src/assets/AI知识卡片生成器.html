@@ -16,7 +16,7 @@
       rel="stylesheet"
     />
     <style>
-      /* 暗色科技风格自定义样式 */
+      /* 暗色科技风格自定义样式 (样式无变化，保持原样) */
       body {
         font-family: 'Noto Sans SC', sans-serif;
         background-color: #0d1117;
@@ -68,7 +68,7 @@
         animation-duration: 150s;
       }
       .stars3 {
-        background-image: url('data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjEwMHB4IiBoZWlnaHQ9IjEwMHB4IiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTAwIDEwMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTQ5LjIsMTcuMWMwLDAsMCwwLDBsMCwwQzQ5LjIsMTcuMSw0OS4yLDE3LjEsNDkuMiwxNy4xeiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik0zMy44LDguNGMwLDAsMCwwLDBsMCwwQzMzLjgsOC40LDMzLjgsOC40LDMzLjgsOC40eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik04NS4xLDguN2MwLDAsMCwwLDBsMCwwQzg1LjEsOC43LDg1LjEsOC43LDg1LjEsOC43eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik04Ny44LDE0LjljMCwwLDAsMCwwbDAsMEM4Ny44LDE0LjksODcuOCwxNC45LDg3LjgsMTQuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzkuOSwzOS45YzAsMCwwLDAsMEw3OS45LDM5LjlMNzkuOSwzOS45eiIvPjwvc3ZnPg==');
+        background-image: url('data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjEwMHB4IiBoZWlnaHQ9IjEwMHB4IiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTAwIDEwMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTQ5LjIsMTcuMWMwLDAsMCwwLDBsMCwwQzQ5LjIsMTcuMSw0OS4yLDE3LjEsNDkuMiwxNy4xeiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik0zMy44LDguNGMwLDAsMCwwLDBsMCwwQzMzLjgsOC44LDMzLjgsOC40LDMzLjgsOC40eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik04NS4xLDguN2MwLDAsMCwwLDBsMCwwQzg1LjEsOC43LDg1LjEsOC43LDg1LjEsOC43eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik04Ny44LDE0LjljMCwwLDAsMCwwbDAsMEM4Ny44LDE0LjksODcuOCwxNC45LDg3LjgsMTQuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzkuOSwzOS45YzAsMCwwLDAsMEw3OS45LDM5LjlMNzkuOSwzOS45eiIvPjwvc3ZnPg==');
         animation-duration: 100s;
       }
 
@@ -98,7 +98,6 @@
         animation: fadeInUp 0.8s 0.2s ease-out backwards;
       }
 
-      /* -- 优化后的 main 容器样式 -- */
       .main-container {
         position: relative;
         border-radius: 1rem;
@@ -118,7 +117,6 @@
         z-index: 1; /* 提升边框层级 */
         pointer-events: none; /* 让鼠标事件穿透边框 */
       }
-      /* -- 结束优化 -- */
 
       h1,
       h2,
@@ -175,6 +173,7 @@
         color: #58a6ff;
         text-shadow: 0 0 5px rgba(88, 166, 255, 0.5);
         margin-bottom: 4px;
+        min-height: 2rem;
       }
       .card-subtitle {
         font-size: 1rem;
@@ -183,11 +182,13 @@
         margin-bottom: 16px;
         border-bottom: 1px dashed #30363d;
         padding-bottom: 12px;
+        min-height: 1.5rem;
       }
       .card-description {
         font-size: 1rem;
         color: #c9d1d9;
         margin-bottom: 16px;
+        min-height: 3rem;
       }
       .card-facts {
         list-style-type: none;
@@ -215,19 +216,23 @@
         box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.2);
         outline: none;
       }
-      textarea::-webkit-scrollbar {
+      textarea::-webkit-scrollbar,
+      #thinking-process-output::-webkit-scrollbar {
         width: 12px;
       }
-      textarea::-webkit-scrollbar-track {
+      textarea::-webkit-scrollbar-track,
+      #thinking-process-output::-webkit-scrollbar-track {
         background: #0d1117;
         border-radius: 10px;
       }
-      textarea::-webkit-scrollbar-thumb {
+      textarea::-webkit-scrollbar-thumb,
+      #thinking-process-output::-webkit-scrollbar-thumb {
         background-color: #30363d;
         border-radius: 10px;
         border: 3px solid #0d1117;
       }
-      textarea::-webkit-scrollbar-thumb:hover {
+      textarea::-webkit-scrollbar-thumb:hover,
+      #thinking-process-output::-webkit-scrollbar-thumb:hover {
         background-color: #58a6ff;
       }
 
@@ -457,13 +462,11 @@
     </style>
   </head>
   <body>
-    <!-- 动态背景容器 -->
     <div class="background-container">
       <div class="stars"></div>
       <div class="stars2"></div>
       <div class="stars3"></div>
     </div>
-    <!-- 新增：消息提醒容器 -->
     <div id="notification-container"></div>
 
     <div class="w-full max-w-6xl mx-auto p-4 sm:p-8 relative z-10">
@@ -481,7 +484,6 @@
 
       <main class="main-container main-container-anim">
         <div class="p-6 sm:p-8">
-          <!-- AI 生成区域 -->
           <div class="mb-8 p-4 bg-transparent border-2 border-dashed border-blue-800 rounded-lg">
             <label
               for="ai-topic-input"
@@ -514,7 +516,6 @@
             </div>
             <div id="ai-error-message" class="text-red-400 mt-2 text-sm font-medium"></div>
 
-            <!-- 高级 API 设置 -->
             <div class="mt-6 border-t border-gray-700 pt-4">
               <details>
                 <summary class="cursor-pointer text-gray-400 hover:text-white tech-font">
@@ -595,6 +596,11 @@
                         </svg>
                       </button>
                     </div>
+                    <!-- D1: API 密钥安全警告 -->
+                    <p class="text-xs text-gray-500 mt-2">
+                      提示：API
+                      密钥仅存储在您的浏览器中，不会发送到任何服务器。但请注意在公共或不安全的网络环境下的潜在风险。
+                    </p>
                   </div>
                   <div>
                     <label for="api-model" class="block text-sm font-medium text-gray-400"
@@ -607,12 +613,34 @@
                       placeholder="例如: gpt-4, gemini-pro"
                     />
                   </div>
+                  <!-- C1: 自定义系统提示词 -->
+                  <div>
+                    <label for="system-prompt" class="block text-sm font-medium text-gray-400"
+                      >自定义系统提示词 (System Prompt)</label
+                    >
+                    <textarea
+                      id="system-prompt"
+                      rows="4"
+                      class="dark-input mt-1 block w-full rounded-md shadow-sm font-mono text-sm"
+                      placeholder="留空则使用默认提示词。自定义提示词将指导 AI 的行为和输出格式。"
+                    ></textarea>
+                  </div>
+
                   <div class="flex items-center justify-between">
                     <label for="enable-thinking" class="text-sm font-medium text-gray-400"
-                      >开启思考过程 (enable_thinking)</label
+                      >开启思考过程</label
                     >
                     <label class="switch">
                       <input type="checkbox" id="enable-thinking" />
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <label for="enable-stream" class="text-sm font-medium text-gray-400"
+                      >开启流式输出</label
+                    >
+                    <label class="switch">
+                      <input type="checkbox" id="enable-stream" />
                       <span class="slider"></span>
                     </label>
                   </div>
@@ -623,6 +651,14 @@
                 </div>
               </details>
             </div>
+          </div>
+
+          <div id="thinking-process-container" class="mb-6 hidden">
+            <h3 class="text-cyan-400 tech-font mb-2">AI 思考过程...</h3>
+            <div
+              id="thinking-process-output"
+              class="p-4 bg-black/30 rounded-lg text-sm font-mono whitespace-pre-wrap h-32 overflow-y-auto"
+            ></div>
           </div>
 
           <!-- JSON 手动输入区域 -->
@@ -643,7 +679,6 @@
             <div id="error-message" class="text-red-400 mt-2 text-sm font-medium"></div>
           </div>
 
-          <!-- 控制按钮 -->
           <div class="flex flex-col sm:flex-row gap-8 mb-8 items-center justify-center">
             <button id="generate-btn" class="btn-sci-fi cyan">
               <span class="tech-font">从文本渲染</span>
@@ -685,6 +720,8 @@
       const stopGenerateBtn = document.getElementById('stop-generate-btn')
       const aiErrorMessage = document.getElementById('ai-error-message')
       const aiBtnText = document.getElementById('ai-btn-text')
+      const thinkingProcessContainer = document.getElementById('thinking-process-container')
+      const thinkingProcessOutput = document.getElementById('thinking-process-output')
 
       // 高级设置元素
       const apiTypeSelect = document.getElementById('api-type-select')
@@ -692,21 +729,71 @@
       const apiKeyInput = document.getElementById('api-key')
       const apiModelInput = document.getElementById('api-model')
       const enableThinkingSwitch = document.getElementById('enable-thinking')
+      const enableStreamSwitch = document.getElementById('enable-stream')
       const saveSettingsBtn = document.getElementById('save-settings-btn')
       const saveFeedback = document.getElementById('save-feedback')
       const notificationContainer = document.getElementById('notification-container')
       const toggleApiKeyBtn = document.getElementById('toggle-api-key')
       const eyeOpenIcon = document.getElementById('eye-open')
       const eyeClosedIcon = document.getElementById('eye-closed')
+      // C1: 新增自定义系统提示词的 DOM 元素
+      const systemPromptInput = document.getElementById('system-prompt')
 
       let abortController = new AbortController()
+
+      // B1: 默认示例数据
+      const defaultJsonData = JSON.stringify(
+        [
+          {
+            title: 'AI 知识卡片生成器',
+            sub_title: '探索这个应用的功能',
+            description:
+              '这是一个强大的工具，可以通过 AI 或手动编辑 JSON 来创建和分享精美的知识卡片。',
+            facts: [
+              '支持多种大语言模型 API，如 Gemini 和 OpenAI。',
+              '可以自定义 API 地址、密钥和模型。',
+              '支持流式输出，实时查看 AI 生成过程。',
+              '可以将生成的卡片导出为一张高清图片。',
+            ],
+          },
+          {
+            title: '什么是 API?',
+            sub_title: '应用程序编程接口',
+            description:
+              'API (Application Programming Interface) 是一组定义、协议和工具，用于构建和集成应用程序软件。',
+            facts: [
+              'API 允许不同的软件系统相互通信。',
+              '常见的 API 类型有 RESTful, SOAP, GraphQL。',
+              'API Key 用于认证和授权 API 请求。',
+              '这个应用就是通过调用 AI 模型的 API 来工作的。',
+            ],
+          },
+          {
+            title: 'Tailwind CSS',
+            sub_title: '一个功能优先的 CSS 框架',
+            description:
+              'Tailwind CSS 是一个高度可定制的、低级的 CSS 框架，让你无需离开 HTML 就能快速构建现代网站。',
+            facts: [
+              '通过组合原子类（如 `p-4`, `flex`）来构建设计。',
+              '本页面的所有样式都基于 Tailwind CSS。',
+              '它鼓励“功能优先”而非“组件优先”的开发模式。',
+              '可以通过配置文件轻松定制颜色、间距等。',
+            ],
+          },
+        ],
+        null,
+        2,
+      )
+
+      // C1: 默认系统提示词
+      const DEFAULT_SYSTEM_PROMPT = `You are a helpful assistant designed to output a valid JSON array of objects based on the user's request. Your response must be a single, parseable JSON array, without any markdown formatting like \`\`\`json or explanatory text outside the JSON structure.`
 
       // 预设 API 地址
       const commonApiEndpoints = [
         {
           name: 'Gemini',
           apiUrl:
-            'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',
+            'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:streamGenerateContent',
         },
         { name: 'OpenAI', apiUrl: 'https://api.openai.com/v1/chat/completions' },
         { name: '硅基流动', apiUrl: 'https://api.siliconflow.cn/v1/chat/completions' },
@@ -740,23 +827,25 @@
       function handleApiTypeChange() {
         const selectedValue = apiTypeSelect.value
         const allSettings = getSettings()
+        let providerConfig = {}
 
         if (selectedValue === 'custom') {
           apiUrlInput.readOnly = false
-          const customConfig = allSettings.providers.custom || {}
-          apiUrlInput.value = customConfig.apiUrl || ''
-          apiKeyInput.value = customConfig.apiKey || ''
-          apiModelInput.value = customConfig.modelId || ''
-          enableThinkingSwitch.checked = customConfig.enableThinking || false
+          providerConfig = allSettings.providers.custom || {}
+          apiUrlInput.value = providerConfig.apiUrl || ''
           apiUrlInput.placeholder = '请输入您的自定义 API 地址'
         } else {
           apiUrlInput.readOnly = true
           apiUrlInput.value = selectedValue
-          const providerConfig = allSettings.providers[selectedValue] || {}
-          apiKeyInput.value = providerConfig.apiKey || ''
-          apiModelInput.value = providerConfig.modelId || ''
-          enableThinkingSwitch.checked = providerConfig.enableThinking || false
+          providerConfig = allSettings.providers[selectedValue] || {}
         }
+
+        apiKeyInput.value = providerConfig.apiKey || ''
+        apiModelInput.value = providerConfig.modelId || ''
+        enableThinkingSwitch.checked = providerConfig.enableThinking || false
+        enableStreamSwitch.checked = providerConfig.enableStream || false
+        // C1: 更新系统提示词输入框
+        systemPromptInput.value = providerConfig.systemPrompt || ''
       }
 
       function getSettings() {
@@ -777,6 +866,9 @@
           apiKey: apiKeyInput.value,
           modelId: apiModelInput.value,
           enableThinking: enableThinkingSwitch.checked,
+          enableStream: enableStreamSwitch.checked,
+          // C1: 保存系统提示词
+          systemPrompt: systemPromptInput.value,
         }
 
         if (selectedType === 'custom') {
@@ -793,9 +885,7 @@
       // 加载设置
       function loadSettings() {
         const allSettings = getSettings()
-
         apiTypeSelect.value = allSettings.lastSelected || commonApiEndpoints[0].apiUrl
-
         handleApiTypeChange()
       }
 
@@ -819,9 +909,7 @@
             setTimeout(() => notification.remove(), 500)
           }
         }
-
         notificationContainer.appendChild(notification)
-
         setTimeout(() => {
           notification.style.animation = 'slideOut 0.5s forwards'
           setTimeout(() => notification.remove(), 500)
@@ -852,6 +940,7 @@
         const model =
           apiModelInput.value || (apiUrl.includes('openai') ? 'gpt-3.5-turbo' : 'gemini-pro')
         const enableThinking = enableThinkingSwitch.checked
+        const enableStream = enableStreamSwitch.checked
 
         if (!apiUrl || apiKeys.length === 0) {
           aiErrorMessage.textContent = '请在高级设置中配置 API 地址和密钥。'
@@ -863,9 +952,21 @@
         stopGenerateBtn.disabled = false
         aiBtnText.textContent = '生成中...'
 
+        resetStreamState()
+        streamState.isStreaming = true
+
+        cardContainer.innerHTML = ''
+        placeholderText.style.display = 'none'
+
+        renderLoop()
+
+        // 思考过程框的显示逻辑已移至 handleStreamResponse
+        jsonInput.value = ''
+
         abortController = new AbortController()
 
-        const userPrompt = `为关于“${topic}”的主题生成6-10个详细的知识卡片。请使用中文回答。响应必须是一个有效的、可以直接解析的JSON数组。数组中的每个对象都必须包含以下键： "title" (字符串，卡片的主标题), "sub_title" (字符串，一个可选的、吸引人的副标题), "description" (字符串，对主题的简要概述，大约30-50字), 和 "facts" (字符串数组，列出3到4个关键知识点或核心事实)。不要在响应中添加 "json" 或 \\\`\\\`\\\` 等标记。`
+        const systemPrompt = systemPromptInput.value.trim() || DEFAULT_SYSTEM_PROMPT
+        const userPrompt = `为关于“${topic}”的主题生成至少4个（不局限于4个，取决于实际知识点数量）详细的知识卡片。请使用中文回答。数组中的每个对象都必须包含以下键： "title" (字符串，卡片的主标题), "sub_title" (字符串，一个可选的、吸引人的副标题), "description" (字符串，对主题的简要概述，大约30-50字), 和 "facts" (字符串数组，列出至少4个关键知识点或核心事实)。`
 
         let success = false
         for (const key of apiKeys) {
@@ -875,46 +976,56 @@
           }
 
           try {
-            let fetchOptions, requestUrl, responseHandler, body
+            let fetchOptions,
+              requestUrl,
+              body = {}
 
             if (apiUrl.includes('completions')) {
-              // OpenAI and compatible APIs
               requestUrl = apiUrl
               body = {
                 model: model,
                 messages: [
-                  {
-                    role: 'system',
-                    content:
-                      "You are a helpful assistant designed to output a valid JSON array of objects based on the user's request, without any markdown formatting.",
-                  },
+                  { role: 'system', content: systemPrompt },
                   { role: 'user', content: userPrompt },
                 ],
+                stream: enableStream,
               }
-              // 仅当开关关闭时，显式添加 enable_thinking: false
-              if (!enableThinking) {
-                body.enable_thinking = false
+              if (enableThinking) {
+                body.stream_options = { include_usage: true }
+                body.enable_thinking = true
               }
+              if (apiUrl.includes('dashscope')) {
+                body.result_format = 'message'
+              }
+
               fetchOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
                 body: JSON.stringify(body),
                 signal: abortController.signal,
               }
-              responseHandler = async (result) => {
-                if (result.choices && result.choices[0]?.message?.content) {
-                  return result.choices[0].message.content
-                }
-                throw new Error('API 响应格式不正确')
-              }
             } else {
               // Gemini
-              requestUrl = `${apiUrl}?key=${key}`
+              const geminiUserPrompt = `${systemPrompt}\n\n任务: ${userPrompt}`
+              requestUrl = enableStream
+                ? apiUrl.replace(':generateContent', ':streamGenerateContent')
+                : apiUrl
+              if (enableStream) {
+                requestUrl = `${apiUrl.replace(':generateContent', ':streamGenerateContent')}?key=${key}&alt=sse`
+              } else {
+                requestUrl = `${apiUrl}?key=${key}`
+              }
               fetchOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                  contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
+                  contents: [{ role: 'user', parts: [{ text: geminiUserPrompt }] }],
+                }),
+                signal: abortController.signal,
+              }
+              if (!enableStream) {
+                fetchOptions.body = JSON.stringify({
+                  contents: [{ role: 'user', parts: [{ text: geminiUserPrompt }] }],
                   generationConfig: {
                     responseMimeType: 'application/json',
                     responseSchema: {
@@ -931,18 +1042,12 @@
                       },
                     },
                   },
-                }),
-                signal: abortController.signal,
-              }
-              responseHandler = async (result) => {
-                if (result.candidates && result.candidates[0]?.content?.parts?.[0]?.text) {
-                  return result.candidates[0].content.parts[0].text
-                }
-                throw new Error('Gemini 响应格式不正确')
+                })
               }
             }
 
             const response = await fetch(requestUrl, fetchOptions)
+
             if (!response.ok) {
               const errorBody = await response.json()
               const errorMessage =
@@ -950,10 +1055,14 @@
               throw new Error(errorMessage)
             }
 
-            const result = await response.json()
-            const jsonText = await responseHandler(result)
-            jsonInput.value = JSON.stringify(JSON.parse(jsonText), null, 2)
-            generateCards()
+            if (enableStream) {
+              await handleStreamResponse(response)
+            } else {
+              const result = await response.json()
+              const jsonText = await handleNonStreamResponse(result, apiUrl)
+              jsonInput.value = jsonText
+            }
+
             success = true
             break
           } catch (error) {
@@ -971,6 +1080,8 @@
           }
         }
 
+        streamState.isStreaming = false
+
         if (!success && !abortController.signal.aborted) {
           aiErrorMessage.textContent = '所有 API Key 均请求失败。'
         }
@@ -980,52 +1091,223 @@
         aiBtnText.textContent = '🚀 AI 生成'
       }
 
-      // 从文本框生成卡片函数
-      function generateCards() {
-        errorMessage.textContent = ''
-        cardContainer.innerHTML = ''
-        const jsonString = jsonInput.value
+      async function handleNonStreamResponse(result, apiUrl) {
+        if (apiUrl.includes('completions')) {
+          if (result.choices && result.choices[0]?.message?.content) {
+            return result.choices[0].message.content
+          }
+        } else {
+          if (result.candidates && result.candidates[0]?.content?.parts?.[0]?.text) {
+            return result.candidates[0].content.parts[0].text
+          }
+        }
+        throw new Error('API 响应格式不正确')
+      }
 
-        if (!jsonString.trim()) {
-          errorMessage.textContent = 'JSON 输入框不能为空。'
-          if (placeholderText) placeholderText.style.display = 'block'
+      async function handleStreamResponse(response) {
+        const reader = response.body.getReader()
+        const decoder = new TextDecoder()
+        let buffer = ''
+
+        while (true) {
+          if (abortController.signal.aborted) {
+            reader.cancel()
+            break
+          }
+          const { done, value } = await reader.read()
+          if (done) break
+
+          buffer += decoder.decode(value, { stream: true })
+          const lines = buffer.split('\n')
+          buffer = lines.pop()
+
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              const data = line.substring(6)
+              if (data.trim() === '[DONE]') {
+                return
+              }
+              try {
+                const chunk = JSON.parse(data)
+                const delta = chunk.choices?.[0]?.delta
+
+                // 新增：只在第一次接收到数据时检查思考过程
+                if (!streamState.thinkingProcessChecked) {
+                  const hasReasoning =
+                    (delta &&
+                      delta.reasoning_content !== null &&
+                      delta.reasoning_content !== undefined) ||
+                    (chunk.candidates &&
+                      chunk.candidates[0] &&
+                      chunk.candidates[0].reasoning_content !== null &&
+                      chunk.candidates[0].reasoning_content !== undefined)
+                  if (hasReasoning) {
+                    thinkingProcessContainer.classList.remove('hidden')
+                  } else {
+                    thinkingProcessContainer.classList.add('hidden')
+                  }
+                  streamState.thinkingProcessChecked = true
+                }
+
+                if (delta?.content) {
+                  streamState.fullText += delta.content
+                } else if (chunk.candidates && chunk.candidates[0]?.content?.parts?.[0]?.text) {
+                  streamState.fullText += chunk.candidates[0].content.parts[0].text
+                } else if (delta?.reasoning_content) {
+                  streamState.thinkingText += delta.reasoning_content
+                }
+              } catch (e) {
+                // 忽略无法解析的块
+              }
+            }
+          }
+        }
+      }
+
+      let streamState = {}
+
+      // 用于流式渲染的状态
+      function resetStreamState() {
+        if (streamState.animationFrameId) {
+          cancelAnimationFrame(streamState.animationFrameId)
+        }
+        streamState = {
+          fullText: '',
+          thinkingText: '',
+          cardData: [],
+          lastRenderedCardCount: 0,
+          isStreaming: false,
+          animationFrameId: null,
+          thinkingProcessChecked: false, // 新增：用于标记是否已检查过思考过程
+        }
+      }
+
+      function renderLoop() {
+        if (thinkingProcessOutput.textContent !== streamState.thinkingText) {
+          thinkingProcessOutput.textContent = streamState.thinkingText
+          thinkingProcessOutput.scrollTop = thinkingProcessOutput.scrollHeight
+        }
+
+        try {
+          if (streamState.fullText) {
+            let parsableText = streamState.fullText
+            const lastClosingBrace = parsableText.lastIndexOf('}')
+
+            if (lastClosingBrace > 0) {
+              parsableText = parsableText.substring(0, lastClosingBrace + 1)
+
+              if (!parsableText.trim().startsWith('[')) {
+                parsableText = '[' + parsableText
+              }
+              if (parsableText.endsWith(',')) {
+                parsableText = parsableText.slice(0, -1)
+              }
+              if (!parsableText.endsWith(']')) {
+                parsableText += ']'
+              }
+
+              const parsedData = JSON.parse(parsableText)
+              if (Array.isArray(parsedData)) {
+                streamState.cardData = parsedData
+              }
+            }
+          }
+        } catch (e) {
+          // 在流式传输期间解析失败是正常的。
+        }
+
+        if (streamState.cardData.length > streamState.lastRenderedCardCount) {
+          exportBtn.disabled = false
+
+          for (let i = streamState.lastRenderedCardCount; i < streamState.cardData.length; i++) {
+            const item = streamState.cardData[i]
+            if (typeof item === 'object' && item !== null && item.title) {
+              const cardElement = document.createElement('div')
+              cardElement.id = `flashcard-${i}`
+              cardElement.className = 'flashcard'
+
+              let cardHTML = `<div><h3 class="card-title" data-field="title">${item.title || ''}</h3>`
+              if (item.sub_title) {
+                cardHTML += `<h4 class="card-subtitle" data-field="sub_title">${item.sub_title}</h4>`
+              }
+              if (item.description) {
+                cardHTML += `<p class="card-description" data-field="description">${item.description}</p>`
+              }
+              if (item.facts && Array.isArray(item.facts) && item.facts.length > 0) {
+                cardHTML += '<ul class="card-facts" data-field="facts">'
+                item.facts.forEach((fact) => {
+                  cardHTML += `<li>${fact}</li>`
+                })
+                cardHTML += '</ul>'
+              }
+              cardHTML += '</div>'
+              cardElement.innerHTML = cardHTML
+
+              cardContainer.appendChild(cardElement)
+            }
+          }
+          streamState.lastRenderedCardCount = streamState.cardData.length
+        }
+
+        if (jsonInput.value !== streamState.fullText) {
+          jsonInput.value = streamState.fullText
+        }
+
+        if (streamState.isStreaming) {
+          streamState.animationFrameId = requestAnimationFrame(renderLoop)
+        } else {
+          if (streamState.fullText) {
+            generateCards()
+          }
+        }
+      }
+
+      function generateCards() {
+        const jsonString = jsonInput.value.trim()
+        if (!jsonString) {
+          cardContainer.innerHTML = ''
+          placeholderText.style.display = 'block'
           exportBtn.disabled = true
+          errorMessage.textContent = ''
           return
         }
 
         try {
           const data = JSON.parse(jsonString)
+          if (!Array.isArray(data)) {
+            throw new Error('JSON 格式错误：根结构必须是一个数组 (e.g., `[...]`)。')
+          }
           if (
-            !Array.isArray(data) ||
+            data.length > 0 &&
             data.some(
               (item) =>
-                typeof item.title === 'undefined' ||
-                typeof item.description === 'undefined' ||
-                !Array.isArray(item.facts),
+                typeof item !== 'object' || item === null || typeof item.title === 'undefined',
             )
           ) {
-            throw new Error(
-              'JSON格式不正确。请确保它是一个数组，且每个对象都包含 "title", "description", 和 "facts" 数组。',
-            )
+            throw new Error('JSON 格式错误：数组中的每个元素都必须是包含 "title" 键的对象。')
           }
-
+          jsonInput.value = JSON.stringify(data, null, 2)
+          errorMessage.textContent = ''
+          cardContainer.innerHTML = ''
           if (data.length === 0) {
-            if (placeholderText) placeholderText.style.display = 'block'
+            placeholderText.style.display = 'block'
             exportBtn.disabled = true
           } else {
-            if (placeholderText) placeholderText.style.display = 'none'
-            data.forEach((item) => {
-              const card = document.createElement('div')
-              card.className = 'flashcard'
+            placeholderText.style.display = 'none'
+            data.forEach((item, index) => {
+              const cardElement = document.createElement('div')
+              cardElement.id = `flashcard-${index}`
+              cardElement.className = 'flashcard'
 
-              let cardHTML = `<div><h3 class="card-title">${item.title}</h3>`
+              let cardHTML = `<div><h3 class="card-title" data-field="title">${item.title || ''}</h3>`
               if (item.sub_title) {
-                cardHTML += `<h4 class="card-subtitle">${item.sub_title}</h4>`
+                cardHTML += `<h4 class="card-subtitle" data-field="sub_title">${item.sub_title}</h4>`
               }
-              cardHTML += `<p class="card-description">${item.description}</p>`
-
-              if (item.facts && item.facts.length > 0) {
-                cardHTML += '<ul class="card-facts">'
+              if (item.description) {
+                cardHTML += `<p class="card-description" data-field="description">${item.description}</p>`
+              }
+              if (item.facts && Array.isArray(item.facts) && item.facts.length > 0) {
+                cardHTML += '<ul class="card-facts" data-field="facts">'
                 item.facts.forEach((fact) => {
                   cardHTML += `<li>${fact}</li>`
                 })
@@ -1033,19 +1315,17 @@
               }
               cardHTML += '</div>'
 
-              card.innerHTML = cardHTML
-              cardContainer.appendChild(card)
+              cardElement.innerHTML = cardHTML
+              cardContainer.appendChild(cardElement)
             })
             exportBtn.disabled = false
           }
         } catch (e) {
-          errorMessage.textContent = `JSON解析失败：${e.message}`
-          if (placeholderText) placeholderText.style.display = 'block'
+          errorMessage.textContent = `❌ JSON 无效: ${e.message} 请检查您的输入。`
           exportBtn.disabled = true
         }
       }
 
-      // -- 全新优化的导出图片函数 --
       function exportImage() {
         const originalButtonText = exportBtn.querySelector('span').textContent
         exportBtn.disabled = true
@@ -1091,7 +1371,7 @@
       }
 
       // 事件监听
-      generateBtn.addEventListener('click', generateCards)
+      generateBtn.addEventListener('click', () => generateCards())
       exportBtn.addEventListener('click', exportImage)
       aiGenerateBtn.addEventListener('click', generateWithAI)
       stopGenerateBtn.addEventListener('click', () => {
@@ -1101,13 +1381,19 @@
       apiTypeSelect.addEventListener('change', handleApiTypeChange)
       toggleApiKeyBtn.addEventListener('click', toggleApiKeyVisibility)
 
-      // 页面加载时加载保存的设置
+      // 页面加载时执行
       window.addEventListener('load', () => {
         populateApiEndpoints()
         loadSettings()
-        // 确保初始图标状态正确
         eyeOpenIcon.classList.add('hidden')
         eyeClosedIcon.classList.remove('hidden')
+
+        const isFirstVisit = !localStorage.getItem('hasVisitedCardGenerator_v2')
+        if (isFirstVisit) {
+          jsonInput.value = defaultJsonData
+          localStorage.setItem('hasVisitedCardGenerator_v2', 'true')
+        }
+        generateCards()
       })
     </script>
   </body>
