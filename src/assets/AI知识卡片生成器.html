@@ -366,6 +366,49 @@
         }
       }
 
+      /* --- 开关按钮样式 --- */
+      .switch {
+        position: relative;
+        display: inline-block;
+        width: 40px;
+        height: 22px;
+      }
+      .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #30363d;
+        transition: 0.4s;
+        border-radius: 22px;
+      }
+      .slider:before {
+        position: absolute;
+        content: '';
+        height: 14px;
+        width: 14px;
+        left: 4px;
+        bottom: 4px;
+        background-color: #c9d1d9;
+        transition: 0.4s;
+        border-radius: 50%;
+      }
+      input:checked + .slider {
+        background-color: #2563eb;
+        box-shadow: 0 0 5px #2563eb;
+      }
+      input:checked + .slider:before {
+        transform: translateX(18px);
+      }
+      /* --- 结束开关按钮样式 --- */
+
       .export-wrapper {
         padding: 2rem;
         background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
@@ -564,6 +607,15 @@
                       placeholder="例如: gpt-4, gemini-pro"
                     />
                   </div>
+                  <div class="flex items-center justify-between">
+                    <label for="enable-thinking" class="text-sm font-medium text-gray-400"
+                      >开启思考过程 (enable_thinking)</label
+                    >
+                    <label class="switch">
+                      <input type="checkbox" id="enable-thinking" />
+                      <span class="slider"></span>
+                    </label>
+                  </div>
                   <button id="save-settings-btn" class="btn-sci-fi cyan w-full sm:w-auto">
                     <span class="tech-font">保存设置</span>
                   </button>
@@ -639,6 +691,7 @@
       const apiUrlInput = document.getElementById('api-url')
       const apiKeyInput = document.getElementById('api-key')
       const apiModelInput = document.getElementById('api-model')
+      const enableThinkingSwitch = document.getElementById('enable-thinking')
       const saveSettingsBtn = document.getElementById('save-settings-btn')
       const saveFeedback = document.getElementById('save-feedback')
       const notificationContainer = document.getElementById('notification-container')
@@ -694,6 +747,7 @@
           apiUrlInput.value = customConfig.apiUrl || ''
           apiKeyInput.value = customConfig.apiKey || ''
           apiModelInput.value = customConfig.modelId || ''
+          enableThinkingSwitch.checked = customConfig.enableThinking || false
           apiUrlInput.placeholder = '请输入您的自定义 API 地址'
         } else {
           apiUrlInput.readOnly = true
@@ -701,6 +755,7 @@
           const providerConfig = allSettings.providers[selectedValue] || {}
           apiKeyInput.value = providerConfig.apiKey || ''
           apiModelInput.value = providerConfig.modelId || ''
+          enableThinkingSwitch.checked = providerConfig.enableThinking || false
         }
       }
 
@@ -721,6 +776,7 @@
         const currentConfig = {
           apiKey: apiKeyInput.value,
           modelId: apiModelInput.value,
+          enableThinking: enableThinkingSwitch.checked,
         }
 
         if (selectedType === 'custom') {
@@ -795,6 +851,7 @@
           .filter(Boolean)
         const model =
           apiModelInput.value || (apiUrl.includes('openai') ? 'gpt-3.5-turbo' : 'gemini-pro')
+        const enableThinking = enableThinkingSwitch.checked
 
         if (!apiUrl || apiKeys.length === 0) {
           aiErrorMessage.textContent = '请在高级设置中配置 API 地址和密钥。'
@@ -818,24 +875,30 @@
           }
 
           try {
-            let fetchOptions, requestUrl, responseHandler
+            let fetchOptions, requestUrl, responseHandler, body
 
             if (apiUrl.includes('completions')) {
+              // OpenAI and compatible APIs
               requestUrl = apiUrl
+              body = {
+                model: model,
+                messages: [
+                  {
+                    role: 'system',
+                    content:
+                      "You are a helpful assistant designed to output a valid JSON array of objects based on the user's request, without any markdown formatting.",
+                  },
+                  { role: 'user', content: userPrompt },
+                ],
+              }
+              // 仅当开关关闭时，显式添加 enable_thinking: false
+              if (!enableThinking) {
+                body.enable_thinking = false
+              }
               fetchOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
-                body: JSON.stringify({
-                  model: model,
-                  messages: [
-                    {
-                      role: 'system',
-                      content:
-                        "You are a helpful assistant designed to output a valid JSON array of objects based on the user's request, without any markdown formatting.",
-                    },
-                    { role: 'user', content: userPrompt },
-                  ],
-                }),
+                body: JSON.stringify(body),
                 signal: abortController.signal,
               }
               responseHandler = async (result) => {
@@ -845,6 +908,7 @@
                 throw new Error('API 响应格式不正确')
               }
             } else {
+              // Gemini
               requestUrl = `${apiUrl}?key=${key}`
               fetchOptions = {
                 method: 'POST',
@@ -880,7 +944,10 @@
 
             const response = await fetch(requestUrl, fetchOptions)
             if (!response.ok) {
-              throw new Error(`请求失败，状态码: ${response.status}`)
+              const errorBody = await response.json()
+              const errorMessage =
+                errorBody.error?.message || `请求失败，状态码: ${response.status}`
+              throw new Error(errorMessage)
             }
 
             const result = await response.json()
@@ -897,7 +964,7 @@
             }
             console.error(`Key ${key} 失败:`, error)
             showNotification(
-              `Key "${key.slice(0, 4)}...${key.slice(-4)}" 请求失败。点击复制。`,
+              `Key "${key.slice(0, 4)}...${key.slice(-4)}" 失败: ${error.message}`,
               'error',
               key,
             )
