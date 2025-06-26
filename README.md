@@ -1,39 +1,28 @@
-# tech-tools
+# 1. Tech-Tools
 
-This template should help get you started developing with Vue 3 in Vite.
+- 一款极具炫酷科技风格的工具集合网站
+- 完全静态页面设计，无任何第三方框架
+- 解耦配置与页面，方便维护，动态增加工具页面
+- 所有工具均为一个完整的 `html` 页面，无任何其他依赖，可以单独启动
 
-## Recommended IDE Setup
+# 2. 新增工具
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+1. 所有工具都存放在 `tools` 目录下，每个工具为一个独立的html文件
+2. 新增工具时，请参考 `tools` 目录下的其他工具的样式和设计风格
+3. 请及时更新 `tools-config.js` 文件，增加新工具的配置
 
-## Type Support for `.vue` Imports in TS
+# 3. 自部署
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+推荐使用 [Vercel](https://vercel.com) 部署，具体部署步骤如下：
 
-## Customize configuration
+1. Fork 本项目
+2. 注册并登录 https://vercel.com
+3. 点击 `Add New`，选择 `Project`
+4. 选择 `Import`，导入你 Fork 的项目
+5. 点击 `Deploy`，等待部署完成
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+# 4. 注意
 
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Type-Check, Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
+- 本项目使用了一些第三方库，如 `fontawesome`、`highlight.js` 等，请自行分析是否符合自己的需求
+- 本项目使用了 `fontawesome` 图标库，需要在 `index.html` 文件中引入 `fontawesome` 的css文件
+- 本项目使用了 `highlight.js` 代码高亮库，需要在 `tools` 目录下的工具html文件中引入 `highlight.js` 的 js 文件
