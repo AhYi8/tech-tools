@@ -1,0 +1,1554 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI 知识卡片生成器 - 高级科技版</title>
+    <!-- 引入 Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 html2canvas for exporting image -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- 引入 Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* 暗色科技风格自定义样式 (样式无变化，保持原样) */
+      body {
+        font-family: "Noto Sans SC", sans-serif;
+        background-color: #0d1117;
+        color: #c9d1d9;
+        overflow-x: hidden; /* 防止横向滚动条 */
+      }
+
+      /* -- 动态背景 -- */
+      .background-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        background: radial-gradient(
+          ellipse at bottom,
+          #1b2735 0%,
+          #090a0f 100%
+        );
+        overflow: hidden;
+      }
+
+      @keyframes move-stars {
+        from {
+          transform: translateY(0px);
+        }
+        to {
+          transform: translateY(-2000px);
+        }
+      }
+
+      .stars,
+      .stars2,
+      .stars3 {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+        background: transparent;
+        background-size: cover;
+        animation: move-stars 200s linear infinite;
+      }
+      .stars {
+        background-image: url("data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjEwMHB4IiBoZWlnaHQ9IjEwMHB4IiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTAwIDEwMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTkyLjUsNjEuNWMwLDAsMCwwLDBsLTIsMC4xYy0wLjUsMC0xLTAuNS0xLTF2LTJjMC0wLjUsMC41LTEsMS0xaDIsMVY2MS41eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik04My4yLDQyLjRjMCwwLDAsMCwwbDAsMEM4My4yLDQyLjQsODMuMiw0Mi40LDgzLjIsNDIuNHoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzkuNCwyNC43YzAsMCwwLDAsMGwwLDBDNzkuNCwyNC43LDc5LjQsMjQuNyw3OS40LDI0Ljd6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTgwLjYsNDEuNWMwLDAsMCwwLDBsMCwwQzgwLjYsNDEuNSw4MC42LDQxLjUsODAuNiw0MS41eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik0yNC4zLDQxYzAsMCwwLDAsMGwtMC4yLTAuMmMwLDAsMCwwLDBMMjQuMyw0MXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNMzEuOCwzOS43YzAsMCwwLDAsMEwzMS44LDM5LjdMMzEuOCwzOS45eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik0zNy4xLDQwLjljMCwwLDAsMCwwbDAsMEMzNy4xLDQwLjksMzcuMSw0MC45LDM3LjIsNDAuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzMuNCwzMS45YzAsMCwwLDAsMEw3My40LDMxLjlMNzMuNCwzMS45eiIvPjwvc3ZnPg==");
+      }
+      .stars2 {
+        background-image: url("data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjEwMHB4IiBoZWlnaHQ9IjEwMHB4IiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTAwIDEwMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTc2LjksMjEuNGMwLDAsMCwwLDBsMCwwQzc2LjksMjEuNCw3Ni45LDIxLjQsNzYuOSwyMS40eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik04NS4yLDU5LjljMCwwLDAsMCwwbDAsMEM4NS4yLDU5LjksODUuMiw1OS45LDg1LjIsNTkuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzAuMywzOS45YzAsMCwwLDAsMEw3MC4zLDM5LjlMNzAuMywzOS45eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik00Ni43LDIwLjlDNDYuNywyMC45LDQ2LjcsMjAuOSw0Ni43LDIwLjlsMCwwQzQ2LjdsMjAuOSw0Ni43LDIwLjksNDYuNywyMC45eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik0yMS44LDIxLjljMCwwLDAsMCwwbDAsMEMyMS44LDIxLjksMjEuOCwyMS45LDIxLjgsMjEuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNMzEuNyw0OS4xYzAsMCwwLDAsMEwzMS43LDQ5LjFMMzEuNyw0OS4xeiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik0zNy44LDI1LjdjMCwwLDAsMCwwbDAsMEMzNy44LDI1LjcsMzcuOCwyNS43LDM3LjgsMjUuN3oiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNTEuOCwxMy43YzAsMCwwLDAsMEw1MS44LDEzLjdMNTIuMiwxMy45YzAsMCwwLDAsMEw1MS44LDEzLjd6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTI3LjEsMTQuNGMwLDAsMCwwLDBsMCwwQzI3LjEsMTQuNCwyNy4xLDE0LjQsMjcuMSwxNC40eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik0zNy41LDMuNGMwLDAsMCwwLDBsMCwwQzM3LjUsMy40LDM3LjUsMy40LDM3LjUsMy40eiIvPjwvc3ZnPg==");
+        animation-duration: 150s;
+      }
+      .stars3 {
+        background-image: url("data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjEwMHB4IiBoZWlnaHQ9IjEwMHB4IiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTAwIDEwMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTQ5LjIsMTcuMWMwLDAsMCwwLDBsMCwwQzQ5LjIsMTcuMSw0OS4yLDE3LjEsNDkuMiwxNy4xeiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik0zMy44LDguNGMwLDAsMCwwLDBsMCwwQzMzLjgsOC44LDMzLjgsOC40LDMzLjgsOC40eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik04NS4xLDguN2MwLDAsMCwwLDBsMCwwQzg1LjEsOC43LDg1LjEsOC43LDg1LjEsOC43eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik04Ny44LDE0LjljMCwwLDAsMCwwbDAsMEM4Ny44LDE0LjksODcuOCwxNC45LDg3LjgsMTQuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzkuOSwzOS45YzAsMCwwLDAsMEw3OS45LDM5LjlMNzkuOSwzOS45eiIvPjwvc3ZnPg==");
+        animation-duration: 100s;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .header-anim {
+        animation: fadeInUp 0.8s ease-out backwards;
+      }
+      .main-container-anim {
+        animation: fadeInUp 0.8s 0.2s ease-out backwards;
+      }
+
+      .main-container {
+        position: relative;
+        border-radius: 1rem;
+      }
+
+      .main-container::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        padding: 2px; /* 边框宽度 */
+        background: linear-gradient(135deg, #a97eff, #58a6ff, #00c3ff);
+        -webkit-mask: linear-gradient(#fff 0 0) content-box,
+          linear-gradient(#fff 0 0);
+        mask-composite: exclude;
+        z-index: 1; /* 提升边框层级 */
+        pointer-events: none; /* 让鼠标事件穿透边框 */
+      }
+
+      h1,
+      h2,
+      h3,
+      .tech-font {
+        font-family: "Exo 2", sans-serif;
+      }
+
+      .flashcard {
+        background: #1a202cdd;
+        backdrop-filter: blur(3px);
+        border: 1px solid #30363d;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 0 15px rgba(0, 191, 255, 0.1),
+          0 0 5px rgba(0, 191, 255, 0.05);
+        word-wrap: break-word;
+        page-break-inside: avoid;
+        break-inside: avoid;
+        transition: all 0.3s ease-in-out;
+        animation: fadeInUp 0.5s ease-out backwards;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .flashcard:nth-child(2) {
+        animation-delay: 0.1s;
+      }
+      .flashcard:nth-child(3) {
+        animation-delay: 0.2s;
+      }
+      .flashcard:nth-child(4) {
+        animation-delay: 0.3s;
+      }
+      .flashcard:nth-child(5) {
+        animation-delay: 0.4s;
+      }
+      .flashcard:nth-child(6) {
+        animation-delay: 0.5s;
+      }
+
+      .flashcard:hover {
+        transform: translateY(-8px) scale(1.03);
+        box-shadow: 0 0 30px rgba(0, 191, 255, 0.3),
+          0 0 15px rgba(0, 191, 255, 0.15);
+        border-color: rgba(0, 191, 255, 0.6);
+      }
+      .card-title {
+        font-family: "Exo 2", sans-serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #58a6ff;
+        text-shadow: 0 0 5px rgba(88, 166, 255, 0.5);
+        margin-bottom: 4px;
+        min-height: 2rem;
+      }
+      .card-subtitle {
+        font-size: 1rem;
+        font-weight: 400;
+        color: #8b949e;
+        margin-bottom: 16px;
+        border-bottom: 1px dashed #30363d;
+        padding-bottom: 12px;
+        min-height: 1.5rem;
+      }
+      .card-description {
+        font-size: 1rem;
+        color: #c9d1d9;
+        margin-bottom: 16px;
+        min-height: 3rem;
+      }
+      .card-facts {
+        list-style-type: none;
+        padding-left: 0;
+      }
+      .card-facts li {
+        background-color: rgba(88, 166, 255, 0.1);
+        color: #c9d1d9;
+        padding: 8px 12px;
+        border-left: 3px solid #58a6ff;
+        border-radius: 0 4px 4px 0;
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+      }
+      #card-container-wrapper {
+        background-color: transparent;
+      }
+      .dark-input {
+        background-color: #0d1117;
+        border: 1px solid #30363d;
+        color: #c9d1d9;
+      }
+      .dark-input:focus {
+        border-color: #58a6ff;
+        box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.2);
+        outline: none;
+      }
+      textarea::-webkit-scrollbar,
+      #thinking-process-output::-webkit-scrollbar {
+        width: 12px;
+      }
+      textarea::-webkit-scrollbar-track,
+      #thinking-process-output::-webkit-scrollbar-track {
+        background: #0d1117;
+        border-radius: 10px;
+      }
+      textarea::-webkit-scrollbar-thumb,
+      #thinking-process-output::-webkit-scrollbar-thumb {
+        background-color: #30363d;
+        border-radius: 10px;
+        border: 3px solid #0d1117;
+      }
+      textarea::-webkit-scrollbar-thumb:hover,
+      #thinking-process-output::-webkit-scrollbar-thumb:hover {
+        background-color: #58a6ff;
+      }
+
+      textarea::-webkit-resizer {
+        background-image: url("data:image/svg+xml;utf8,%3Csvg%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M8%204L4%208%22%20stroke%3D%22%2358a6ff%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22/%3E%3Cpath%20d%3D%22M10%206L6%2010%22%20stroke%3D%22%2358a6ff%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: bottom right;
+        border: 2px solid transparent;
+      }
+      textarea::-webkit-scrollbar-corner {
+        background-color: transparent;
+      }
+
+      .btn-ai-style {
+        position: relative;
+        background: #0d1117;
+        color: #c9d1d9;
+        border: 1px solid #30363d;
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 0 10px rgba(0, 191, 255, 0.2);
+      }
+      .btn-ai-style:not(:disabled):hover {
+        color: white;
+        border-color: #58a6ff;
+        box-shadow: 0 0 20px rgba(88, 166, 255, 0.5);
+      }
+      .btn-ai-style:disabled {
+        cursor: not-allowed;
+        color: #4b5563;
+        background-color: #161b22;
+      }
+
+      .btn-sci-fi {
+        position: relative;
+        padding: 12px 30px;
+        border: 2px solid #30363d;
+        background-color: transparent;
+        color: #c9d1d9;
+        font-weight: 700;
+        cursor: pointer;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        transform: skew(-15deg);
+      }
+      .btn-sci-fi > span {
+        display: inline-block;
+        transform: skew(15deg);
+        transition: color 0.3s ease;
+      }
+      .btn-sci-fi::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -150%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--glow-color, rgba(0, 191, 255, 0.5)),
+          transparent
+        );
+        transition: left 0.5s ease;
+        transform: skew(-15deg) translateX(50%);
+      }
+
+      .btn-sci-fi:not(:disabled):hover {
+        color: white;
+        border-color: var(--glow-color, rgba(0, 191, 255, 0.8));
+        box-shadow: 0 0 15px var(--glow-color, rgba(0, 191, 255, 0.5));
+      }
+      .btn-sci-fi:not(:disabled):hover > span {
+        color: white;
+      }
+      .btn-sci-fi:not(:disabled):hover::before {
+        left: 150%;
+      }
+
+      .btn-sci-fi.cyan {
+        --glow-color: #0891b2;
+      }
+      .btn-sci-fi.green {
+        --glow-color: #16a34a;
+      }
+
+      .btn-sci-fi:disabled {
+        border-color: #4b5563;
+        color: #4b5563;
+        cursor: not-allowed;
+        box-shadow: none;
+      }
+
+      #notification-container {
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .notification {
+        background-color: #161b22cc;
+        backdrop-filter: blur(5px);
+        color: #f87171; /* red-400 */
+        padding: 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid #ef4444; /* red-500 */
+        box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        opacity: 0;
+        transform: translateX(100%);
+        animation: slideIn 0.5s forwards;
+      }
+      .notification.success {
+        color: #4ade80; /* green-400 */
+        border-color: #22c55e; /* green-500 */
+        box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
+      }
+      @keyframes slideIn {
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+      @keyframes slideOut {
+        from {
+          opacity: 1;
+          transform: translateX(0);
+        }
+        to {
+          opacity: 0;
+          transform: translateX(100%);
+        }
+      }
+
+      /* --- 开关按钮样式 --- */
+      .switch {
+        position: relative;
+        display: inline-block;
+        width: 40px;
+        height: 22px;
+      }
+      .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #30363d;
+        transition: 0.4s;
+        border-radius: 22px;
+      }
+      .slider:before {
+        position: absolute;
+        content: "";
+        height: 14px;
+        width: 14px;
+        left: 4px;
+        bottom: 4px;
+        background-color: #c9d1d9;
+        transition: 0.4s;
+        border-radius: 50%;
+      }
+      input:checked + .slider {
+        background-color: #2563eb;
+        box-shadow: 0 0 5px #2563eb;
+      }
+      input:checked + .slider:before {
+        transform: translateX(18px);
+      }
+      /* --- 结束开关按钮样式 --- */
+
+      .export-wrapper {
+        padding: 2rem;
+        background: radial-gradient(
+          ellipse at bottom,
+          #1b2735 0%,
+          #090a0f 100%
+        );
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        width: 550px;
+      }
+
+      .export-wrapper .flashcard {
+        background: #1a202c;
+        border: 1px solid #30363d;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 0 15px rgba(0, 191, 255, 0.2);
+        position: relative;
+        overflow: hidden;
+        transform: none !important;
+        animation: none !important;
+      }
+
+      .export-wrapper .flashcard::before {
+        content: "";
+        position: absolute;
+        left: -50%;
+        top: -50%;
+        width: 200%;
+        height: 200%;
+        background: conic-gradient(
+          #f474c4,
+          #a97eff,
+          #58a6ff,
+          #00c3ff,
+          #58a6ff,
+          #a97eff,
+          #f474c4
+        );
+        animation: rotate-border 4s linear infinite;
+      }
+      .export-wrapper .flashcard::after {
+        content: "";
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        right: 2px;
+        bottom: 2px;
+        background: #1a202c;
+        border-radius: 10px;
+      }
+      .export-wrapper .flashcard > * {
+        position: relative;
+        z-index: 1;
+      }
+      /* --- 全局滚动条样式 (与 index.html 统一) --- */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background-color: rgba(
+          139,
+          148,
+          158,
+          0.2
+        ); /* 对应 index.html 的 --border-color */
+        border-radius: 10px;
+        border: 2px solid #0d1117; /* 对应 index.html 的 --bg-color，制造边距感 */
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background-color: #58a6ff; /* 对应 index.html 的 --accent-color */
+      }
+      /* --- 结束 --- */
+    </style>
+  </head>
+  <body>
+    <div class="background-container">
+      <div class="stars"></div>
+      <div class="stars2"></div>
+      <div class="stars3"></div>
+    </div>
+    <div id="notification-container"></div>
+
+    <div class="w-full max-w-6xl mx-auto p-4 sm:p-8 relative z-10">
+      <header class="text-center mb-8 header-anim">
+        <h1
+          class="text-3xl sm:text-4xl font-bold text-cyan-400"
+          style="text-shadow: 0 0 10px rgba(0, 255, 255, 0.5)"
+        >
+          AI 知识矩阵生成器
+        </h1>
+        <p class="text-gray-400 mt-2">
+          输入一个主题，让 AI 为您构建深度知识卡片，或手动编辑 JSON 数据。
+        </p>
+      </header>
+
+      <main class="main-container main-container-anim">
+        <div class="p-6 sm:p-8">
+          <div
+            class="mb-8 p-4 bg-transparent border-2 border-dashed border-blue-800 rounded-lg"
+          >
+            <label
+              for="ai-topic-input"
+              class="block text-lg font-medium text-cyan-400 mb-2 tech-font"
+              >1. AI 智能生成</label
+            >
+            <p class="text-sm text-gray-400 mb-3">
+              输入您想学习的主题，AI 将自动生成结构化知识卡片。
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4">
+              <input
+                type="text"
+                id="ai-topic-input"
+                class="dark-input flex-grow p-3 rounded-lg shadow-sm"
+                placeholder="例如：量子计算、设计模式、太阳系..."
+              />
+              <button
+                id="ai-generate-btn"
+                class="btn-ai-style flex items-center justify-center font-bold py-3 px-6"
+              >
+                <span id="ai-btn-text" class="tech-font">🚀 AI 生成</span>
+              </button>
+              <button
+                id="stop-generate-btn"
+                class="btn-ai-style flex items-center justify-center font-bold py-3 px-6"
+                disabled
+              >
+                <span id="stop-btn-text" class="tech-font">🚫 停止</span>
+              </button>
+            </div>
+            <div
+              id="ai-error-message"
+              class="text-red-400 mt-2 text-sm font-medium"
+            ></div>
+
+            <div class="mt-6 border-t border-gray-700 pt-4">
+              <details>
+                <summary
+                  class="cursor-pointer text-gray-400 hover:text-white tech-font"
+                >
+                  高级 API 设置
+                </summary>
+                <div class="mt-4 space-y-4">
+                  <div>
+                    <label
+                      for="api-type-select"
+                      class="block text-sm font-medium text-gray-400"
+                      >API 类型</label
+                    >
+                    <select
+                      id="api-type-select"
+                      class="dark-input mt-1 block w-full rounded-md shadow-sm"
+                    ></select>
+                  </div>
+                  <div>
+                    <label
+                      for="api-url"
+                      class="block text-sm font-medium text-gray-400"
+                      >API 地址 (URL)</label
+                    >
+                    <input
+                      type="text"
+                      id="api-url"
+                      class="dark-input mt-1 block w-full rounded-md shadow-sm"
+                      readonly
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="api-key"
+                      class="block text-sm font-medium text-gray-400"
+                      >API 密钥 (Key) - 可用英文逗号,分割多个</label
+                    >
+                    <div class="relative mt-1">
+                      <input
+                        type="password"
+                        id="api-key"
+                        class="dark-input block w-full rounded-md shadow-sm pr-10"
+                        placeholder="在此输入您的 API Key"
+                      />
+                      <button
+                        type="button"
+                        id="toggle-api-key"
+                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-blue-400 hover:text-cyan-300 focus:outline-none"
+                      >
+                        <svg
+                          id="eye-open"
+                          xmlns="http://www.w3.org/2000/svg"
+                          class="h-4 w-4 hidden"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        >
+                          <path
+                            d="M1 12C1 12 5 4 12 4C19 4 23 12 23 12C23 12 19 20 12 20C5 20 1 12 1 12Z"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                          <path
+                            d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                        </svg>
+                        <svg
+                          id="eye-closed"
+                          xmlns="http://www.w3.org/2000/svg"
+                          class="h-4 w-4"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        >
+                          <path
+                            d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                          <path
+                            d="M1 1L23 23"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                    <!-- D1: API 密钥安全警告 -->
+                    <p class="text-xs text-gray-500 mt-2">
+                      提示：API
+                      密钥仅存储在您的浏览器中，不会发送到任何服务器。但请注意在公共或不安全的网络环境下的潜在风险。
+                    </p>
+                  </div>
+                  <div>
+                    <label
+                      for="api-model"
+                      class="block text-sm font-medium text-gray-400"
+                      >模型 ID (Model ID)</label
+                    >
+                    <input
+                      type="text"
+                      id="api-model"
+                      class="dark-input mt-1 block w-full rounded-md shadow-sm"
+                      placeholder="例如: gpt-4, gemini-pro"
+                    />
+                  </div>
+                  <!-- C1: 自定义系统提示词 -->
+                  <div>
+                    <label
+                      for="system-prompt"
+                      class="block text-sm font-medium text-gray-400"
+                      >自定义系统提示词 (System Prompt)</label
+                    >
+                    <textarea
+                      id="system-prompt"
+                      rows="4"
+                      class="dark-input mt-1 block w-full rounded-md shadow-sm font-mono text-sm"
+                      placeholder="留空则使用默认提示词。自定义提示词将指导 AI 的行为和输出格式。"
+                    ></textarea>
+                  </div>
+
+                  <div class="flex items-center justify-between">
+                    <label
+                      for="enable-thinking"
+                      class="text-sm font-medium text-gray-400"
+                      >开启思考过程</label
+                    >
+                    <label class="switch">
+                      <input type="checkbox" id="enable-thinking" />
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <label
+                      for="enable-stream"
+                      class="text-sm font-medium text-gray-400"
+                      >开启流式输出</label
+                    >
+                    <label class="switch">
+                      <input type="checkbox" id="enable-stream" />
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                  <button
+                    id="save-settings-btn"
+                    class="btn-sci-fi cyan w-full sm:w-auto"
+                  >
+                    <span class="tech-font">保存设置</span>
+                  </button>
+                  <p id="save-feedback" class="text-green-400 text-sm mt-2"></p>
+                </div>
+              </details>
+            </div>
+          </div>
+
+          <div id="thinking-process-container" class="mb-6 hidden">
+            <h3 class="text-cyan-400 tech-font mb-2">AI 思考过程...</h3>
+            <div
+              id="thinking-process-output"
+              class="p-4 bg-black/30 rounded-lg text-sm font-mono whitespace-pre-wrap h-32 overflow-y-auto"
+            ></div>
+          </div>
+
+          <!-- JSON 手动输入区域 -->
+          <div class="mb-6">
+            <label
+              for="json-input"
+              class="block text-lg font-medium text-cyan-400 mb-2 tech-font"
+              >2. 手动编辑 JSON</label
+            >
+            <p class="text-sm text-gray-400 mb-2">
+              在此处编辑或粘贴您的 JSON 数据。新格式包含 title, sub_title,
+              description, 和 facts 数组。
+            </p>
+            <textarea
+              id="json-input"
+              rows="12"
+              class="dark-input w-full p-4 rounded-lg shadow-sm font-mono text-sm"
+              placeholder="在此处粘贴或编辑您的 JSON..."
+            ></textarea>
+            <div
+              id="error-message"
+              class="text-red-400 mt-2 text-sm font-medium"
+            ></div>
+          </div>
+
+          <div
+            class="flex flex-col sm:flex-row gap-8 mb-8 items-center justify-center"
+          >
+            <button id="generate-btn" class="btn-sci-fi cyan">
+              <span class="tech-font">从文本渲染</span>
+            </button>
+            <button id="export-btn" class="btn-sci-fi green" disabled>
+              <span class="tech-font">导出为图片</span>
+            </button>
+          </div>
+
+          <h2
+            class="text-2xl font-bold text-cyan-400 mb-4 border-b border-gray-700 pb-2"
+          >
+            卡片预览
+          </h2>
+          <div id="card-container-wrapper" class="p-4 rounded-lg">
+            <div
+              id="card-container"
+              class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6"
+            >
+              <p
+                id="placeholder-text"
+                class="text-gray-500 col-span-full text-center py-10"
+              >
+                ...系统待命中，等待生成指令...
+              </p>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <footer class="text-center mt-8 text-gray-500 text-sm">
+        <p>Powered by Gemini ✨ &copy; 2024</p>
+      </footer>
+    </div>
+
+    <script>
+      // DOM 元素
+      const jsonInput = document.getElementById("json-input");
+      const generateBtn = document.getElementById("generate-btn");
+      const exportBtn = document.getElementById("export-btn");
+      const cardContainer = document.getElementById("card-container");
+      const errorMessage = document.getElementById("error-message");
+      const placeholderText = document.getElementById("placeholder-text");
+
+      const aiTopicInput = document.getElementById("ai-topic-input");
+      const aiGenerateBtn = document.getElementById("ai-generate-btn");
+      const stopGenerateBtn = document.getElementById("stop-generate-btn");
+      const aiErrorMessage = document.getElementById("ai-error-message");
+      const aiBtnText = document.getElementById("ai-btn-text");
+      const thinkingProcessContainer = document.getElementById(
+        "thinking-process-container"
+      );
+      const thinkingProcessOutput = document.getElementById(
+        "thinking-process-output"
+      );
+
+      // 高级设置元素
+      const apiTypeSelect = document.getElementById("api-type-select");
+      const apiUrlInput = document.getElementById("api-url");
+      const apiKeyInput = document.getElementById("api-key");
+      const apiModelInput = document.getElementById("api-model");
+      const enableThinkingSwitch = document.getElementById("enable-thinking");
+      const enableStreamSwitch = document.getElementById("enable-stream");
+      const saveSettingsBtn = document.getElementById("save-settings-btn");
+      const saveFeedback = document.getElementById("save-feedback");
+      const notificationContainer = document.getElementById(
+        "notification-container"
+      );
+      const toggleApiKeyBtn = document.getElementById("toggle-api-key");
+      const eyeOpenIcon = document.getElementById("eye-open");
+      const eyeClosedIcon = document.getElementById("eye-closed");
+      // C1: 新增自定义系统提示词的 DOM 元素
+      const systemPromptInput = document.getElementById("system-prompt");
+
+      let abortController = new AbortController();
+
+      // B1: 默认示例数据
+      const defaultJsonData = JSON.stringify(
+        [
+          {
+            title: "AI 知识卡片生成器",
+            sub_title: "探索这个应用的功能",
+            description:
+              "这是一个强大的工具，可以通过 AI 或手动编辑 JSON 来创建和分享精美的知识卡片。",
+            facts: [
+              "支持多种大语言模型 API，如 Gemini 和 OpenAI。",
+              "可以自定义 API 地址、密钥和模型。",
+              "支持流式输出，实时查看 AI 生成过程。",
+              "可以将生成的卡片导出为一张高清图片。",
+            ],
+          },
+          {
+            title: "什么是 API?",
+            sub_title: "应用程序编程接口",
+            description:
+              "API (Application Programming Interface) 是一组定义、协议和工具，用于构建和集成应用程序软件。",
+            facts: [
+              "API 允许不同的软件系统相互通信。",
+              "常见的 API 类型有 RESTful, SOAP, GraphQL。",
+              "API Key 用于认证和授权 API 请求。",
+              "这个应用就是通过调用 AI 模型的 API 来工作的。",
+            ],
+          },
+          {
+            title: "Tailwind CSS",
+            sub_title: "一个功能优先的 CSS 框架",
+            description:
+              "Tailwind CSS 是一个高度可定制的、低级的 CSS 框架，让你无需离开 HTML 就能快速构建现代网站。",
+            facts: [
+              "通过组合原子类（如 `p-4`, `flex`）来构建设计。",
+              "本页面的所有样式都基于 Tailwind CSS。",
+              "它鼓励“功能优先”而非“组件优先”的开发模式。",
+              "可以通过配置文件轻松定制颜色、间距等。",
+            ],
+          },
+        ],
+        null,
+        2
+      );
+
+      // C1: 默认系统提示词
+      const DEFAULT_SYSTEM_PROMPT = `You are a helpful assistant designed to output a valid JSON array of objects based on the user's request. Your response must be a single, parseable JSON array, without any markdown formatting like \`\`\`json or explanatory text outside the JSON structure.`;
+
+      // 预设 API 地址
+      const commonApiEndpoints = [
+        {
+          name: "Gemini",
+          apiUrl:
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:streamGenerateContent",
+        },
+        {
+          name: "OpenAI",
+          apiUrl: "https://api.openai.com/v1/chat/completions",
+        },
+        {
+          name: "硅基流动",
+          apiUrl: "https://api.siliconflow.cn/v1/chat/completions",
+        },
+        { name: "Grok", apiUrl: "https://api.x.ai/v1/chat/completions" },
+        {
+          name: "DeepSeek",
+          apiUrl: "https://api.deepseek.com/v1/chat/completions",
+        },
+        {
+          name: "OpenRouter",
+          apiUrl: "https://openrouter.ai/api/v1/chat/completions",
+        },
+        { name: "302.AI", apiUrl: "https://api.302.ai/v1/chat/completions" },
+        {
+          name: "MiniMax",
+          apiUrl: "https://api.minimax.chat/v1/chat/completions",
+        },
+        {
+          name: "阿里云百炼",
+          apiUrl:
+            "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+        },
+        {
+          name: "GPTGOD",
+          apiUrl: "https://api.gptgod.online/v1/chat/completions",
+        },
+      ];
+
+      // 填充 API 类型下拉菜单
+      function populateApiEndpoints() {
+        commonApiEndpoints.forEach((endpoint) => {
+          const option = document.createElement("option");
+          option.value = endpoint.apiUrl;
+          option.textContent = endpoint.name;
+          apiTypeSelect.appendChild(option);
+        });
+        const customOption = document.createElement("option");
+        customOption.value = "custom";
+        customOption.textContent = "自定义";
+        apiTypeSelect.appendChild(customOption);
+      }
+
+      // 处理 API 类型变化
+      function handleApiTypeChange() {
+        const selectedValue = apiTypeSelect.value;
+        const allSettings = getSettings();
+        let providerConfig = {};
+
+        if (selectedValue === "custom") {
+          apiUrlInput.readOnly = false;
+          providerConfig = allSettings.providers.custom || {};
+          apiUrlInput.value = providerConfig.apiUrl || "";
+          apiUrlInput.placeholder = "请输入您的自定义 API 地址";
+        } else {
+          apiUrlInput.readOnly = true;
+          apiUrlInput.value = selectedValue;
+          providerConfig = allSettings.providers[selectedValue] || {};
+        }
+
+        apiKeyInput.value = providerConfig.apiKey || "";
+        apiModelInput.value = providerConfig.modelId || "";
+        enableThinkingSwitch.checked = providerConfig.enableThinking || false;
+        enableStreamSwitch.checked = providerConfig.enableStream || false;
+        // C1: 更新系统提示词输入框
+        systemPromptInput.value = providerConfig.systemPrompt || "";
+      }
+
+      function getSettings() {
+        const settings = localStorage.getItem("cardGenApiSettings");
+        return settings
+          ? JSON.parse(settings)
+          : { lastSelected: commonApiEndpoints[0].apiUrl, providers: {} };
+      }
+
+      // 保存设置
+      function saveSettings() {
+        const allSettings = getSettings();
+        const selectedType = apiTypeSelect.value;
+
+        allSettings.lastSelected = selectedType;
+
+        const currentConfig = {
+          apiKey: apiKeyInput.value,
+          modelId: apiModelInput.value,
+          enableThinking: enableThinkingSwitch.checked,
+          enableStream: enableStreamSwitch.checked,
+          // C1: 保存系统提示词
+          systemPrompt: systemPromptInput.value,
+        };
+
+        if (selectedType === "custom") {
+          currentConfig.apiUrl = apiUrlInput.value;
+          allSettings.providers.custom = currentConfig;
+        } else {
+          allSettings.providers[selectedType] = currentConfig;
+        }
+
+        localStorage.setItem("cardGenApiSettings", JSON.stringify(allSettings));
+        showNotification("设置已保存！", "success");
+      }
+
+      // 加载设置
+      function loadSettings() {
+        const allSettings = getSettings();
+        apiTypeSelect.value =
+          allSettings.lastSelected || commonApiEndpoints[0].apiUrl;
+        handleApiTypeChange();
+      }
+
+      // 自定义消息提醒函数
+      function showNotification(message, type = "error", failedKey = "") {
+        const notification = document.createElement("div");
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+
+        if (failedKey) {
+          notification.title = "点击复制";
+          notification.onclick = () => {
+            const tempInput = document.createElement("input");
+            document.body.appendChild(tempInput);
+            tempInput.value = failedKey;
+            tempInput.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempInput);
+            showNotification("失败的 Key 已复制到剪贴板", "success");
+            notification.style.animation = "slideOut 0.5s forwards";
+            setTimeout(() => notification.remove(), 500);
+          };
+        }
+        notificationContainer.appendChild(notification);
+        setTimeout(() => {
+          notification.style.animation = "slideOut 0.5s forwards";
+          setTimeout(() => notification.remove(), 500);
+        }, 5000);
+      }
+
+      // 切换 API Key 可见性
+      function toggleApiKeyVisibility() {
+        const isPassword = apiKeyInput.type === "password";
+        apiKeyInput.type = isPassword ? "text" : "password";
+        eyeOpenIcon.classList.toggle("hidden", !isPassword);
+        eyeClosedIcon.classList.toggle("hidden", isPassword);
+      }
+
+      // AI 生成函数
+      async function generateWithAI() {
+        const topic = aiTopicInput.value.trim();
+        if (!topic) {
+          aiErrorMessage.textContent = "请输入一个有效的主题。";
+          return;
+        }
+
+        const apiUrl = apiUrlInput.value;
+        const apiKeys = apiKeyInput.value
+          .split(",")
+          .map((k) => k.trim())
+          .filter(Boolean);
+        const model =
+          apiModelInput.value ||
+          (apiUrl.includes("openai") ? "gpt-3.5-turbo" : "gemini-pro");
+        const enableThinking = enableThinkingSwitch.checked;
+        const enableStream = enableStreamSwitch.checked;
+
+        if (!apiUrl || apiKeys.length === 0) {
+          aiErrorMessage.textContent = "请在高级设置中配置 API 地址和密钥。";
+          return;
+        }
+
+        aiErrorMessage.textContent = "";
+        aiGenerateBtn.disabled = true;
+        stopGenerateBtn.disabled = false;
+        aiBtnText.textContent = "生成中...";
+
+        resetStreamState();
+        streamState.isStreaming = true;
+
+        cardContainer.innerHTML = "";
+        placeholderText.style.display = "none";
+
+        renderLoop();
+
+        // 思考过程框的显示逻辑已移至 handleStreamResponse
+        jsonInput.value = "";
+
+        abortController = new AbortController();
+
+        const systemPrompt =
+          systemPromptInput.value.trim() || DEFAULT_SYSTEM_PROMPT;
+        const userPrompt = `为关于“${topic}”的主题生成至少4个（不局限于4个，取决于实际知识点数量）详细的知识卡片。请使用中文回答。数组中的每个对象都必须包含以下键： "title" (字符串，卡片的主标题), "sub_title" (字符串，一个可选的、吸引人的副标题), "description" (字符串，对主题的简要概述，大约30-50字), 和 "facts" (字符串数组，列出至少4个关键知识点或核心事实)。`;
+
+        let success = false;
+        for (const key of apiKeys) {
+          if (abortController.signal.aborted) {
+            aiErrorMessage.textContent = "生成已取消。";
+            break;
+          }
+
+          try {
+            let fetchOptions,
+              requestUrl,
+              body = {};
+
+            if (apiUrl.includes("completions")) {
+              requestUrl = apiUrl;
+              body = {
+                model: model,
+                messages: [
+                  { role: "system", content: systemPrompt },
+                  { role: "user", content: userPrompt },
+                ],
+                stream: enableStream,
+              };
+              if (enableThinking) {
+                body.stream_options = { include_usage: true };
+                body.enable_thinking = true;
+              }
+              if (apiUrl.includes("dashscope")) {
+                body.result_format = "message";
+              }
+
+              fetchOptions = {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${key}`,
+                },
+                body: JSON.stringify(body),
+                signal: abortController.signal,
+              };
+            } else {
+              // Gemini
+              const geminiUserPrompt = `${systemPrompt}\n\n任务: ${userPrompt}`;
+              requestUrl = enableStream
+                ? apiUrl.replace(":generateContent", ":streamGenerateContent")
+                : apiUrl;
+              if (enableStream) {
+                requestUrl = `${apiUrl.replace(
+                  ":generateContent",
+                  ":streamGenerateContent"
+                )}?key=${key}&alt=sse`;
+              } else {
+                requestUrl = `${apiUrl}?key=${key}`;
+              }
+              fetchOptions = {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  contents: [
+                    { role: "user", parts: [{ text: geminiUserPrompt }] },
+                  ],
+                }),
+                signal: abortController.signal,
+              };
+              if (!enableStream) {
+                fetchOptions.body = JSON.stringify({
+                  contents: [
+                    { role: "user", parts: [{ text: geminiUserPrompt }] },
+                  ],
+                  generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                      type: "ARRAY",
+                      items: {
+                        type: "OBJECT",
+                        properties: {
+                          title: { type: "STRING" },
+                          sub_title: { type: "STRING" },
+                          description: { type: "STRING" },
+                          facts: { type: "ARRAY", items: { type: "STRING" } },
+                        },
+                        required: ["title", "description", "facts"],
+                      },
+                    },
+                  },
+                });
+              }
+            }
+
+            const response = await fetch(requestUrl, fetchOptions);
+
+            if (!response.ok) {
+              const errorBody = await response.json();
+              const errorMessage =
+                errorBody.error?.message ||
+                `请求失败，状态码: ${response.status}`;
+              throw new Error(errorMessage);
+            }
+
+            if (enableStream) {
+              await handleStreamResponse(response);
+            } else {
+              const result = await response.json();
+              const jsonText = await handleNonStreamResponse(result, apiUrl);
+              jsonInput.value = jsonText;
+            }
+
+            success = true;
+            break;
+          } catch (error) {
+            if (error.name === "AbortError") {
+              console.log("Fetch aborted by user.");
+              aiErrorMessage.textContent = "生成已取消。";
+              break;
+            }
+            console.error(`Key ${key} 失败:`, error);
+            showNotification(
+              `Key "${key.slice(0, 4)}...${key.slice(-4)}" 失败: ${
+                error.message
+              }`,
+              "error",
+              key
+            );
+          }
+        }
+
+        streamState.isStreaming = false;
+
+        if (!success && !abortController.signal.aborted) {
+          aiErrorMessage.textContent = "所有 API Key 均请求失败。";
+        }
+
+        aiGenerateBtn.disabled = false;
+        stopGenerateBtn.disabled = true;
+        aiBtnText.textContent = "🚀 AI 生成";
+      }
+
+      async function handleNonStreamResponse(result, apiUrl) {
+        if (apiUrl.includes("completions")) {
+          if (result.choices && result.choices[0]?.message?.content) {
+            return result.choices[0].message.content;
+          }
+        } else {
+          if (
+            result.candidates &&
+            result.candidates[0]?.content?.parts?.[0]?.text
+          ) {
+            return result.candidates[0].content.parts[0].text;
+          }
+        }
+        throw new Error("API 响应格式不正确");
+      }
+
+      async function handleStreamResponse(response) {
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+
+        while (true) {
+          if (abortController.signal.aborted) {
+            reader.cancel();
+            break;
+          }
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split("\n");
+          buffer = lines.pop();
+
+          for (const line of lines) {
+            if (line.startsWith("data: ")) {
+              const data = line.substring(6);
+              if (data.trim() === "[DONE]") {
+                return;
+              }
+              try {
+                const chunk = JSON.parse(data);
+                const delta = chunk.choices?.[0]?.delta;
+
+                // 新增：只在第一次接收到数据时检查思考过程
+                if (!streamState.thinkingProcessChecked) {
+                  const hasReasoning =
+                    (delta &&
+                      delta.reasoning_content !== null &&
+                      delta.reasoning_content !== undefined) ||
+                    (chunk.candidates &&
+                      chunk.candidates[0] &&
+                      chunk.candidates[0].reasoning_content !== null &&
+                      chunk.candidates[0].reasoning_content !== undefined);
+                  if (hasReasoning) {
+                    thinkingProcessContainer.classList.remove("hidden");
+                  } else {
+                    thinkingProcessContainer.classList.add("hidden");
+                  }
+                  streamState.thinkingProcessChecked = true;
+                }
+
+                if (delta?.content) {
+                  streamState.fullText += delta.content;
+                } else if (
+                  chunk.candidates &&
+                  chunk.candidates[0]?.content?.parts?.[0]?.text
+                ) {
+                  streamState.fullText +=
+                    chunk.candidates[0].content.parts[0].text;
+                } else if (delta?.reasoning_content) {
+                  streamState.thinkingText += delta.reasoning_content;
+                }
+              } catch (e) {
+                // 忽略无法解析的块
+              }
+            }
+          }
+        }
+      }
+
+      let streamState = {};
+
+      // 用于流式渲染的状态
+      function resetStreamState() {
+        if (streamState.animationFrameId) {
+          cancelAnimationFrame(streamState.animationFrameId);
+        }
+        streamState = {
+          fullText: "",
+          thinkingText: "",
+          cardData: [],
+          lastRenderedCardCount: 0,
+          isStreaming: false,
+          animationFrameId: null,
+          thinkingProcessChecked: false, // 新增：用于标记是否已检查过思考过程
+        };
+      }
+
+      function renderLoop() {
+        if (thinkingProcessOutput.textContent !== streamState.thinkingText) {
+          thinkingProcessOutput.textContent = streamState.thinkingText;
+          thinkingProcessOutput.scrollTop = thinkingProcessOutput.scrollHeight;
+        }
+
+        try {
+          if (streamState.fullText) {
+            let parsableText = streamState.fullText;
+            const lastClosingBrace = parsableText.lastIndexOf("}");
+
+            if (lastClosingBrace > 0) {
+              parsableText = parsableText.substring(0, lastClosingBrace + 1);
+
+              if (!parsableText.trim().startsWith("[")) {
+                parsableText = "[" + parsableText;
+              }
+              if (parsableText.endsWith(",")) {
+                parsableText = parsableText.slice(0, -1);
+              }
+              if (!parsableText.endsWith("]")) {
+                parsableText += "]";
+              }
+
+              const parsedData = JSON.parse(parsableText);
+              if (Array.isArray(parsedData)) {
+                streamState.cardData = parsedData;
+              }
+            }
+          }
+        } catch (e) {
+          // 在流式传输期间解析失败是正常的。
+        }
+
+        if (streamState.cardData.length > streamState.lastRenderedCardCount) {
+          exportBtn.disabled = false;
+
+          for (
+            let i = streamState.lastRenderedCardCount;
+            i < streamState.cardData.length;
+            i++
+          ) {
+            const item = streamState.cardData[i];
+            if (typeof item === "object" && item !== null && item.title) {
+              const cardElement = document.createElement("div");
+              cardElement.id = `flashcard-${i}`;
+              cardElement.className = "flashcard";
+
+              let cardHTML = `<div><h3 class="card-title" data-field="title">${
+                item.title || ""
+              }</h3>`;
+              if (item.sub_title) {
+                cardHTML += `<h4 class="card-subtitle" data-field="sub_title">${item.sub_title}</h4>`;
+              }
+              if (item.description) {
+                cardHTML += `<p class="card-description" data-field="description">${item.description}</p>`;
+              }
+              if (
+                item.facts &&
+                Array.isArray(item.facts) &&
+                item.facts.length > 0
+              ) {
+                cardHTML += '<ul class="card-facts" data-field="facts">';
+                item.facts.forEach((fact) => {
+                  cardHTML += `<li>${fact}</li>`;
+                });
+                cardHTML += "</ul>";
+              }
+              cardHTML += "</div>";
+              cardElement.innerHTML = cardHTML;
+
+              cardContainer.appendChild(cardElement);
+            }
+          }
+          streamState.lastRenderedCardCount = streamState.cardData.length;
+        }
+
+        if (jsonInput.value !== streamState.fullText) {
+          jsonInput.value = streamState.fullText;
+        }
+
+        if (streamState.isStreaming) {
+          streamState.animationFrameId = requestAnimationFrame(renderLoop);
+        } else {
+          if (streamState.fullText) {
+            generateCards();
+          }
+        }
+      }
+
+      function generateCards() {
+        const jsonString = jsonInput.value.trim();
+        if (!jsonString) {
+          cardContainer.innerHTML = "";
+          placeholderText.style.display = "block";
+          exportBtn.disabled = true;
+          errorMessage.textContent = "";
+          return;
+        }
+
+        try {
+          const data = JSON.parse(jsonString);
+          if (!Array.isArray(data)) {
+            throw new Error(
+              "JSON 格式错误：根结构必须是一个数组 (e.g., `[...]`)。"
+            );
+          }
+          if (
+            data.length > 0 &&
+            data.some(
+              (item) =>
+                typeof item !== "object" ||
+                item === null ||
+                typeof item.title === "undefined"
+            )
+          ) {
+            throw new Error(
+              'JSON 格式错误：数组中的每个元素都必须是包含 "title" 键的对象。'
+            );
+          }
+          jsonInput.value = JSON.stringify(data, null, 2);
+          errorMessage.textContent = "";
+          cardContainer.innerHTML = "";
+          if (data.length === 0) {
+            placeholderText.style.display = "block";
+            exportBtn.disabled = true;
+          } else {
+            placeholderText.style.display = "none";
+            data.forEach((item, index) => {
+              const cardElement = document.createElement("div");
+              cardElement.id = `flashcard-${index}`;
+              cardElement.className = "flashcard";
+
+              let cardHTML = `<div><h3 class="card-title" data-field="title">${
+                item.title || ""
+              }</h3>`;
+              if (item.sub_title) {
+                cardHTML += `<h4 class="card-subtitle" data-field="sub_title">${item.sub_title}</h4>`;
+              }
+              if (item.description) {
+                cardHTML += `<p class="card-description" data-field="description">${item.description}</p>`;
+              }
+              if (
+                item.facts &&
+                Array.isArray(item.facts) &&
+                item.facts.length > 0
+              ) {
+                cardHTML += '<ul class="card-facts" data-field="facts">';
+                item.facts.forEach((fact) => {
+                  cardHTML += `<li>${fact}</li>`;
+                });
+                cardHTML += "</ul>";
+              }
+              cardHTML += "</div>";
+
+              cardElement.innerHTML = cardHTML;
+              cardContainer.appendChild(cardElement);
+            });
+            exportBtn.disabled = false;
+          }
+        } catch (e) {
+          errorMessage.textContent = `❌ JSON 无效: ${e.message} 请检查您的输入。`;
+          exportBtn.disabled = true;
+        }
+      }
+
+      function exportImage() {
+        const originalButtonText = exportBtn.querySelector("span").textContent;
+        exportBtn.disabled = true;
+        exportBtn.querySelector("span").textContent = "导出中...";
+
+        const exportWrapper = document.createElement("div");
+        exportWrapper.className = "export-wrapper";
+
+        const cards = cardContainer.querySelectorAll(".flashcard");
+        cards.forEach((cardNode) => {
+          exportWrapper.appendChild(cardNode.cloneNode(true));
+        });
+
+        exportWrapper.style.position = "absolute";
+        exportWrapper.style.left = "-9999px";
+        document.body.appendChild(exportWrapper);
+
+        setTimeout(() => {
+          html2canvas(exportWrapper, {
+            logging: true,
+            useCORS: true,
+            scale: 2,
+            backgroundColor: null,
+          })
+            .then((canvas) => {
+              const link = document.createElement("a");
+              link.href = canvas.toDataURL("image/png");
+              link.download = "knowledge-matrix.png";
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            })
+            .catch((err) => {
+              console.error("图片导出失败:", err);
+              errorMessage.textContent =
+                "图片导出失败，请查看控制台获取更多信息。";
+            })
+            .finally(() => {
+              document.body.removeChild(exportWrapper);
+              exportBtn.disabled = false;
+              exportBtn.querySelector("span").textContent = originalButtonText;
+            });
+        }, 100);
+      }
+
+      // 事件监听
+      generateBtn.addEventListener("click", () => generateCards());
+      exportBtn.addEventListener("click", exportImage);
+      aiGenerateBtn.addEventListener("click", generateWithAI);
+      stopGenerateBtn.addEventListener("click", () => {
+        abortController.abort();
+      });
+      saveSettingsBtn.addEventListener("click", saveSettings);
+      apiTypeSelect.addEventListener("change", handleApiTypeChange);
+      toggleApiKeyBtn.addEventListener("click", toggleApiKeyVisibility);
+
+      // 页面加载时执行
+      window.addEventListener("load", () => {
+        populateApiEndpoints();
+        loadSettings();
+        eyeOpenIcon.classList.add("hidden");
+        eyeClosedIcon.classList.remove("hidden");
+
+        const isFirstVisit = !localStorage.getItem(
+          "hasVisitedCardGenerator_v2"
+        );
+        if (isFirstVisit) {
+          jsonInput.value = defaultJsonData;
+          localStorage.setItem("hasVisitedCardGenerator_v2", "true");
+        }
+        generateCards();
+      });
+    </script>
+  </body>
+</html>
