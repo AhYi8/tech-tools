@@ -3,7 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>IT Tools - 科技版在线工具箱</title>
+    <title>Tech-Tools - 在线工具箱</title>
+    <link rel="icon" href="./favicon.ico" type="image/x-icon" />
 
     <!-- 引入 Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -257,7 +258,7 @@
           <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
             <!-- 移动端汉堡菜单 -->
             <div class="md:hidden mb-6 flex items-center justify-between">
-              <h1 class="font-exo text-2xl font-bold">IT-Tools</h1>
+              <h1 class="font-exo text-2xl font-bold">Tech-Tools</h1>
               <button id="menu-toggle" class="p-2">
                 <i data-lucide="menu" class="w-6 h-6"></i>
               </button>
@@ -379,11 +380,11 @@
       // --- 收藏夹功能 ---
       function loadFavorites() {
         favorites =
-          JSON.parse(localStorage.getItem("it-tools-favorites")) || [];
+          JSON.parse(localStorage.getItem("tech-tools-favorites")) || [];
       }
 
       function saveFavorites() {
-        localStorage.setItem("it-tools-favorites", JSON.stringify(favorites));
+        localStorage.setItem("tech-tools-favorites", JSON.stringify(favorites));
       }
 
       function toggleFavorite(event, toolId) {
