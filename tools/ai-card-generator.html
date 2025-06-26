@@ -1540,13 +1540,13 @@
         eyeOpenIcon.classList.add("hidden");
         eyeClosedIcon.classList.remove("hidden");
 
-        const isFirstVisit = !localStorage.getItem(
-          "hasVisitedCardGenerator_v2"
-        );
-        if (isFirstVisit) {
-          jsonInput.value = defaultJsonData;
-          localStorage.setItem("hasVisitedCardGenerator_v2", "true");
-        }
+        // const isFirstVisit = !localStorage.getItem(
+        //   "hasVisitedCardGenerator_v2"
+        // );
+        // if (isFirstVisit) {
+        jsonInput.value = defaultJsonData;
+        //   localStorage.setItem("hasVisitedCardGenerator_v2", "true");
+        // }
         generateCards();
       });
     </script>
