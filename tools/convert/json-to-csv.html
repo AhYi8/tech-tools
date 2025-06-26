@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JSON 转 CSV 工具 - 科技版</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* 沿用自项目其他页面的暗色科技风格 */
+      body {
+        font-family: "Noto Sans SC", sans-serif;
+        background-color: #0d1117;
+        color: #c9d1d9;
+        overflow: hidden; /* 防止主滚动条 */
+      }
+
+      /* -- 动态背景 -- */
+      .background-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        background: radial-gradient(
+          ellipse at bottom,
+          #1b2735 0%,
+          #090a0f 100%
+        );
+        overflow: hidden;
+      }
+
+      @keyframes move-stars {
+        from {
+          transform: translateY(0px);
+        }
+        to {
+          transform: translateY(-2000px);
+        }
+      }
+
+      .stars,
+      .stars2,
+      .stars3 {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+        background: transparent;
+        background-size: cover;
+        animation: move-stars 200s linear infinite;
+      }
+      .stars {
+        background-image: url("data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjEwMHB4IiBoZWlnaHQ9IjEwMHB4IiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTAwIDEwMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTkyLjUsNjEuNWMwLDAsMCwwLDBsLTIsMC4xYy0wLjUsMC0xLTAuNS0xLTF2LTJjMC0wLjUsMC41LTEsMS0xaDIsMVY2MS41eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik04My4yLDQyLjRjMCwwLDAsMCwwbDAsMEM4My4yLDQyLjQsODMuMiw0Mi40LDgzLjIsNDIuNHoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzkuNCwyNC43YzAsMCwwLDAsMGwwLDBDNzkuNCwyNC43LDc5LjQsMjQuNyw3OS40LDI0Ljd6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTgwLjYsNDEuNWMwLDAsMCwwLDBsMCwwQzgwLjYsNDEuNSw4MC42LDQxLjUsODAuNiw0MS41eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik0yNC4zLDQxYzAsMCwwLDAsMGwtMC4yLTAuMmMwLDAsMCwwLDBMMjQuMyw0MXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNMzEuOCwzOS43YzAsMCwwLDAsMEwzMS44LDM5LjdMMzEuOCwzOS45eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik0zNy4xLDQwLjljMCwwLDAsMCwwbDAsMEMzNy4xLDQwLjksMzcuMSw0MC45LDM3LjIsNDAuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzMuNCwzMS45YzAsMCwwLDAsMEw3My40LDMxLjlMNzMuNCwzMS45eiIvPjwvc3ZnPg==");
+      }
+      .stars2 {
+        background-image: url("data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjEwMHB4IiBoZWlnaHQ9IjEwMHB4IiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTAwIDEwMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTc2LjksMjEuNGMwLDAsMCwwLDBsMCwwQzc2LjksMjEuNCw3Ni45LDIxLjQsNzYuOSwyMS40eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik04NS4yLDU5LjljMCwwLDAsMCwwbDAsMEM4NS4yLDU5LjksODUuMiw1OS45LDg1LjIsNTkuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzAuMywzOS45YzAsMCwwLDAsMEw3MC4zLDM5LjlMNzAuMywzOS45eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik00Ni43LDIwLjlDNDYuNywyMC45LDQ2LjcsMjAuOSw0Ni43LDIwLjlsMCwwQzQ2LjdsMjAuOSw0Ni44LDIwLjksNDYuNywyMC45eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik0yMS44LDIxLjljMCwwLDAsMCwwbDAsMEMyMS44LDIxLjksMjEuOCwyMS45LDIxLjgsMjEuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNMzEuNyw0OS4xYzAsMCwwLDAsMEwzMS43LDQ5LjFMMzEuNyw0OS4xeiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik0zNy44LDI1LjdjMCwwLDAsMCwwbDAsMEMzNy44LDI1LjcsMzcuOCwyNS43LDM3LjgsMjUuN3oiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNTEuOCwxMy43YzAsMCwwLDAsMEw1MS44LDEzLjdMNTIuMiwxMy45YzAsMCwwLDAsMEw1MS44LDEzLjd6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTI3LjEsMTQuNGMwLDAsMCwwLDBsMCwwQzI3LjEsMTQuNCwyNy4xLDE0LjQsMjcuMSwxNC40eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik0zNy41LDMuNGMwLDAsMCwwLDBsMCwwQzM3LjUsMy40LDM3LjUsMy40LDM3LjUsMy40eiIvPjwvc3ZnPg==");
+        animation-duration: 150s;
+      }
+      .stars3 {
+        background-image: url("data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjEwMHB4IiBoZWlnaHQ9IjEwMHB4IiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTAwIDEwMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTQ5LjIsMTcuMWMwLDAsMCwwLDBsMCwwQzQ5LjIsMTcuMSw0OS4yLDE3LjEsNDkuMiwxNy4xeiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik0zMy44LDguNGMwLDAsMCwwLDBsMCwwQzMzLjgsOC40LDMzLjgsOC44LDMzLjgsOC40eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik04NS4xLDguN2MwLDAsMCwwLDBsMCwwQzg1LjEsOC43LDg1LjEsOC43LDg1LjEsOC43eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik04Ny44LDE0LjljMCwwLDAsMCwwbDAsMEM4Ny44LDE0LjksODcuOCwxNC45LDg3LjgsMTQuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzkuOSwzOS45YzAsMCwwLDAsMEw3OS45LDM5LjlMNzkuOSwzOS45eiIvPjwvc3ZnPg==");
+        animation-duration: 100s;
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .header-anim {
+        animation: fadeInUp 0.8s ease-out backwards;
+      }
+      .main-container-anim {
+        animation: fadeInUp 0.8s 0.2s ease-out backwards;
+      }
+
+      .main-container {
+        position: relative;
+        border-radius: 1rem;
+        background-color: #161b2288; /* Semi-transparent background */
+        backdrop-filter: blur(5px);
+      }
+
+      .main-container::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        padding: 2px; /* 边框宽度 */
+        background: linear-gradient(135deg, #a97eff, #58a6ff, #00c3ff);
+        -webkit-mask: linear-gradient(#fff 0 0) content-box,
+          linear-gradient(#fff 0 0);
+        mask-composite: exclude;
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      h1,
+      h2,
+      .tech-font {
+        font-family: "Exo 2", sans-serif;
+      }
+
+      .dark-input,
+      .dark-textarea {
+        background-color: #0d1117;
+        border: 1px solid #30363d;
+        color: #c9d1d9;
+        transition: all 0.3s ease;
+      }
+      .dark-input:focus,
+      .dark-textarea:focus {
+        border-color: #58a6ff;
+        box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.2);
+        outline: none;
+      }
+      .dark-textarea {
+        resize: vertical;
+      }
+
+      textarea::-webkit-scrollbar {
+        width: 12px;
+      }
+      textarea::-webkit-scrollbar-track {
+        background: #0d1117;
+        border-radius: 10px;
+      }
+      textarea::-webkit-scrollbar-thumb {
+        background-color: #30363d;
+        border-radius: 10px;
+        border: 3px solid #0d1117;
+      }
+      textarea::-webkit-scrollbar-thumb:hover {
+        background-color: #58a6ff;
+      }
+      textarea::-webkit-resizer {
+        background-image: url("data:image/svg+xml;utf8,%3Csvg%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M8%204L4%208%22%20stroke%3D%22%2358a6ff%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22/%3E%3Cpath%20d%3D%22M10%206L6%2010%22%20stroke%3D%22%2358a6ff%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: bottom right;
+        border: 2px solid transparent;
+      }
+      textarea::-webkit-scrollbar-corner {
+        background-color: transparent;
+      }
+
+      .btn-sci-fi {
+        position: relative;
+        padding: 10px 24px;
+        border: 2px solid #30363d;
+        background-color: transparent;
+        color: #c9d1d9;
+        font-weight: 700;
+        cursor: pointer;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        transform: skew(-15deg);
+      }
+      .btn-sci-fi > span {
+        display: inline-block;
+        transform: skew(15deg);
+        transition: color 0.3s ease;
+      }
+      .btn-sci-fi::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -150%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--glow-color, rgba(0, 191, 255, 0.5)),
+          transparent
+        );
+        transition: left 0.5s ease;
+        transform: skew(-15deg) translateX(50%);
+      }
+      .btn-sci-fi:not(:disabled):hover {
+        color: white;
+        border-color: var(--glow-color, rgba(0, 191, 255, 0.8));
+        box-shadow: 0 0 15px var(--glow-color, rgba(0, 191, 255, 0.5));
+      }
+      .btn-sci-fi:not(:disabled):hover > span {
+        color: white;
+      }
+      .btn-sci-fi:not(:disabled):hover::before {
+        left: 150%;
+      }
+      .btn-sci-fi.cyan {
+        --glow-color: #0891b2;
+      }
+
+      #notification-container {
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .notification {
+        background-color: #161b22cc;
+        backdrop-filter: blur(5px);
+        color: #f87171; /* red-400 */
+        padding: 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid #ef4444; /* red-500 */
+        box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        opacity: 0;
+        transform: translateX(100%);
+        animation: slideIn 0.5s forwards;
+      }
+      .notification.success {
+        color: #4ade80; /* green-400 */
+        border-color: #22c55e; /* green-500 */
+        box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
+      }
+      @keyframes slideIn {
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+      @keyframes slideOut {
+        from {
+          opacity: 1;
+          transform: translateX(0);
+        }
+        to {
+          opacity: 0;
+          transform: translateX(100%);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="background-container">
+      <div class="stars"></div>
+      <div class="stars2"></div>
+      <div class="stars3"></div>
+    </div>
+    <div id="notification-container"></div>
+
+    <div
+      class="w-full max-w-5xl mx-auto p-4 sm:p-8 flex flex-col min-h-screen"
+    >
+      <header class="text-center mb-6 header-anim">
+        <h1
+          class="text-3xl sm:text-4xl font-bold text-cyan-400"
+          style="text-shadow: 0 0 10px rgba(0, 255, 255, 0.5)"
+        >
+          JSON 转 CSV 工具
+        </h1>
+        <p class="text-gray-400 mt-2">
+          将 JSON 数组转换为 CSV，支持排除不需要的字段
+        </p>
+      </header>
+
+      <main
+        class="main-container main-container-anim flex-grow flex flex-col p-4 sm:p-6"
+      >
+        <div class="flex flex-col lg:flex-row flex-grow gap-6">
+          <div class="flex flex-col gap-4 lg:w-1/2">
+            <div class="flex-grow flex flex-col min-h-0">
+              <div class="flex justify-between items-center mb-2 px-1">
+                <h2 class="text-lg text-cyan-400 tech-font">
+                  输入 (JSON 数组)
+                </h2>
+                <button
+                  id="clear-input"
+                  class="text-gray-400 hover:text-white text-xs tech-font"
+                >
+                  清空
+                </button>
+              </div>
+              <textarea
+                id="input-area"
+                class="dark-textarea w-full h-full p-3 rounded-lg shadow-sm font-mono text-sm"
+                placeholder="在此处粘贴您的 JSON 数组... (Ctrl+Enter 转换)"
+              ></textarea>
+            </div>
+            <div>
+              <label
+                for="exclude-fields"
+                class="block text-cyan-400 mb-2 tech-font"
+                >排除字段 (可选)</label
+              >
+              <input
+                type="text"
+                id="exclude-fields"
+                class="dark-input w-full p-2 rounded-lg font-mono text-sm"
+                placeholder="例如: id, timestamp (Enter 转换)"
+              />
+            </div>
+            <div class="flex justify-center">
+              <button id="convert-btn" class="btn-sci-fi cyan">
+                <span class="tech-font">转换</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="flex flex-col lg:w-1/2 flex-grow min-h-0">
+            <div class="flex justify-between items-center mb-2 px-1">
+              <h2 class="text-lg text-cyan-400 tech-font">输出 (CSV)</h2>
+              <button
+                id="copy-output"
+                class="text-gray-400 hover:text-white text-xs tech-font"
+              >
+                复制
+              </button>
+            </div>
+            <textarea
+              id="output-area"
+              readonly
+              class="dark-textarea w-full h-full p-3 rounded-lg shadow-sm font-mono text-sm"
+              placeholder="CSV 结果将显示在此处..."
+            ></textarea>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      // DOM Element References
+      const inputArea = document.getElementById("input-area");
+      const outputArea = document.getElementById("output-area");
+      const excludeFieldsInput = document.getElementById("exclude-fields");
+      const convertBtn = document.getElementById("convert-btn");
+      const clearInputBtn = document.getElementById("clear-input");
+      const copyOutputBtn = document.getElementById("copy-output");
+      const notificationContainer =
+        document.getElementById("notification-container");
+
+      // Default example JSON
+      const defaultJson = JSON.stringify(
+        [
+          {
+            id: 1,
+            name: "Alice",
+            email: "alice@example.com",
+            role: "Admin",
+            "last login": "2024-10-26",
+          },
+          {
+            id: 2,
+            name: "Bob",
+            email: "bob@example.com",
+            role: "User",
+            "last login": "2024-10-25",
+          },
+          {
+            id: 3,
+            name: "Charlie, Jr.",
+            email: "charlie@example.com",
+            role: "User",
+            "last login": "2024-10-26",
+          },
+        ],
+        null,
+        2
+      );
+
+      // --- Utility Functions ---
+
+      /**
+       * Shows a notification message.
+       * @param {string} message - The message to display.
+       * @param {string} type - 'success' or 'error'.
+       */
+      function showNotification(message, type = "error") {
+        const notification = document.createElement("div");
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+        notificationContainer.appendChild(notification);
+
+        notification.onclick = () => {
+          notification.style.animation = "slideOut 0.5s forwards";
+          setTimeout(() => notification.remove(), 500);
+        };
+
+        setTimeout(() => {
+          if (notification.parentElement) {
+            notification.style.animation = "slideOut 0.5s forwards";
+            setTimeout(() => notification.remove(), 500);
+          }
+        }, 5000);
+      }
+
+      /**
+       * Sets the output area content and handles styling for errors.
+       * @param {string} content - The content to display.
+       * @param {boolean} isError - If true, styles the output as an error.
+       */
+      function setOutput(content, isError = false) {
+        outputArea.value = content;
+        if (isError) {
+          outputArea.style.borderColor = "#ef4444"; // red-500
+        } else {
+          outputArea.style.borderColor = "#30363d";
+        }
+      }
+
+      // --- Core Conversion Logic ---
+
+      function convertJsonToCsv() {
+        const jsonString = inputArea.value.trim();
+        if (!jsonString) {
+          setOutput("错误：JSON 输入为空。", true);
+          return;
+        }
+
+        let data;
+        try {
+          data = JSON.parse(jsonString);
+        } catch (error) {
+          setOutput(`JSON 解析错误: ${error.message}`, true);
+          showNotification("无效的 JSON 格式！", "error");
+          return;
+        }
+
+        if (!Array.isArray(data)) {
+          setOutput("错误：输入必须是 JSON 数组。", true);
+          return;
+        }
+
+        if (data.length === 0) {
+          setOutput("");
+          showNotification("JSON 数组为空，无内容可转换。", "success");
+          return;
+        }
+
+        const excludedFields = new Set(
+          excludeFieldsInput.value
+            .split(",")
+            .map((field) => field.trim())
+            .filter(Boolean)
+        );
+
+        // Get headers from the first object, respecting order, and excluding specified fields
+        const headers = Object.keys(data[0]).filter(
+          (key) => !excludedFields.has(key)
+        );
+        if (headers.length === 0) {
+          setOutput("错误：所有字段都被排除了，无法生成 CSV。", true);
+          return;
+        }
+
+        const csvRows = [];
+        // Add header row
+        csvRows.push(headers.map(escapeCsvField).join(","));
+
+        // Add data rows
+        for (const row of data) {
+          const values = headers.map((header) => {
+            const value = row[header];
+            return escapeCsvField(value);
+          });
+          csvRows.push(values.join(","));
+        }
+
+        setOutput(csvRows.join("\n"));
+        showNotification("转换成功！", "success");
+      }
+
+      /**
+       * Escapes a field for CSV format.
+       * Wraps in double quotes if it contains a comma, double quote, or newline.
+       * Doubles up existing double quotes.
+       * @param {*} value - The value to escape.
+       * @returns {string} The escaped value.
+       */
+      function escapeCsvField(value) {
+        if (value === null || value === undefined) {
+          return "";
+        }
+        const stringValue = String(value);
+        if (
+          stringValue.includes(",") ||
+          stringValue.includes('"') ||
+          stringValue.includes("\n")
+        ) {
+          return `"${stringValue.replace(/"/g, '""')}"`;
+        }
+        return stringValue;
+      }
+
+      // --- Event Listeners ---
+
+      convertBtn.addEventListener("click", convertJsonToCsv);
+
+      clearInputBtn.addEventListener("click", () => {
+        inputArea.value = "";
+        setOutput("");
+        excludeFieldsInput.value = "";
+        inputArea.focus();
+      });
+
+      copyOutputBtn.addEventListener("click", () => {
+        const content = outputArea.value;
+        if (content && outputArea.style.borderColor !== "rgb(239, 68, 68)") {
+          navigator.clipboard
+            .writeText(content)
+            .then(() => {
+              showNotification("已复制到剪贴板！", "success");
+            })
+            .catch((err) => {
+              showNotification("复制失败！", "error");
+            });
+        } else if (!content) {
+          showNotification("输出为空，无需复制。", "error");
+        } else {
+          showNotification("不能复制错误信息。", "error");
+        }
+      });
+      
+      // 新增：监听输入框的回车事件
+      inputArea.addEventListener('keydown', (e) => {
+          // 在 JSON 输入框中，使用 Ctrl+Enter 或 Cmd+Enter 触发
+          if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+              e.preventDefault(); // 阻止默认的换行行为
+              convertJsonToCsv();
+          }
+      });
+
+      excludeFieldsInput.addEventListener('keydown', (e) => {
+          // 在排除字段输入框中，直接按 Enter 触发
+          if (e.key === 'Enter') {
+              e.preventDefault(); // 阻止可能的表单提交行为
+              convertJsonToCsv();
+          }
+      });
+
+      // --- Initialization ---
+      document.addEventListener("DOMContentLoaded", () => {
+        inputArea.value = defaultJson;
+        excludeFieldsInput.value = "";
+        setOutput("");
+        inputArea.focus();
+      });
+    </script>
+  </body>
+</html>
