@@ -151,6 +151,60 @@
         height: 100vh;
       }
 
+      /* 收藏按钮样式 */
+      .favorite-btn {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        z-index: 10;
+        color: var(--text-secondary-color);
+        padding: 0.25rem;
+        border-radius: 99px;
+        transition: all 0.2s ease-in-out;
+      }
+      .favorite-btn:hover {
+        color: #facc15; /* yellow-400 */
+        background-color: rgba(250, 204, 21, 0.1);
+      }
+      .favorite-btn.favorited svg {
+        fill: #facc15;
+        color: #facc15;
+      }
+      .favorite-btn svg {
+        transition: all 0.2s ease;
+      }
+
+      /* 收藏分组动画 */
+      @keyframes favorite-section-fade-in {
+        from {
+          opacity: 0;
+          transform: translateY(-15px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes favorite-section-fade-out {
+        from {
+          opacity: 1;
+          transform: translateY(0);
+        }
+        to {
+          opacity: 0;
+          transform: translateY(-15px);
+        }
+      }
+
+      .favorite-section-enter {
+        animation: favorite-section-fade-in 0.4s ease-out forwards;
+      }
+
+      .favorite-section-leave {
+        animation: favorite-section-fade-out 0.4s ease-out forwards;
+      }
+
       /* 自定义滚动条 */
       ::-webkit-scrollbar {
         width: 8px;
@@ -252,12 +306,7 @@
 
             <!-- 未找到结果的提示 -->
             <div id="noResults" class="hidden text-center py-16">
-              <i
-                data-lucide="search-x"
-                class="mx-auto h-16 w-16 text-gray-600"
-              ></i>
-              <h3 class="mt-4 text-xl font-semibold">未找到匹配的工具</h3>
-              <p class="mt-2 text-gray-400">请尝试使用其他关键词进行搜索。</p>
+              <!-- JS动态生成提示内容 -->
             </div>
           </div>
         </div>
@@ -276,8 +325,31 @@
 
     <script src="./config/tools-config.js"></script>
     <script>
-      // --- 动态渲染与导航 ---
+      // --- 全局变量 ---
+      let favorites = [];
+
+      // --- 初始化 ---
       document.addEventListener("DOMContentLoaded", () => {
+        if (typeof toolsData === "undefined" || !toolsData) {
+          console.error(
+            "错误：`toolsData` 未定义。请确保 `config/tools-config.js` 文件已正确加载且路径无误。"
+          );
+          const toolsContainer = document.getElementById("toolsContainer");
+          if (toolsContainer) {
+            toolsContainer.innerHTML = `
+                    <div class="text-center py-16 text-red-400">
+                        <i data-lucide="alert-triangle" class="mx-auto h-16 w-16"></i>
+                        <h3 class="mt-4 text-xl font-semibold">工具配置加载失败</h3>
+                        <p class="mt-2 text-gray-400">请检查 'config/tools-config.js' 文件是否存在且路径正确。</p>
+                        <p class="mt-1 text-sm text-gray-500">更多信息请查看浏览器开发者控制台。</p>
+                    </div>
+                `;
+            lucide.createIcons();
+          }
+          return;
+        }
+
+        loadFavorites();
         renderContent();
         lucide.createIcons();
         initSearch();
@@ -287,12 +359,183 @@
         initNavigation();
       });
 
+      // --- 卡片创建辅助函数 ---
+      function createToolCard(tool) {
+        const card = document.createElement("div");
+        card.className = "tool-card group block p-6";
+        card.dataset.name = tool.name.toLowerCase();
+        card.dataset.toolId = tool.name;
+        card.dataset.keywords = (tool.keywords + " " + tool.name).toLowerCase();
+
+        card.addEventListener("click", () => {
+          if (tool.targetPage) {
+            loadAndShowPage(tool.targetPage);
+          } else {
+            alert(`'${tool.name}' 工具页面待开发...`);
+          }
+        });
+
+        const favBtn = document.createElement("button");
+        favBtn.className = "favorite-btn";
+        if (favorites.includes(tool.name)) {
+          favBtn.classList.add("favorited");
+        }
+        favBtn.innerHTML = `<i data-lucide="star" class="w-4 h-4"></i>`;
+        favBtn.addEventListener("click", (e) => toggleFavorite(e, tool.name));
+        card.appendChild(favBtn);
+
+        const cardContent = document.createElement("div");
+        cardContent.innerHTML = `
+            <div class="flex items-center space-x-4">
+                <i data-lucide="${tool.icon}" class="w-10 h-10 tool-card-icon flex-shrink-0"></i>
+                <div class="text-left">
+                    <h3 class="font-bold text-lg text-gray-100">${tool.name}</h3>
+                    <p class="text-sm text-gray-400">${tool.desc}</p>
+                </div>
+            </div>
+        `;
+        card.appendChild(cardContent);
+        return card;
+      }
+
+      // --- 收藏夹功能 ---
+      function loadFavorites() {
+        favorites =
+          JSON.parse(localStorage.getItem("it-tools-favorites")) || [];
+      }
+
+      function saveFavorites() {
+        localStorage.setItem("it-tools-favorites", JSON.stringify(favorites));
+      }
+
+      function toggleFavorite(event, toolId) {
+        event.stopPropagation();
+        const index = favorites.indexOf(toolId);
+
+        if (index > -1) {
+          favorites.splice(index, 1);
+        } else {
+          favorites.push(toolId);
+        }
+        saveFavorites();
+
+        // 更新所有相关卡片的收藏状态
+        const allCardsWithId = document.querySelectorAll(
+          `.tool-card[data-tool-id="${toolId.replace(/"/g, '\\"')}"]`
+        );
+        allCardsWithId.forEach((card) => {
+          const btn = card.querySelector(".favorite-btn");
+          if (favorites.includes(toolId)) {
+            btn.classList.add("favorited");
+          } else {
+            btn.classList.remove("favorited");
+          }
+        });
+
+        // 重新渲染收藏区域
+        renderFavoritesSection();
+        lucide.createIcons(); // 确保新渲染的收藏区域图标也能正常显示
+      }
+
+      function renderFavoritesSection() {
+        const toolsContainer = document.getElementById("toolsContainer");
+        const existingFavSection =
+          document.getElementById("category-favorites");
+        const favoritesLink = document.getElementById("favorites-link");
+        const divider = document.getElementById("favorites-divider");
+
+        const hasFavorites = favorites.length > 0;
+
+        // --- Handle visibility of sidebar link ---
+        if (favoritesLink)
+          favoritesLink.style.display = hasFavorites ? "flex" : "none";
+        if (divider) divider.style.display = hasFavorites ? "block" : "none";
+
+        // --- Handle the section itself ---
+        if (hasFavorites) {
+          const favoriteTools = [];
+          for (const category in toolsData) {
+            toolsData[category].forEach((tool) => {
+              if (favorites.includes(tool.name)) {
+                favoriteTools.push(tool);
+              }
+            });
+          }
+
+          if (existingFavSection) {
+            // Section already exists, just update its content
+            const grid = existingFavSection.querySelector(".grid");
+            grid.innerHTML = ""; // Clear old content
+            favoriteTools.forEach((tool) => {
+              const card = createToolCard(tool);
+              grid.appendChild(card);
+            });
+          } else {
+            // Section doesn't exist, create it with fade-in animation
+            const newSection = document.createElement("section");
+            newSection.id = `category-favorites`;
+            newSection.className =
+              "category-section pt-8 mb-12 favorite-section-enter"; // Add animation class
+
+            const categoryTitle = document.createElement("h2");
+            categoryTitle.className =
+              "category-title font-exo text-3xl font-bold mb-8 flex items-center";
+            categoryTitle.innerHTML = `<i data-lucide="star" class="w-7 h-7 mr-3 text-yellow-400 fill-current"></i> 收藏`;
+            newSection.appendChild(categoryTitle);
+
+            const grid = document.createElement("div");
+            grid.className =
+              "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6";
+            favoriteTools.forEach((tool) => {
+              const card = createToolCard(tool);
+              grid.appendChild(card);
+            });
+            newSection.appendChild(grid);
+            toolsContainer.prepend(newSection);
+          }
+        } else if (existingFavSection) {
+          // No favorites, but section exists. Fade it out and remove.
+          existingFavSection.className = existingFavSection.className.replace(
+            "favorite-section-enter",
+            ""
+          );
+          existingFavSection.classList.add("favorite-section-leave");
+
+          setTimeout(() => {
+            const sectionToRemove =
+              document.getElementById("category-favorites");
+            if (sectionToRemove) {
+              sectionToRemove.remove();
+            }
+          }, 400); // Must match CSS animation duration
+        }
+      }
+
+      // --- 核心渲染与导航功能 ---
       function renderContent() {
         const toolsContainer = document.getElementById("toolsContainer");
         const sidebarNav = document.getElementById("sidebarNav");
         toolsContainer.innerHTML = "";
         sidebarNav.innerHTML = "";
 
+        // 1. 添加侧边栏收藏链接
+        const favoritesLink = document.createElement("a");
+        favoritesLink.href = "#category-favorites";
+        favoritesLink.id = "favorites-link";
+        favoritesLink.className =
+          "sidebar-link flex items-center py-2 px-4 rounded-md mb-1 font-medium border-l-2 border-l-transparent";
+        favoritesLink.innerHTML = `<i data-lucide="star" class="w-4 h-4 mr-3 flex-shrink-0"></i> 收藏`;
+        sidebarNav.appendChild(favoritesLink);
+
+        const divider = document.createElement("hr");
+        divider.className = "border-t border-t-[var(--border-color)] my-2";
+        divider.id = "favorites-divider";
+        sidebarNav.appendChild(divider);
+
+        // 2. 渲染收藏区 (初始)
+        renderFavoritesSection();
+
+        // 3. 渲染其他所有分类
         for (const category in toolsData) {
           const navLink = document.createElement("a");
           navLink.href = `#category-${category}`;
@@ -316,33 +559,7 @@
             "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6";
 
           toolsData[category].forEach((tool) => {
-            const card = document.createElement("div");
-            card.className = "tool-card group block p-6";
-            card.dataset.name = tool.name.toLowerCase();
-            card.dataset.keywords = (
-              tool.keywords +
-              " " +
-              tool.name
-            ).toLowerCase();
-            if (tool.targetPage) {
-              card.addEventListener("click", () =>
-                loadAndShowPage(tool.targetPage)
-              );
-            } else {
-              card.addEventListener("click", () =>
-                alert(`'${tool.name}' 工具页面待开发...`)
-              );
-            }
-
-            card.innerHTML = `
-                <div class="flex items-center space-x-4">
-                    <i data-lucide="${tool.icon}" class="w-10 h-10 tool-card-icon flex-shrink-0"></i>
-                    <div class="text-left">
-                        <h3 class="font-bold text-lg text-gray-100">${tool.name}</h3>
-                        <p class="text-sm text-gray-400">${tool.desc}</p>
-                    </div>
-                </div>
-            `;
+            const card = createToolCard(tool);
             grid.appendChild(card);
           });
 
@@ -351,7 +568,26 @@
         }
       }
 
-      function showHomePage() {
+      function resetToAllToolsView() {
+        document
+          .querySelectorAll(".tool-card")
+          .forEach((c) => (c.style.display = "block"));
+        document
+          .querySelectorAll(".category-section")
+          .forEach((s) => (s.style.display = "block"));
+
+        // 只有当有收藏时，才显示收藏区
+        const favSection = document.getElementById("category-favorites");
+        if (favSection && favorites.length === 0) {
+          favSection.style.display = "none";
+        } else if (favSection) {
+          favSection.style.display = "block";
+        }
+
+        document.getElementById("noResults").style.display = "none";
+      }
+
+      function showHomePageContainer() {
         const homeContainer = document.getElementById("home-page-container");
         const iframeContainer = document.getElementById(
           "tool-iframe-container"
@@ -360,7 +596,9 @@
 
         iframeContainer.classList.add("hidden");
         homeContainer.classList.remove("hidden");
-        iframe.src = "about:blank"; // 清空iframe，停止任何脚本运行并释放内存
+        if (iframe.src !== "about:blank") {
+          iframe.src = "about:blank";
+        }
       }
 
       function loadAndShowPage(url) {
@@ -377,40 +615,61 @@
 
       function initNavigation() {
         const logoLink = document.getElementById("logo-link");
+        const sidebarNav = document.getElementById("sidebarNav");
+
         logoLink.addEventListener("click", (e) => {
           e.preventDefault();
-          showHomePage();
+          showHomePageContainer();
+          resetToAllToolsView();
+          document.getElementById("searchInput").value = "";
+          document
+            .getElementById("home-page-container")
+            .scrollTo({ top: 0, behavior: "smooth" });
         });
 
-        const sidebarNav = document.getElementById("sidebarNav");
         sidebarNav.addEventListener("click", (e) => {
-          if (e.target.tagName === "A") {
-            e.preventDefault();
-            showHomePage();
-            setTimeout(() => {
-              const targetId = e.target.getAttribute("href");
-              const targetElement = document.querySelector(targetId);
-              if (targetElement) {
-                targetElement.scrollIntoView({ behavior: "smooth" });
-              }
-            }, 100);
+          const link = e.target.closest("a");
+          if (!link) return;
+          e.preventDefault();
 
-            if (window.innerWidth < 768) toggleSidebar(false);
-          }
+          showHomePageContainer();
+          resetToAllToolsView();
+
+          setTimeout(() => {
+            const targetId = link.getAttribute("href");
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+              const homeContainer = document.getElementById(
+                "home-page-container"
+              );
+              homeContainer.scrollTo({
+                top: targetElement.offsetTop - 20,
+                behavior: "smooth",
+              });
+            }
+          }, 50);
+
+          if (window.innerWidth < 768) toggleSidebar(false);
         });
       }
 
       function initSearch() {
         const searchInput = document.getElementById("searchInput");
-        const noResults = document.getElementById("noResults");
 
         searchInput.addEventListener("input", (e) => {
           const searchTerm = e.target.value.toLowerCase().trim();
-          showHomePage();
+          showHomePageContainer();
 
-          const allCards = document.querySelectorAll(".tool-card");
-          const categorySections =
-            document.querySelectorAll(".category-section");
+          // 在搜索时，我们隐藏收藏夹（如果存在），只搜索原始分类
+          const favSection = document.getElementById("category-favorites");
+          if (favSection) favSection.style.display = "none";
+
+          const allCards = document.querySelectorAll(
+            ".category-section:not(#category-favorites) .tool-card"
+          );
+          const categorySections = document.querySelectorAll(
+            ".category-section:not(#category-favorites)"
+          );
           let visibleCategories = new Set();
 
           allCards.forEach((card) => {
@@ -430,8 +689,20 @@
               : "none";
           });
 
-          noResults.style.display =
-            visibleCategories.size === 0 && searchTerm ? "block" : "none";
+          const noResults = document.getElementById("noResults");
+          if (searchTerm) {
+            noResults.style.display =
+              visibleCategories.size === 0 ? "block" : "none";
+            noResults.innerHTML = `
+                  <i data-lucide="search-x" class="mx-auto h-16 w-16 text-gray-600"></i>
+                  <h3 class="mt-4 text-xl font-semibold">未找到匹配的工具</h3>
+                  <p class="mt-2 text-gray-400">请尝试使用其他关键词进行搜索。</p>
+              `;
+            lucide.createIcons();
+          } else {
+            noResults.style.display = "none";
+            resetToAllToolsView();
+          }
         });
       }
 
@@ -476,29 +747,25 @@
         const navLinks = document.querySelectorAll(".sidebar-link");
         if (!sections.length) return;
 
+        const homeContainer = document.getElementById("home-page-container");
+
         const observer = new IntersectionObserver(
           (entries) => {
-            if (
-              document
-                .getElementById("home-page-container")
-                .classList.contains("hidden")
-            )
-              return;
+            if (homeContainer.classList.contains("hidden")) return;
 
             entries.forEach((entry) => {
               if (entry.isIntersecting) {
-                navLinks.forEach((link) => {
-                  link.classList.remove("active");
-                  if (
-                    link.getAttribute("href").substring(1) === entry.target.id
-                  ) {
-                    link.classList.add("active");
-                  }
-                });
+                const activeLink = document.querySelector(
+                  `.sidebar-link[href="#${entry.target.id}"]`
+                );
+                if (activeLink) {
+                  navLinks.forEach((link) => link.classList.remove("active"));
+                  activeLink.classList.add("active");
+                }
               }
             });
           },
-          { rootMargin: "-50% 0px -50% 0px" }
+          { root: homeContainer, rootMargin: "-40% 0px -60% 0px" }
         );
 
         sections.forEach((section) => observer.observe(section));
