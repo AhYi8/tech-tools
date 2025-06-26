@@ -1,596 +1,834 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>正则表达式在线测试工具 - 科技版</title>
     <!-- 引入 Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- 引入 Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        /* 从 ai-card-generator.html 移植的暗色科技风格自定义样式 */
-        body {
-            font-family: 'Noto Sans SC', sans-serif;
-            background-color: #0d1117;
-            color: #c9d1d9;
-            overflow-x: hidden;
-        }
+      /* 从 ai-card-generator.html 移植的暗色科技风格自定义样式 */
+      body {
+        font-family: "Noto Sans SC", sans-serif;
+        background-color: #0d1117;
+        color: #c9d1d9;
+        overflow-x: hidden;
+      }
 
-        .background-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
-            overflow: hidden;
-        }
+      .background-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        background: radial-gradient(
+          ellipse at bottom,
+          #1b2735 0%,
+          #090a0f 100%
+        );
+        overflow: hidden;
+      }
 
-        @keyframes move-stars {
-            from { transform: translateY(0px); }
-            to { transform: translateY(-2000px); }
+      @keyframes move-stars {
+        from {
+          transform: translateY(0px);
         }
+        to {
+          transform: translateY(-2000px);
+        }
+      }
 
-        .stars, .stars2, .stars3 {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            width: 100%;
-            height: 200%; /* 增加高度以实现更无缝的循环 */
-            display: block;
-            background: transparent;
-            background-repeat: repeat;
-        }
-        .stars {
-            background-image: url("data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjEwMHB4IiBoZWlnaHQ9IjEwMHB4IiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTAwIDEwMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTkyLjUsNjEuNWMwLDAsMCwwLDBsLTIsMC4xYy0wLjUsMC0xLTAuNS0xLTF2LTJjMC0wLjUsMC41LTEsMS0xaDIsMVY2MS41eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik04My4yLDQyLjRjMCwwLDAsMCwwbDAsMEM4My4yLDQyLjQsODMuMiw0Mi40LDgzLjIsNDIuNHoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzkuNCwyNC43YzAsMCwwLDAsMGwwLDBDNzkuNCwyNC43LDc5LjQsMjQuNyw3OS40LDI0Ljd6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTgwLjYsNDEuNWMwLDAsMCwwLDBsMCwwQzgwLjYsNDEuNSw4MC42LDQxLjUsODAuNiw0MS41eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik0yNC4zLDQxYzAsMCwwLDAsMGwtMC4yLTAuMmMwLDAsMCwwLDBMMjQuMyw0MXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNMzEuOCwzOS43YzAsMCwwLDAsMEwzMS44LDM5LjdMMzEuOCwzOS45eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik0zNy4xLDQwLjljMCwwLDAsMCwwbDAsMEMzNy4xLDQwLjksMzcuMSw0MC45LDM3LjIsNDAuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzMuNCwzMS45YzAsMCwwLDAsMEw3My40LDMxLjlMNzMuNCwzMS45eiIvPjwvc3ZnPg==");
-            animation: move-stars 200s linear infinite;
-        }
-        .stars2 {
-            background-image: url("data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjEwMHB4IiBoZWlnaHQ9IjEwMHB4IiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTAwIDEwMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTc2LjksMjEuNGMwLDAsMCwwLDBsMCwwQzc2LjksMjEuNCw3Ni45LDIxLjQsNzYuOSwyMS40eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik04NS4yLDU5LjljMCwwLDAsMCwwbDAsMEM4NS4yLDU5LjksODUuMiw1OS45LDg1LjIsNTkuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzAuMywzOS45YzAsMCwwLDAsMEw3MC4zLDM5LjlMNzAuMywzOS45eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik00Ni43LDIwLjlDNDYuNywyMC45LDQ2LjcsMjAuOSw0Ni43LDIwLjlsMCwwQzQ2LjdsMjAuOSw0Ni43LDIwLjksNDYuNywyMC45eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik0yMS44LDIxLjljMCwwLDAsMCwwbDAsMEMyMS44LDIxLjksMjEuOCwyMS45LDIxLjgsMjEuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNMzEuNyw0OS4xYzAsMCwwLDAsMEwzMS43LDQ5LjFMMzEuNyw0OS4xeiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik0zNy44LDI1LjdjMCwwLDAsMCwwbDAsMEMzNy44LDI1LjcsMzcuOCwyNS43LDM3LjgsMjUuN3oiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNTEuOCwxMy43YzAsMCwwLDAsMEw1MS44LDEzLjdMNTIuMiwxMy45YzAsMCwwLDAsMEw1MS44LDEzLjd6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTI3LjEsMTQuNGMwLDAsMCwwLDBsMCwwQzI3LjEsMTQuNCwyNy4xLDE0LjQsMjcuMSwxNC40eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik0zNy41LDMuNGMwLDAsMCwwLDBsMCwwQzM3LjUsMy40LDM3LjUsMy40LDM7LjUsMy40eiIvPjwvc3ZnPg==");
-            animation: move-stars 150s linear infinite;
-        }
-        .stars3 {
-            background-image: url("data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjEwMHB4IiBoZWlnaHQ9IjEwMHB4IiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTAwIDEwMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTQ5LjIsMTcuMWMwLDAsMCwwLDBsMCwwQzQ5LjIsMTcuMSw0OS4yLDE3LjEsNDkuMiwxNy4xeiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik0zMy44LDguNGMwLDAsMCwwLDBsMCwwQzMzLjgsOC44LDMzLjgsOC40LDMzLjgsOC40eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik04NS4xLDguN2MwLDAsMCwwLDBsMCwwQzg1LjEsOC43LDg1LjEsOC43LDg1LjEsOC43eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik04Ny44LDE0LjljMCwwLDAsMCwwbDAsMEM4Ny44LDE0LjksODcuOCwxNC45LDg3LjgsMTQuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzkuOSwzOS45YzAsMCwwLDAsMEw3OS45LDM5LjlMNzkuOSwzOS45eiIvPjwvc3ZnPg==");
-            animation: move-stars 100s linear infinite;
-        }
+      .stars,
+      .stars2,
+      .stars3 {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 200%; /* 增加高度以实现更无缝的循环 */
+        display: block;
+        background: transparent;
+        background-repeat: repeat;
+      }
+      .stars {
+        background-image: url("data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjEwMHB4IiBoZWlnaHQ9IjEwMHB4IiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTAwIDEwMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTkyLjUsNjEuNWMwLDAsMCwwLDBsLTIsMC4xYy0wLjUsMC0xLTAuNS0xLTF2LTJjMC0wLjUsMC41LTEsMS0xaDIsMVY2MS41eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik04My4yLDQyLjRjMCwwLDAsMCwwbDAsMEM4My4yLDQyLjQsODMuMiw0Mi40LDgzLjIsNDIuNHoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzkuNCwyNC43YzAsMCwwLDAsMGwwLDBDNzkuNCwyNC43LDc5LjQsMjQuNyw3OS40LDI0Ljd6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTgwLjYsNDEuNWMwLDAsMCwwLDBsMCwwQzgwLjYsNDEuNSw4MC42LDQxLjUsODAuNiw0MS41eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik0yNC4zLDQxYzAsMCwwLDAsMGwtMC4yLTAuMmMwLDAsMCwwLDBMMjQuMyw0MXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNMzEuOCwzOS43YzAsMCwwLDAsMEwzMS44LDM5LjdMMzEuOCwzOS45eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik0zNy4xLDQwLjljMCwwLDAsMCwwbDAsMEMzNy4xLDQwLjksMzcuMSw0MC45LDM3LjIsNDAuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzMuNCwzMS45YzAsMCwwLDAsMEw3My40LDMxLjlMNzMuNCwzMS45eiIvPjwvc3ZnPg==");
+        animation: move-stars 200s linear infinite;
+      }
+      .stars2 {
+        background-image: url("data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjEwMHB4IiBoZWlnaHQ9IjEwMHB4IiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTAwIDEwMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTc2LjksMjEuNGMwLDAsMCwwLDBsMCwwQzc2LjksMjEuNCw3Ni45LDIxLjQsNzYuOSwyMS40eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik04NS4yLDU5LjljMCwwLDAsMCwwbDAsMEM4NS4yLDU5LjksODUuMiw1OS45LDg1LjIsNTkuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzAuMywzOS45YzAsMCwwLDAsMEw3MC4zLDM5LjlMNzAuMywzOS45eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik00Ni43LDIwLjlDNDYuNywyMC45LDQ2LjcsMjAuOSw0Ni43LDIwLjlsMCwwQzQ2LjdsMjAuOSw0Ni43LDIwLjksNDYuNywyMC45eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik0yMS44LDIxLjljMCwwLDAsMCwwbDAsMEMyMS44LDIxLjksMjEuOCwyMS45LDIxLjgsMjEuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNMzEuNyw0OS4xYzAsMCwwLDAsMEwzMS43LDQ5LjFMMzEuNyw0OS4xeiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik0zNy44LDI1LjdjMCwwLDAsMCwwbDAsMEMzNy44LDI1LjcsMzcuOCwyNS43LDM3LjgsMjUuN3oiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNTEuOCwxMy43YzAsMCwwLDAsMEw1MS44LDEzLjdMNTIuMiwxMy45YzAsMCwwLDAsMEw1MS44LDEzLjd6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTI3LjEsMTQuNGMwLDAsMCwwLDBsMCwwQzI3LjEsMTQuNCwyNy4xLDE0LjQsMjcuMSwxNC40eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik0zNy41LDMuNGMwLDAsMCwwLDBsMCwwQzM3LjUsMy40LDM3LjUsMy40LDM7LjUsMy40eiIvPjwvc3ZnPg==");
+        animation: move-stars 150s linear infinite;
+      }
+      .stars3 {
+        background-image: url("data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjEwMHB4IiBoZWlnaHQ9IjEwMHB4IiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTAwIDEwMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTQ5LjIsMTcuMWMwLDAsMCwwLDBsMCwwQzQ5LjIsMTcuMSw0OS4yLDE3LjEsNDkuMiwxNy4xeiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik0zMy44LDguNGMwLDAsMCwwLDBsMCwwQzMzLjgsOC44LDMzLjgsOC40LDMzLjgsOC40eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik04NS4xLDguN2MwLDAsMCwwLDBsMCwwQzg1LjEsOC43LDg1LjEsOC43LDg1LjEsOC43eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik04Ny44LDE0LjljMCwwLDAsMCwwbDAsMEM4Ny44LDE0LjksODcuOCwxNC45LDg3LjgsMTQuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzkuOSwzOS45YzAsMCwwLDAsMEw3OS45LDM5LjlMNzkuOSwzOS45eiIvPjwvc3ZnPg==");
+        animation: move-stars 100s linear infinite;
+      }
 
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
         }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
 
-        .main-container-anim {
-            animation: fadeInUp 0.8s 0.2s ease-out backwards;
-        }
-        
-        h1, h2, .tech-font {
-            font-family: 'Exo 2', sans-serif;
-        }
+      .main-container-anim {
+        animation: fadeInUp 0.8s 0.2s ease-out backwards;
+      }
 
-        .main-container {
-            position: relative;
-            border-radius: 1rem;
-            background-color: #161b2299; /* 半透明背景 */
-            backdrop-filter: blur(5px);
-            z-index: 1;
-        }
-        
-        .main-container::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            border-radius: inherit;
-            padding: 2px; /* 边框宽度 */
-            background: linear-gradient(135deg, #a97eff, #58a6ff, #00c3ff);
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: exclude;
-            mask-composite: exclude;
-            pointer-events: none;
-        }
+      h1,
+      h2,
+      .tech-font {
+        font-family: "Exo 2", sans-serif;
+      }
 
-        .dark-input, .dark-textarea {
-            background-color: #0d1117;
-            border: 1px solid #30363d;
-            color: #c9d1d9;
-            border-radius: 0.5rem;
-            transition: all 0.3s ease;
-        }
-        .dark-input:focus, .dark-textarea:focus {
-            border-color: #58a6ff;
-            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.25);
-            outline: none;
-        }
-        
-        .dark-textarea {
-            resize: vertical;
-        }
+      .main-container {
+        position: relative;
+        border-radius: 1rem;
+        background-color: #161b2299; /* 半透明背景 */
+        backdrop-filter: blur(5px);
+        z-index: 1;
+      }
 
-        textarea::-webkit-scrollbar { width: 12px; }
-        textarea::-webkit-scrollbar-track { background: #0d1117; border-radius: 10px; }
-        textarea::-webkit-scrollbar-thumb { background-color: #30363d; border-radius: 10px; border: 3px solid #0d1117; }
-        textarea::-webkit-scrollbar-thumb:hover { background-color: #58a6ff; }
-        textarea::-webkit-resizer {
-            background-image: url("data:image/svg+xml;utf8,%3Csvg%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M8%204L4%208%22%20stroke%3D%22%2358a6ff%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22/%3E%3Cpath%20d%3D%22M10%206L6%2010%22%20stroke%3D%22%2358a6ff%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22/%3E%3C/svg%3E");
-        }
-        textarea::-webkit-scrollbar-corner { background-color: transparent; }
+      .main-container::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        padding: 2px; /* 边框宽度 */
+        background: linear-gradient(135deg, #a97eff, #58a6ff, #00c3ff);
+        -webkit-mask: linear-gradient(#fff 0 0) content-box,
+          linear-gradient(#fff 0 0);
+        -webkit-mask-composite: exclude;
+        mask-composite: exclude;
+        pointer-events: none;
+      }
 
-        /* --- 开关按钮样式 --- */
-        .switch { position: relative; display: inline-block; width: 40px; height: 22px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #30363d; transition: .4s; border-radius: 22px; }
-        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 4px; bottom: 4px; background-color: #c9d1d9; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: #2563eb; box-shadow: 0 0 5px #2563eb; }
-        input:checked + .slider:before { transform: translateX(18px); }
+      .dark-input,
+      .dark-textarea {
+        background-color: #0d1117;
+        border: 1px solid #30363d;
+        color: #c9d1d9;
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
+      }
+      .dark-input:focus,
+      .dark-textarea:focus {
+        border-color: #58a6ff;
+        box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.25);
+        outline: none;
+      }
 
-        .result-box {
-            background-color: #0d1117;
-            border: 1px solid #30363d;
-            color: #c9d1d9;
-            border-radius: 0.5rem;
-            min-height: 100px;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            font-family: 'Consolas', 'Monaco', monospace;
-            line-height: 1.6;
-        }
+      .dark-textarea {
+        resize: vertical;
+      }
 
-        .result-box mark {
-            background-color: rgba(88, 166, 255, 0.4);
-            color: #f0f6fc;
-            padding: 2px 4px;
-            border-radius: 4px;
-            font-weight: bold;
-        }
+      textarea::-webkit-scrollbar {
+        width: 12px;
+      }
+      textarea::-webkit-scrollbar-track {
+        background: #0d1117;
+        border-radius: 10px;
+      }
+      textarea::-webkit-scrollbar-thumb {
+        background-color: #30363d;
+        border-radius: 10px;
+        border: 3px solid #0d1117;
+      }
+      textarea::-webkit-scrollbar-thumb:hover {
+        background-color: #58a6ff;
+      }
+      textarea::-webkit-resizer {
+        background-image: url("data:image/svg+xml;utf8,%3Csvg%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M8%204L4%208%22%20stroke%3D%22%2358a6ff%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22/%3E%3Cpath%20d%3D%22M10%206L6%2010%22%20stroke%3D%22%2358a6ff%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22/%3E%3C/svg%3E");
+      }
+      textarea::-webkit-scrollbar-corner {
+        background-color: transparent;
+      }
 
-        #detailed-match-info .match-item {
-            border-bottom: 1px solid #30363d;
-        }
-        #detailed-match-info .match-item:last-child {
-            border-bottom: none;
-        }
-        #detailed-match-info .match-header {
-            background-color: rgba(88, 166, 255, 0.1);
-            font-weight: bold;
-        }
-        #detailed-match-info .group-item {
-            border-top: 1px dashed #222b38;
-        }
-         #detailed-match-info .match-value {
-            color: #7ee787; /* 绿色 */
-            background-color: #161b22;
-            border-radius: 4px;
-        }
+      /* --- 开关按钮样式 --- */
+      .switch {
+        position: relative;
+        display: inline-block;
+        width: 40px;
+        height: 22px;
+      }
+      .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #30363d;
+        transition: 0.4s;
+        border-radius: 22px;
+      }
+      .slider:before {
+        position: absolute;
+        content: "";
+        height: 14px;
+        width: 14px;
+        left: 4px;
+        bottom: 4px;
+        background-color: #c9d1d9;
+        transition: 0.4s;
+        border-radius: 50%;
+      }
+      input:checked + .slider {
+        background-color: #2563eb;
+        box-shadow: 0 0 5px #2563eb;
+      }
+      input:checked + .slider:before {
+        transform: translateX(18px);
+      }
 
-        .cheatsheet-item {
-            background-color: rgba(88, 166, 255, 0.05);
-            border-left: 3px solid #58a6ff;
-            transition: all 0.2s ease-in-out;
-            cursor: pointer;
-        }
-        .cheatsheet-item:hover {
-            background-color: rgba(88, 166, 255, 0.15);
-            transform: translateX(5px);
-        }
-        .cheatsheet-code {
-            font-family: 'Consolas', 'Monaco', monospace;
-            background-color: #0d1117;
-            color: #7ee787; /* 绿色，适合代码 */
-        }
-        
-        .info-box {
-            background-color: rgba(43, 80, 128, 0.2);
-            border-left: 4px solid #58a6ff;
-            color: #a5d6ff;
-        }
+      .result-box {
+        background-color: #0d1117;
+        border: 1px solid #30363d;
+        color: #c9d1d9;
+        border-radius: 0.5rem;
+        min-height: 100px;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        font-family: "Consolas", "Monaco", monospace;
+        line-height: 1.6;
+      }
+
+      .result-box mark {
+        background-color: rgba(88, 166, 255, 0.4);
+        color: #f0f6fc;
+        padding: 2px 4px;
+        border-radius: 4px;
+        font-weight: bold;
+      }
+
+      #detailed-match-info .match-item {
+        border-bottom: 1px solid #30363d;
+      }
+      #detailed-match-info .match-item:last-child {
+        border-bottom: none;
+      }
+      #detailed-match-info .match-header {
+        background-color: rgba(88, 166, 255, 0.1);
+        font-weight: bold;
+      }
+      #detailed-match-info .group-item {
+        border-top: 1px dashed #222b38;
+      }
+      #detailed-match-info .match-value {
+        color: #7ee787; /* 绿色 */
+        background-color: #161b22;
+        border-radius: 4px;
+      }
+
+      .cheatsheet-item {
+        background-color: rgba(88, 166, 255, 0.05);
+        border-left: 3px solid #58a6ff;
+        transition: all 0.2s ease-in-out;
+        cursor: pointer;
+      }
+      .cheatsheet-item:hover {
+        background-color: rgba(88, 166, 255, 0.15);
+        transform: translateX(5px);
+      }
+      .cheatsheet-code {
+        font-family: "Consolas", "Monaco", monospace;
+        background-color: #0d1117;
+        color: #7ee787; /* 绿色，适合代码 */
+      }
+
+      .info-box {
+        background-color: rgba(43, 80, 128, 0.2);
+        border-left: 4px solid #58a6ff;
+        color: #a5d6ff;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="background-container">
-        <div class="stars"></div>
-        <div class="stars2"></div>
-        <div class="stars3"></div>
+      <div class="stars"></div>
+      <div class="stars2"></div>
+      <div class="stars3"></div>
     </div>
 
     <div class="w-full max-w-4xl mx-auto p-4 sm:p-8 relative z-10">
-        <header class="text-center mb-8">
-            <h1 class="text-3xl sm:text-4xl font-bold text-cyan-400 tech-font" style="text-shadow: 0 0 10px rgba(0, 255, 255, 0.5)">
-                正则表达式在线测试工具
-            </h1>
-            <p class="text-gray-400 mt-2">
-                实时匹配、高亮显示、替换，助您轻松调试正则表达式。
-            </p>
-        </header>
+      <header class="text-center mb-8">
+        <h1
+          class="text-3xl sm:text-4xl font-bold text-cyan-400 tech-font"
+          style="text-shadow: 0 0 10px rgba(0, 255, 255, 0.5)"
+        >
+          正则表达式在线测试工具
+        </h1>
+        <p class="text-gray-400 mt-2">
+          实时匹配、高亮显示、替换，助您轻松调试正则表达式。
+        </p>
+      </header>
 
-        <main class="main-container main-container-anim">
-            <div class="p-6 sm:p-8 flex flex-col gap-8">
-                <!-- 1. 输入和设置 -->
-                <section class="flex flex-col gap-6">
-                    <div>
-                        <label for="regex-input" class="block text-lg font-medium text-cyan-400 mb-2 tech-font">正则表达式</label>
-                        <div class="relative">
-                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xl">/</span>
-                            <input type="text" id="regex-input" class="dark-input w-full p-3 pl-8 pr-20 shadow-sm font-mono text-lg" placeholder="在此输入你的正则表达式">
-                             <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xl" id="regex-flags-display">/gi</span>
-                        </div>
-                    </div>
-                    <div>
-                        <h3 class="text-lg font-medium text-cyan-400 mb-3 tech-font">匹配选项</h3>
-                        <div class="flex flex-wrap gap-x-6 gap-y-2">
-                            <label class="flex items-center space-x-2 cursor-pointer">
-                                <label class="switch">
-                                    <input type="checkbox" id="flag-g" class="regex-flag" data-flag="g" checked>
-                                    <span class="slider"></span>
-                                </label>
-                                <span class="text-gray-300">全局搜索 (g)</span>
-                            </label>
-                             <label class="flex items-center space-x-2 cursor-pointer">
-                                <label class="switch">
-                                    <input type="checkbox" id="flag-i" class="regex-flag" data-flag="i" checked>
-                                    <span class="slider"></span>
-                                </label>
-                                <span class="text-gray-300">忽略大小写 (i)</span>
-                            </label>
-                             <label class="flex items-center space-x-2 cursor-pointer">
-                                <label class="switch">
-                                    <input type="checkbox" id="flag-m" class="regex-flag" data-flag="m">
-                                    <span class="slider"></span>
-                                </label>
-                                <span class="text-gray-300">多行匹配 (m)</span>
-                            </label>
-                        </div>
-                    </div>
-                     <div>
-                        <label for="test-string-input" class="block text-lg font-medium text-cyan-400 mb-2 tech-font">待匹配文本</label>
-                        <textarea id="test-string-input" rows="10" class="dark-textarea w-full p-3 shadow-sm font-mono text-base" placeholder="在此输入需要测试的字符串..."></textarea>
-                    </div>
-                </section>
-
-                <!-- 2. 匹配结果 -->
-                <section class="flex flex-col gap-6">
-                    <div>
-                         <h2 class="text-lg font-medium text-cyan-400 mb-2 tech-font">高亮结果</h2>
-                         <div id="match-results-display" class="result-box p-4 overflow-auto">
-                            <span class="text-gray-500">等待输入...</span>
-                         </div>
-                    </div>
-                     <div>
-                         <h2 class="text-lg font-medium text-cyan-400 mb-2 tech-font">详细匹配信息</h2>
-                         <div id="detailed-match-info" class="result-box overflow-auto">
-                         </div>
-                    </div>
-                </section>
-
-                <!-- 3. 替换功能 -->
-                <section id="replace-section" class="flex flex-col gap-6">
-                    <h2 class="text-lg font-medium text-cyan-400 mb-0 tech-font">正则替换</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                             <label for="replace-target-input" class="block text-sm font-medium text-gray-400 mb-1">待替换</label>
-                             <input type="text" id="replace-target-input" class="dark-input w-full p-2 shadow-sm font-mono" placeholder="#*">
-                        </div>
-                         <div>
-                             <label for="replace-value-input" class="block text-sm font-medium text-gray-400 mb-1">替换为</label>
-                             <input type="text" id="replace-value-input" class="dark-input w-full p-2 shadow-sm font-mono" placeholder="some text or #1.$2">
-                        </div>
-                    </div>
-                    <div>
-                        <h3 class="text-base font-medium text-cyan-400 mb-2 tech-font">替换结果</h3>
-                        <div id="replace-result-display" class="result-box p-4 overflow-auto">
-                        </div>
-                    </div>
-                    <div id="replace-help-box" class="info-box p-4 rounded-lg">
-                        <h4 class="font-bold text-cyan-300 mb-2">替换语法说明</h4>
-                        <ul class="list-disc list-inside space-y-1 text-sm">
-                            <li><code class="bg-black/20 px-1 rounded">#n</code> 代表第 <strong>n</strong> 个匹配项 (n从1开始)。</li>
-                            <li><code class="bg-black/20 px-1 rounded">$m</code> 代表第 <strong>m</strong> 个捕获组 (m从1开始)。</li>
-                            <li><code class="bg-black/20 px-1 rounded">#*</code> 代表所有匹配项。</li>
-                            <li><strong>待替换示例:</strong>
-                                <ul class="list-['-_'] list-inside pl-4 mt-1 space-y-1">
-                                    <li><code class="bg-black/20 px-1 rounded">#*</code>: 替换所有匹配。</li>
-                                    <li><code class="bg-black/20 px-1 rounded">#2</code>: 替换第二个匹配。</li>
-                                    <li><code class="bg-black/20 px-1 rounded">#*.$1</code>: 替换所有匹配中的第1个捕获组。</li>
-                                    <li><code class="bg-black/20 px-1 rounded">#3.$2</code>: 替换第3个匹配中的第2个捕获组。</li>
-                                </ul>
-                            </li>
-                             <li><strong>"替换为"</strong>框中也可以使用 <code class="bg-black/20 px-1 rounded">#n.$m</code> 引用值。</li>
-                        </ul>
-                    </div>
-                </section>
-                
-                <!-- 4. 常用表达式 -->
-                <section class="flex flex-col gap-6">
-                     <div>
-                        <h2 class="text-lg font-medium text-cyan-400 mb-2 tech-font">常用正则表达式速查</h2>
-                        <div id="cheatsheet-container" class="space-y-2 pr-2">
-                        </div>
-                    </div>
-                </section>
+      <main class="main-container main-container-anim">
+        <div class="p-6 sm:p-8 flex flex-col gap-8">
+          <!-- 1. 输入和设置 -->
+          <section class="flex flex-col gap-6">
+            <div>
+              <label
+                for="regex-input"
+                class="block text-lg font-medium text-cyan-400 mb-2 tech-font"
+                >正则表达式</label
+              >
+              <div class="relative">
+                <span
+                  class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xl"
+                  >/</span
+                >
+                <input
+                  type="text"
+                  id="regex-input"
+                  class="dark-input w-full p-3 pl-8 pr-20 shadow-sm font-mono text-lg"
+                  placeholder="在此输入你的正则表达式"
+                />
+                <span
+                  class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xl"
+                  id="regex-flags-display"
+                  >/gi</span
+                >
+              </div>
             </div>
-        </main>
-        
-        <footer class="text-center mt-8 text-gray-500 text-sm">
-            <p>&copy; 2024 - 基于 ai-card-generator 样式构建</p>
-        </footer>
+            <div>
+              <h3 class="text-lg font-medium text-cyan-400 mb-3 tech-font">
+                匹配选项
+              </h3>
+              <div class="flex flex-wrap gap-x-6 gap-y-2">
+                <label class="flex items-center space-x-2 cursor-pointer">
+                  <label class="switch">
+                    <input
+                      type="checkbox"
+                      id="flag-g"
+                      class="regex-flag"
+                      data-flag="g"
+                      checked
+                    />
+                    <span class="slider"></span>
+                  </label>
+                  <span class="text-gray-300">全局搜索 (g)</span>
+                </label>
+                <label class="flex items-center space-x-2 cursor-pointer">
+                  <label class="switch">
+                    <input
+                      type="checkbox"
+                      id="flag-i"
+                      class="regex-flag"
+                      data-flag="i"
+                      checked
+                    />
+                    <span class="slider"></span>
+                  </label>
+                  <span class="text-gray-300">忽略大小写 (i)</span>
+                </label>
+                <label class="flex items-center space-x-2 cursor-pointer">
+                  <label class="switch">
+                    <input
+                      type="checkbox"
+                      id="flag-m"
+                      class="regex-flag"
+                      data-flag="m"
+                    />
+                    <span class="slider"></span>
+                  </label>
+                  <span class="text-gray-300">多行匹配 (m)</span>
+                </label>
+              </div>
+            </div>
+            <div>
+              <label
+                for="test-string-input"
+                class="block text-lg font-medium text-cyan-400 mb-2 tech-font"
+                >待匹配文本</label
+              >
+              <textarea
+                id="test-string-input"
+                rows="10"
+                class="dark-textarea w-full p-3 shadow-sm font-mono text-base"
+                placeholder="在此输入需要测试的字符串..."
+              ></textarea>
+            </div>
+          </section>
+
+          <!-- 2. 匹配结果 -->
+          <section class="flex flex-col gap-6">
+            <div>
+              <h2 class="text-lg font-medium text-cyan-400 mb-2 tech-font">
+                高亮结果
+              </h2>
+              <div
+                id="match-results-display"
+                class="result-box p-4 overflow-auto"
+              >
+                <span class="text-gray-500">等待输入...</span>
+              </div>
+            </div>
+            <div>
+              <h2 class="text-lg font-medium text-cyan-400 mb-2 tech-font">
+                详细匹配信息
+              </h2>
+              <div
+                id="detailed-match-info"
+                class="result-box overflow-auto"
+              ></div>
+            </div>
+          </section>
+
+          <!-- 3. 替换功能 -->
+          <section id="replace-section" class="flex flex-col gap-6">
+            <h2 class="text-lg font-medium text-cyan-400 mb-0 tech-font">
+              正则替换
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label
+                  for="replace-target-input"
+                  class="block text-sm font-medium text-gray-400 mb-1"
+                  >待替换</label
+                >
+                <input
+                  type="text"
+                  id="replace-target-input"
+                  class="dark-input w-full p-2 shadow-sm font-mono"
+                  placeholder="#*"
+                />
+              </div>
+              <div>
+                <label
+                  for="replace-value-input"
+                  class="block text-sm font-medium text-gray-400 mb-1"
+                  >替换为</label
+                >
+                <input
+                  type="text"
+                  id="replace-value-input"
+                  class="dark-input w-full p-2 shadow-sm font-mono"
+                  placeholder="some text or #1.$2"
+                />
+              </div>
+            </div>
+            <div>
+              <h3 class="text-base font-medium text-cyan-400 mb-2 tech-font">
+                替换结果
+              </h3>
+              <div
+                id="replace-result-display"
+                class="result-box p-4 overflow-auto"
+              ></div>
+            </div>
+            <div id="replace-help-box" class="info-box p-4 rounded-lg">
+              <h4 class="font-bold text-cyan-300 mb-2">替换语法说明</h4>
+              <ul class="list-disc list-inside space-y-1 text-sm">
+                <li>
+                  <code class="bg-black/20 px-1 rounded">#n</code> 代表第
+                  <strong>n</strong> 个匹配项 (n从1开始)。
+                </li>
+                <li>
+                  <code class="bg-black/20 px-1 rounded">$m</code> 代表第
+                  <strong>m</strong> 个捕获组 (m从1开始)。
+                </li>
+                <li>
+                  <code class="bg-black/20 px-1 rounded">#*</code>
+                  代表所有匹配项。
+                </li>
+                <li>
+                  <strong>待替换示例:</strong>
+                  <ul class="list-['-_'] list-inside pl-4 mt-1 space-y-1">
+                    <li>
+                      <code class="bg-black/20 px-1 rounded">#*</code>:
+                      替换所有匹配。
+                    </li>
+                    <li>
+                      <code class="bg-black/20 px-1 rounded">#2</code>:
+                      替换第二个匹配。
+                    </li>
+                    <li>
+                      <code class="bg-black/20 px-1 rounded">#*.$1</code>:
+                      替换所有匹配中的第1个捕获组。
+                    </li>
+                    <li>
+                      <code class="bg-black/20 px-1 rounded">#3.$2</code>:
+                      替换第3个匹配中的第2个捕获组。
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  <strong>"替换为"</strong>框中也可以使用
+                  <code class="bg-black/20 px-1 rounded">#n.$m</code> 引用值。
+                </li>
+              </ul>
+            </div>
+          </section>
+
+          <!-- 4. 常用表达式 -->
+          <section class="flex flex-col gap-6">
+            <div>
+              <h2 class="text-lg font-medium text-cyan-400 mb-2 tech-font">
+                常用正则表达式速查
+              </h2>
+              <div id="cheatsheet-container" class="space-y-2 pr-2"></div>
+            </div>
+          </section>
+        </div>
+      </main>
+
+      <footer class="text-center mt-8 text-gray-500 text-sm">
+        <p>&copy; 2024 - 基于 ai-card-generator 样式构建</p>
+      </footer>
     </div>
 
     <script>
-        // DOM 元素
-        const regexInput = document.getElementById('regex-input');
-        const testStringInput = document.getElementById('test-string-input');
-        const matchResultsDisplay = document.getElementById('match-results-display');
-        const detailedMatchInfo = document.getElementById('detailed-match-info');
-        const flagCheckboxes = document.querySelectorAll('.regex-flag');
-        const regexFlagsDisplay = document.getElementById('regex-flags-display');
-        const cheatsheetContainer = document.getElementById('cheatsheet-container');
-        // 新增替换功能 DOM 元素
-        const replaceSection = document.getElementById('replace-section');
-        const replaceTargetInput = document.getElementById('replace-target-input');
-        const replaceValueInput = document.getElementById('replace-value-input');
-        const replaceResultDisplay = document.getElementById('replace-result-display');
-        
-        // 全局变量，用于存储最新的匹配结果
-        let g_matches = [];
-        let g_hasIndicesSupport = true;
+      // DOM 元素
+      const regexInput = document.getElementById("regex-input");
+      const testStringInput = document.getElementById("test-string-input");
+      const matchResultsDisplay = document.getElementById(
+        "match-results-display"
+      );
+      const detailedMatchInfo = document.getElementById("detailed-match-info");
+      const flagCheckboxes = document.querySelectorAll(".regex-flag");
+      const regexFlagsDisplay = document.getElementById("regex-flags-display");
+      const cheatsheetContainer = document.getElementById(
+        "cheatsheet-container"
+      );
+      // 新增替换功能 DOM 元素
+      const replaceSection = document.getElementById("replace-section");
+      const replaceTargetInput = document.getElementById(
+        "replace-target-input"
+      );
+      const replaceValueInput = document.getElementById("replace-value-input");
+      const replaceResultDisplay = document.getElementById(
+        "replace-result-display"
+      );
 
-        // 常用正则表达式数据
-        const commonRegexes = [
-            { name: '匹配中文字符', regex: '[\u4e00-\u9fa5]' },
-            { name: '匹配双字节字符', regex: '[^\x00-\xff]' },
-            { name: '匹配空白行', regex: '\\n\\s*\\r' },
-            { name: '匹配Email地址', regex: '[\\w!#$%&\'*+/=?^_`{|}~-]+(?:\\.[\\w!#$%&\'*+/=?^_`{|}~-]+)*@(?:[\\w](?:[\\w-]*[\\w])?\\.)+[\\w](?:[\\w-]*[\\w])?' },
-            { name: '匹配网址URL', regex: '[a-zA-z]+://[^\\s]*' },
-            { name: '匹配国内手机号码', regex: '1[3456789]\\d{9}' },
-            { name: '匹配国内电话号码', regex: '\\d{3}-\\d{8}|\\d{4}-\\d{7}' },
-            { name: '匹配身份证号(18位)', regex: '^\\d{17}(\\d|X|x)$' },
-            { name: '匹配IP地址', regex: '((2(5[0-5]|[0-4]\\d))|[0-1]?\\d{1,2})(.((2(5[0-5]|[0-4]\\d))|[0-1]?\\d{1,2})){3}'},
-            { name: '匹配正整数', regex: '^[1-9]\\d*$' },
-            { name: '匹配负整数', regex: '^-[1-9]\\d*$' },
-            { name: '匹配整数', regex: '^-?[1-9]\\d*$' },
-            { name: '匹配非负浮点数', regex: '^\\d+(\\.\\d+)?$' },
-        ];
+      // 全局变量，用于存储最新的匹配结果
+      let g_matches = [];
+      let g_hasIndicesSupport = true;
 
-        function populateCheatsheet() {
-            cheatsheetContainer.innerHTML = '';
-            commonRegexes.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'cheatsheet-item p-3 rounded-md';
-                div.innerHTML = `<p class="text-gray-300">${item.name}</p><p class="cheatsheet-code p-1 mt-1 rounded text-sm">${item.regex}</p>`;
-                div.addEventListener('click', () => {
-                    regexInput.value = item.regex;
-                    runAll();
-                    regexInput.focus();
+      // 常用正则表达式数据
+      const commonRegexes = [
+        { name: "匹配中文字符", regex: "[\u4e00-\u9fa5]" },
+        { name: "匹配双字节字符", regex: "[^\x00-\xff]" },
+        { name: "匹配空白行", regex: "\\n\\s*\\r" },
+        {
+          name: "匹配Email地址",
+          regex:
+            "[\\w!#$%&'*+/=?^_`{|}~-]+(?:\\.[\\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\\w](?:[\\w-]*[\\w])?\\.)+[\\w](?:[\\w-]*[\\w])?",
+        },
+        { name: "匹配网址URL", regex: "[a-zA-z]+://[^\\s]*" },
+        { name: "匹配国内手机号码", regex: "1[3456789]\\d{9}" },
+        { name: "匹配国内电话号码", regex: "\\d{3}-\\d{8}|\\d{4}-\\d{7}" },
+        { name: "匹配身份证号(18位)", regex: "^\\d{17}(\\d|X|x)$" },
+        {
+          name: "匹配IP地址",
+          regex:
+            "((2(5[0-5]|[0-4]\\d))|[0-1]?\\d{1,2})(.((2(5[0-5]|[0-4]\\d))|[0-1]?\\d{1,2})){3}",
+        },
+        { name: "匹配正整数", regex: "^[1-9]\\d*$" },
+        { name: "匹配负整数", regex: "^-[1-9]\\d*$" },
+        { name: "匹配整数", regex: "^-?[1-9]\\d*$" },
+        { name: "匹配非负浮点数", regex: "^\\d+(\\.\\d+)?$" },
+      ];
+
+      function populateCheatsheet() {
+        cheatsheetContainer.innerHTML = "";
+        commonRegexes.forEach((item) => {
+          const div = document.createElement("div");
+          div.className = "cheatsheet-item p-3 rounded-md";
+          div.innerHTML = `<p class="text-gray-300">${item.name}</p><p class="cheatsheet-code p-1 mt-1 rounded text-sm">${item.regex}</p>`;
+          div.addEventListener("click", () => {
+            regexInput.value = item.regex;
+            runAll();
+            regexInput.focus();
+          });
+          cheatsheetContainer.appendChild(div);
+        });
+      }
+
+      function getFlags() {
+        let flags = "";
+        flagCheckboxes.forEach((checkbox) => {
+          if (checkbox.checked) {
+            flags += checkbox.dataset.flag;
+          }
+        });
+        return flags;
+      }
+
+      function updateFlagsDisplay() {
+        const flags = getFlags();
+        regexFlagsDisplay.textContent = `/${flags}`;
+      }
+
+      function escapeHTML(str) {
+        if (typeof str !== "string") return "";
+        return str.replace(
+          /[&<>'"]/g,
+          (tag) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              "'": "&#39;",
+              '"': "&quot;",
+            }[tag] || tag)
+        );
+      }
+
+      // 主更新函数，执行所有操作
+      function runAll() {
+        performMatch();
+        performReplace();
+      }
+
+      function performMatch() {
+        const regexPattern = regexInput.value;
+        const testString = testStringInput.value;
+        let flags = getFlags();
+
+        matchResultsDisplay.innerHTML = "";
+        detailedMatchInfo.innerHTML = "";
+        g_matches = []; // 清空全局匹配
+
+        if (!regexPattern || !testString) {
+          matchResultsDisplay.innerHTML = `<span class="text-gray-500">等待输入...</span>`;
+          detailedMatchInfo.innerHTML = `<div class="p-4 text-gray-500">等待输入...</div>`;
+          return;
+        }
+
+        // 为替换功能，必须加入 'd' flag
+        if (g_hasIndicesSupport && !flags.includes("d")) {
+          flags += "d";
+        }
+
+        try {
+          const regex = new RegExp(regexPattern, flags);
+
+          g_matches = [...testString.matchAll(regex)];
+
+          // 1. 高亮结果 (使用不带 d 的正则，避免高亮区显示问题)
+          const highlightRegex = new RegExp(regexPattern, getFlags());
+          const highlightedString = testString.replace(
+            highlightRegex,
+            (match) => `<mark>${escapeHTML(match)}</mark>`
+          );
+          matchResultsDisplay.innerHTML =
+            highlightedString === testString && g_matches.length === 0
+              ? `<span class="text-yellow-400">无匹配结果。</span>`
+              : highlightedString;
+
+          // 2. 详细匹配信息
+          if (g_matches.length > 0) {
+            g_matches.forEach((match, index) => {
+              let detailHtml = `<div class="match-item p-3">`;
+              detailHtml += `<div class="match-header p-2">匹配 #${
+                index + 1
+              }</div>`;
+              detailHtml += `<div class="group-item p-2 flex items-center gap-2"><span class="text-gray-400 w-16">完整</span><code class="match-value p-1 flex-grow">${escapeHTML(
+                match[0]
+              )}</code></div>`;
+              if (match.length > 1) {
+                match.slice(1).forEach((group, groupIndex) => {
+                  detailHtml += `<div class="group-item p-2 flex items-center gap-2"><span class="text-gray-400 w-16">组 $${
+                    groupIndex + 1
+                  }</span><code class="match-value p-1 flex-grow">${
+                    group === undefined
+                      ? "<em>undefined</em>"
+                      : escapeHTML(group)
+                  }</code></div>`;
                 });
-                cheatsheetContainer.appendChild(div);
+              }
+              detailHtml += `</div>`;
+              detailedMatchInfo.innerHTML += detailHtml;
             });
+          } else {
+            detailedMatchInfo.innerHTML = `<div class="p-4 text-yellow-400">无匹配结果。</div>`;
+          }
+        } catch (e) {
+          matchResultsDisplay.innerHTML = `<span class="text-red-400">高亮失败</span>`;
+          detailedMatchInfo.innerHTML = `<div class="p-4 text-red-400">正则表达式错误: ${e.message}</div>`;
         }
-        
-        function getFlags() {
-            let flags = '';
-            flagCheckboxes.forEach(checkbox => {
-                if (checkbox.checked) {
-                    flags += checkbox.dataset.flag;
-                }
-            });
-            return flags;
-        }
-        
-        function updateFlagsDisplay() {
-            const flags = getFlags();
-            regexFlagsDisplay.textContent = `/${flags}`;
-        }
-        
-        function escapeHTML(str) {
-            if (typeof str !== 'string') return '';
-            return str.replace(/[&<>'"]/g, 
-                tag => ({'&': '&amp;','<': '&lt;','>': '&gt;',"'": '&#39;','"': '&quot;'}[tag] || tag)
-            );
-        }
-        
-        // 主更新函数，执行所有操作
-        function runAll() {
-            performMatch();
-            performReplace();
-        }
+      }
 
-        function performMatch() {
-            const regexPattern = regexInput.value;
-            const testString = testStringInput.value;
-            let flags = getFlags();
+      // --- 替换功能逻辑 ---
 
-            matchResultsDisplay.innerHTML = '';
-            detailedMatchInfo.innerHTML = '';
-            g_matches = []; // 清空全局匹配
+      // 解析 #n.$m 语法
+      function parseReference(refStr) {
+        if (!refStr) return { error: "引用字符串为空" };
+        const match = refStr.match(/^#(\*|\d+)(?:\.\$(\d+))?$/);
+        if (!match) return { error: "语法无效" };
 
-            if (!regexPattern || !testString) {
-                matchResultsDisplay.innerHTML = `<span class="text-gray-500">等待输入...</span>`;
-                detailedMatchInfo.innerHTML = `<div class="p-4 text-gray-500">等待输入...</div>`;
-                return;
-            }
-            
-            // 为替换功能，必须加入 'd' flag
-            if (g_hasIndicesSupport && !flags.includes('d')) {
-                flags += 'd';
-            }
+        const [_, matchPart, groupPart] = match;
 
-            try {
-                const regex = new RegExp(regexPattern, flags);
-                
-                g_matches = [...testString.matchAll(regex)];
+        return {
+          matchNum: matchPart === "*" ? "*" : parseInt(matchPart, 10),
+          groupNum: groupPart ? parseInt(groupPart, 10) : null,
+          error: null,
+        };
+      }
 
-                // 1. 高亮结果 (使用不带 d 的正则，避免高亮区显示问题)
-                const highlightRegex = new RegExp(regexPattern, getFlags());
-                const highlightedString = testString.replace(highlightRegex, match => `<mark>${escapeHTML(match)}</mark>`);
-                matchResultsDisplay.innerHTML = (highlightedString === testString && g_matches.length === 0) 
-                    ? `<span class="text-yellow-400">无匹配结果。</span>` 
-                    : highlightedString;
-
-                // 2. 详细匹配信息
-                if (g_matches.length > 0) {
-                    g_matches.forEach((match, index) => {
-                        let detailHtml = `<div class="match-item p-3">`;
-                        detailHtml += `<div class="match-header p-2">匹配 #${index + 1}</div>`;
-                        detailHtml += `<div class="group-item p-2 flex items-center gap-2"><span class="text-gray-400 w-16">完整</span><code class="match-value p-1 flex-grow">${escapeHTML(match[0])}</code></div>`;
-                        if (match.length > 1) {
-                            match.slice(1).forEach((group, groupIndex) => {
-                                detailHtml += `<div class="group-item p-2 flex items-center gap-2"><span class="text-gray-400 w-16">$${groupIndex + 1}</span><code class="match-value p-1 flex-grow">${group === undefined ? '<em>undefined</em>' : escapeHTML(group)}</code></div>`;
-                            });
-                        }
-                        detailHtml += `</div>`;
-                        detailedMatchInfo.innerHTML += detailHtml;
-                    });
-                } else {
-                    detailedMatchInfo.innerHTML = `<div class="p-4 text-yellow-400">无匹配结果。</div>`;
-                }
-
-            } catch (e) {
-                matchResultsDisplay.innerHTML = `<span class="text-red-400">高亮失败</span>`;
-                detailedMatchInfo.innerHTML = `<div class="p-4 text-red-400">正则表达式错误: ${e.message}</div>`;
-            }
+      // 根据引用获取真实值
+      function getReplacementValue(refStr) {
+        const parsed = parseReference(refStr);
+        if (parsed.error) {
+          // 如果不是引用格式，则视为字面量字符串
+          return { value: refStr, error: null };
         }
 
-        // --- 替换功能逻辑 ---
-        
-        // 解析 #n.$m 语法
-        function parseReference(refStr) {
-            if (!refStr) return { error: '引用字符串为空' };
-            const match = refStr.match(/^#(\*|\d+)(?:\.\$(\d+))?$/);
-            if (!match) return { error: '语法无效' };
-            
-            const [_, matchPart, groupPart] = match;
-            
+        if (parsed.matchNum === "*") {
+          return { value: null, error: '"替换为"字段不能引用所有匹配项 (#*)' };
+        }
+        const matchIndex = parsed.matchNum - 1;
+
+        if (matchIndex < 0 || matchIndex >= g_matches.length) {
+          return { value: null, error: `匹配 #${parsed.matchNum} 不存在` };
+        }
+        const match = g_matches[matchIndex];
+
+        if (parsed.groupNum === null) {
+          // 引用整个匹配 #n
+          return { value: match[0], error: null };
+        } else {
+          // 引用某个组 #n.$m
+          const groupIndex = parsed.groupNum;
+          if (groupIndex < 1 || groupIndex >= match.length) {
             return {
-                matchNum: matchPart === '*' ? '*' : parseInt(matchPart, 10),
-                groupNum: groupPart ? parseInt(groupPart, 10) : null,
-                error: null
+              value: null,
+              error: `匹配 #${parsed.matchNum} 中不存在组 $${parsed.groupNum}`,
             };
+          }
+          return {
+            value: match[groupIndex] === undefined ? "" : match[groupIndex],
+            error: null,
+          };
+        }
+      }
+
+      function performReplace() {
+        const testString = testStringInput.value;
+        const targetStr = replaceTargetInput.value.trim() || "#*";
+        const valueStr = replaceValueInput.value;
+
+        if (g_matches.length === 0) {
+          replaceResultDisplay.innerHTML = `<span class="text-gray-500">无匹配项可替换。</span>`;
+          return;
         }
 
-        // 根据引用获取真实值
-        function getReplacementValue(refStr) {
-            const parsed = parseReference(refStr);
-            if (parsed.error) {
-                // 如果不是引用格式，则视为字面量字符串
-                return { value: refStr, error: null };
-            }
-
-            if (parsed.matchNum === '*') {
-                 return { value: null, error: '"替换为"字段不能引用所有匹配项 (#*)' };
-            }
-            const matchIndex = parsed.matchNum - 1;
-
-            if (matchIndex < 0 || matchIndex >= g_matches.length) {
-                return { value: null, error: `匹配 #${parsed.matchNum} 不存在` };
-            }
-            const match = g_matches[matchIndex];
-            
-            if (parsed.groupNum === null) { // 引用整个匹配 #n
-                return { value: match[0], error: null };
-            } else { // 引用某个组 #n.$m
-                const groupIndex = parsed.groupNum;
-                if (groupIndex < 1 || groupIndex >= match.length) {
-                     return { value: null, error: `匹配 #${parsed.matchNum} 中不存在组 $${parsed.groupNum}` };
-                }
-                return { value: match[groupIndex] === undefined ? '' : match[groupIndex], error: null };
-            }
-        }
-        
-        function performReplace() {
-            const testString = testStringInput.value;
-            const targetStr = replaceTargetInput.value.trim() || '#*';
-            const valueStr = replaceValueInput.value;
-
-            if (g_matches.length === 0) {
-                replaceResultDisplay.innerHTML = `<span class="text-gray-500">无匹配项可替换。</span>`;
-                return;
-            }
-
-            const targetRef = parseReference(targetStr);
-            if (targetRef.error) {
-                replaceResultDisplay.innerHTML = `<span class="text-red-400">"待替换"语法错误: ${targetRef.error}</span>`;
-                return;
-            }
-
-            const finalValue = getReplacementValue(valueStr);
-            if (finalValue.error) {
-                 replaceResultDisplay.innerHTML = `<span class="text-red-400">"替换为"语法错误: ${finalValue.error}</span>`;
-                return;
-            }
-            const finalReplacementText = finalValue.value;
-            
-            let modifications = [];
-
-            for (let i = 0; i < g_matches.length; i++) {
-                const match = g_matches[i];
-                const currentMatchNum = i + 1;
-
-                if (targetRef.matchNum === '*' || targetRef.matchNum === currentMatchNum) {
-                    let startIndex, endIndex, newText = finalReplacementText;
-                    
-                    if (targetRef.groupNum === null) { // 替换整个匹配
-                        startIndex = match.index;
-                        endIndex = match.index + match[0].length;
-                    } else { // 替换特定组
-                        if (!match.indices || !match.indices[targetRef.groupNum]) {
-                             replaceResultDisplay.innerHTML = `<span class="text-red-400">错误: 匹配 #${currentMatchNum} 中无法找到组 $${targetRef.groupNum} 的位置信息。</span>`;
-                             return;
-                        }
-                        [startIndex, endIndex] = match.indices[targetRef.groupNum];
-                    }
-                     modifications.push({ startIndex, endIndex, newText });
-                }
-            }
-            
-            // 从后往前应用修改，避免索引错乱
-            let resultString = testString;
-            for (let i = modifications.length - 1; i >= 0; i--) {
-                const mod = modifications[i];
-                if(mod.startIndex === undefined || mod.endIndex === undefined) continue;
-                resultString = resultString.slice(0, mod.startIndex) + mod.newText + resultString.slice(mod.endIndex);
-            }
-            
-            replaceResultDisplay.innerHTML = escapeHTML(resultString);
+        const targetRef = parseReference(targetStr);
+        if (targetRef.error) {
+          replaceResultDisplay.innerHTML = `<span class="text-red-400">"待替换"语法错误: ${targetRef.error}</span>`;
+          return;
         }
 
+        const finalValue = getReplacementValue(valueStr);
+        if (finalValue.error) {
+          replaceResultDisplay.innerHTML = `<span class="text-red-400">"替换为"语法错误: ${finalValue.error}</span>`;
+          return;
+        }
+        const finalReplacementText = finalValue.value;
 
-        // 初始化和事件监听
-        document.addEventListener('DOMContentLoaded', () => {
-            // 检查 'd' flag 支持情况
-             try {
-                new RegExp(".", "d");
-            } catch (e) {
-                g_hasIndicesSupport = false;
-                replaceSection.innerHTML = `<div class="p-4 text-yellow-400">警告：您的浏览器不支持 RegExp 'd' 标志，正则替换功能已禁用。请更新您的浏览器。</div>`;
-                console.warn("RegExp 'd' flag not supported, replace functionality is disabled.");
+        let modifications = [];
+
+        for (let i = 0; i < g_matches.length; i++) {
+          const match = g_matches[i];
+          const currentMatchNum = i + 1;
+
+          if (
+            targetRef.matchNum === "*" ||
+            targetRef.matchNum === currentMatchNum
+          ) {
+            let startIndex,
+              endIndex,
+              newText = finalReplacementText;
+
+            if (targetRef.groupNum === null) {
+              // 替换整个匹配
+              startIndex = match.index;
+              endIndex = match.index + match[0].length;
+            } else {
+              // 替换特定组
+              if (!match.indices || !match.indices[targetRef.groupNum]) {
+                replaceResultDisplay.innerHTML = `<span class="text-red-400">错误: 匹配 #${currentMatchNum} 中无法找到组 $${targetRef.groupNum} 的位置信息。</span>`;
+                return;
+              }
+              [startIndex, endIndex] = match.indices[targetRef.groupNum];
             }
+            modifications.push({ startIndex, endIndex, newText });
+          }
+        }
 
-            // 设置默认值
-            testStringInput.value = `contact us at support-team@example.com or for sales, reach out to sales-info@example.org.`;
-            regexInput.value = '(\\w+)-(\\w+)@(\\w+\\.\\w+)';
-            replaceTargetInput.value = "#*.$1";
-            replaceValueInput.value = "contact";
-            
-            populateCheatsheet();
-            runAll(); // 初始加载时运行
-            
-            // 事件监听器
-            [regexInput, testStringInput, replaceTargetInput, replaceValueInput].forEach(el => {
-                el.addEventListener('input', runAll);
-            });
-            
-            flagCheckboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', () => {
-                    updateFlagsDisplay();
-                    runAll();
-                });
-            });
+        // 从后往前应用修改，避免索引错乱
+        let resultString = testString;
+        for (let i = modifications.length - 1; i >= 0; i--) {
+          const mod = modifications[i];
+          if (mod.startIndex === undefined || mod.endIndex === undefined)
+            continue;
+          resultString =
+            resultString.slice(0, mod.startIndex) +
+            mod.newText +
+            resultString.slice(mod.endIndex);
+        }
+
+        replaceResultDisplay.innerHTML = escapeHTML(resultString);
+      }
+
+      // 初始化和事件监听
+      document.addEventListener("DOMContentLoaded", () => {
+        // 检查 'd' flag 支持情况
+        try {
+          new RegExp(".", "d");
+        } catch (e) {
+          g_hasIndicesSupport = false;
+          replaceSection.innerHTML = `<div class="p-4 text-yellow-400">警告：您的浏览器不支持 RegExp 'd' 标志，正则替换功能已禁用。请更新您的浏览器。</div>`;
+          console.warn(
+            "RegExp 'd' flag not supported, replace functionality is disabled."
+          );
+        }
+
+        // 设置默认值
+        testStringInput.value = `contact us at support-team@example.com or for sales, reach out to sales-info@example.org.`;
+        regexInput.value = "(\\w+)-(\\w+)@(\\w+\\.\\w+)";
+        replaceTargetInput.value = "#*.$1";
+        replaceValueInput.value = "contact";
+
+        populateCheatsheet();
+        runAll(); // 初始加载时运行
+
+        // 事件监听器
+        [
+          regexInput,
+          testStringInput,
+          replaceTargetInput,
+          replaceValueInput,
+        ].forEach((el) => {
+          el.addEventListener("input", runAll);
         });
 
+        flagCheckboxes.forEach((checkbox) => {
+          checkbox.addEventListener("change", () => {
+            updateFlagsDisplay();
+            runAll();
+          });
+        });
+      });
     </script>
-</body>
+  </body>
 </html>
