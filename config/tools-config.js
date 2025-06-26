@@ -8,4 +8,13 @@ const toolsData = {
       targetPage: './tools/ai-card-generator.html' // 指向独立的HTML文件
     }
   ],
+  '转换工具': [
+    {
+      name: 'JSON ↔ YAML ↔ JAVA',
+      desc: 'JSON、YAML、JAVA 格式相互转换',
+      icon: 'pencil-ruler',
+      keywords: 'json yaml java',
+      targetPage: './tools/json-yaml-java.html' // 指向独立的HTML文件
+    }
+  ],
 };

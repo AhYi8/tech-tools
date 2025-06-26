@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>暗黑科技风 JSON 工具</title>
+    <!-- 引入 Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 js-yaml for YAML conversion -->
+    <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+    <!-- 引入 Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* 暗色科技风格自定义样式 */
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            overflow: hidden; /* 防止滚动条 */
+        }
+        
+        /* -- 动态背景 -- */
+        .background-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+            overflow: hidden;
+        }
+
+        @keyframes move-stars {
+            from {transform: translateY(0px);}
+            to {transform: translateY(-2000px);}
+        }
+
+        .stars, .stars2, .stars3 {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            background: transparent;
+            background-size: cover;
+            animation: move-stars 200s linear infinite;
+        }
+        .stars { background-image: url('data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjEwMHB4IiBoZWlnaHQ9IjEwMHB4IiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTAwIDEwMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTkyLjUsNjEuNWMwLDAsMCwwLDBsLTIsMC4xYy0wLjUsMC0xLTAuNS0xLTF2LTJjMC0wLjUsMC41LTEsMS0xaDIsMVY2MS41eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik04My4yLDQyLjRjMCwwLDAsMCwwbDAsMEM4My4yLDQyLjQsODMuMiw0Mi40LDgzLjIsNDIuNHoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzkuNCwyNC43YzAsMCwwLDAsMGwwLDBDNzkuNCwyNC43LDc5LjQsMjQuNyw3OS40LDI0Ljd6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTgwLjYsNDEuNWMwLDAsMCwwLDBsMCwwQzgwLjYsNDEuNSw4MC42LDQxLjUsODAuNiw0MS41eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik0yNC4zLDQxYzAsMCwwLDAsMGwtMC4yLTAuMmMwLDAsMCwwLDBMMjQuMyw0MXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNMzEuOCwzOS43YzAsMCwwLDAsMEwzMS44LDM5LjdMMzEuOCwzOS45eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik0zNy4xLDQwLjljMCwwLDAsMCwwbDAsMEMzNy4xLDQwLjksMzcuMSw0MC45LDM3LjIsNDAuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzMuNCwzMS45YzAsMCwwLDAsMEw3My40LDMxLjlMNzMuNCwzMS45eiIvPjwvc3ZnPg=='); }
+        .stars2 { background-image: url('data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjEwMHB4IiBoZWlnaHQ9IjEwMHB4IiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTAwIDEwMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTc2LjksMjEuNGMwLDAsMCwwLDBsMCwwQzc2LjksMjEuNCw3Ni45LDIxLjQsNzYuOSwyMS40eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik04NS4yLDU5LjljMCwwLDAsMCwwbDAsMEM4NS4yLDU5LjksODUuMiw1OS45LDg1LjIsNTkuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzAuMywzOS45YzAsMCwwLDAsMEw3MC4zLDM5LjlMNzAuMywzOS45eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik00Ni43LDIwLjlDNDYuNywyMC45LDQ2LjcsMjAuOSw0Ni43LDIwLjlsMCwwQzQ2LjdsMjAuOSw0Ni44LDIwLjksNDYuNywyMC45eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik0yMS44LDIxLjljMCwwLDAsMCwwbDAsMEMyMS44LDIxLjksMjEuOCwyMS45LDIxLjgsMjEuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNMzEuNyw0OS4xYzAsMCwwLDAsMEwzMS43LDQ5LjFMMzEuNyw0OS4xeiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik0zNy44LDI1LjdjMCwwLDAsMCwwbDAsMEMzNy44LDI1LjcsMzcuOCwyNS43LDM3LjgsMjUuN3oiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNTEuOCwxMy43YzAsMCwwLDAsMEw1MS44LDEzLjdMNTIuMiwxMy45YzAsMCwwLDAsMEw1MS44LDEzLjd6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTI3LjEsMTQuNGMwLDAsMCwwLDBsMCwwQzI3LjEsMTQuNCwyNy4xLDE0LjQsMjcuMSwxNC40eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik0zNy41LDMuNGMwLDAsMCwwLDBsMCwwQzM3LjUsMy40LDM3LjUsMy40LDM3LjUsMy40eiIvPjwvc3ZnPg=='); animation-duration: 150s; }
+        .stars3 { background-image: url('data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjEwMHB4IiBoZWlnaHQ9IjEwMHB4IiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTAwIDEwMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTQ5LjIsMTcuMWMwLDAsMCwwLDBsMCwwQzQ5LjIsMTcuMSw0OS4yLDE3LjEsNDkuMiwxNy4xeiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik0zMy44LDguNGMwLDAsMCwwLDBsMCwwQzMzLjgsOC40LDMzLjgsOC44LDMzLjgsOC40eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik04NS4xLDguN2MwLDAsMCwwLDBsMCwwQzg1LjEsOC43LDg1LjEsOC43LDg1LjEsOC43eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik04Ny44LDE0LjljMCwwLDAsMCwwbDAsMEM4Ny44LDE0LjksODcuOCwxNC45LDg3LjgsMTQuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzkuOSwzOS45YzAsMCwwLDAsMEw3OS45LDM5LjlMNzkuOSwzOS45eiIvPjwvc3ZnPg=='); animation-duration: 100s; }
+
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .header-anim { animation: fadeInUp 0.8s ease-out backwards; }
+        .main-container-anim { animation: fadeInUp 0.8s 0.2s ease-out backwards; }
+
+        .main-container {
+            position: relative;
+            border-radius: 1rem;
+            background-color: #161b2288; /* Semi-transparent background */
+            backdrop-filter: blur(5px);
+        }
+
+        .main-container::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            padding: 2px; /* 边框宽度 */
+            background: linear-gradient(135deg, #a97eff, #58a6ff, #00c3ff);
+            -webkit-mask:
+                linear-gradient(#fff 0 0) content-box,
+                linear-gradient(#fff 0 0);
+            mask-composite: exclude;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        h1, h2, .tech-font { font-family: 'Exo 2', sans-serif; }
+        
+        .dark-input {
+            background-color: #0d1117;
+            border: 1px solid #30363d;
+            color: #c9d1d9;
+            resize: vertical;
+        }
+        .dark-input:focus {
+            border-color: #58a6ff;
+            box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.2);
+            outline: none;
+        }
+        
+        textarea::-webkit-scrollbar { width: 12px; }
+        textarea::-webkit-scrollbar-track { background: #0d1117; border-radius: 10px; }
+        textarea::-webkit-scrollbar-thumb { background-color: #30363d; border-radius: 10px; border: 3px solid #0d1117; }
+        textarea::-webkit-scrollbar-thumb:hover { background-color: #58a6ff; }
+        
+        textarea::-webkit-resizer {
+            background-image: url('data:image/svg+xml;utf8,%3Csvg%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M8%204L4%208%22%20stroke%3D%22%2358a6ff%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22/%3E%3Cpath%20d%3D%22M10%206L6%2010%22%20stroke%3D%22%2358a6ff%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22/%3E%3C/svg%3E');
+            background-repeat: no-repeat;
+            background-position: bottom right;
+            border: 2px solid transparent;
+        }
+        textarea::-webkit-scrollbar-corner {
+            background-color: transparent;
+        }
+        
+        .btn-sci-fi {
+            position: relative;
+            padding: 10px 24px;
+            border: 2px solid #30363d;
+            background-color: transparent;
+            color: #c9d1d9;
+            font-weight: 700;
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            transform: skew(-15deg);
+        }
+        .btn-sci-fi > span {
+            display: inline-block;
+            transform: skew(15deg);
+            transition: color 0.3s ease;
+        }
+        .btn-sci-fi::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, var(--glow-color, rgba(0, 191, 255, 0.5)), transparent);
+            transition: left 0.5s ease;
+            transform: skew(-15deg) translateX(50%);
+        }
+        .btn-sci-fi:not(:disabled):hover {
+            color: white;
+            border-color: var(--glow-color, rgba(0, 191, 255, 0.8));
+            box-shadow: 0 0 15px var(--glow-color, rgba(0, 191, 255, 0.5));
+        }
+        .btn-sci-fi:not(:disabled):hover > span {
+            color: white;
+        }
+        .btn-sci-fi:not(:disabled):hover::before {
+            left: 150%;
+        }
+        .btn-sci-fi:disabled {
+            cursor: not-allowed;
+            color: #4b5563;
+            border-color: #4b5563;
+        }
+
+        .btn-sci-fi.cyan { --glow-color: #0891b2; }
+        .btn-sci-fi.green { --glow-color: #16a34a; }
+
+        #notification-container {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .notification {
+            background-color: #161b22CC;
+            backdrop-filter: blur(5px);
+            color: #f87171; /* red-400 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid #ef4444; /* red-500 */
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateX(100%);
+            animation: slideIn 0.5s forwards;
+        }
+        .notification.success {
+            color: #4ade80; /* green-400 */
+            border-color: #22c55e; /* green-500 */
+            box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
+        }
+        @keyframes slideIn { to { opacity: 1; transform: translateX(0); } }
+        @keyframes slideOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(100%); } }
+    </style>
+</head>
+<body>
+    <!-- 动态背景容器 -->
+    <div class="background-container">
+        <div class="stars"></div>
+        <div class="stars2"></div>
+        <div class="stars3"></div>
+    </div>
+    <!-- 消息提醒容器 -->
+    <div id="notification-container"></div>
+    
+    <div class="w-full max-w-7xl mx-auto p-4 sm:p-8 flex flex-col h-screen">
+        <header class="text-center mb-6 header-anim">
+            <h1 class="text-3xl sm:text-4xl font-bold text-cyan-400" style="text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);">JSON 工具</h1>
+            <p class="text-gray-400 mt-2">校验、格式化、压缩与多语言对象转换</p>
+        </header>
+
+        <main class="main-container main-container-anim flex-grow flex flex-col p-4 sm:p-6">
+            <!-- Controls Section -->
+            <div class="flex flex-wrap justify-center items-center gap-4 mb-6">
+                <button id="format-json" class="btn-sci-fi cyan"><span class="tech-font">JSON 美化</span></button>
+                <button id="compress-json" class="btn-sci-fi cyan"><span class="tech-font">JSON 压缩</span></button>
+                <button id="to-yaml" class="btn-sci-fi cyan"><span class="tech-font">JSON → YAML</span></button>
+                <button id="to-json" class="btn-sci-fi cyan"><span class="tech-font">YAML → JSON</span></button>
+                <button id="to-java" class="btn-sci-fi cyan"><span class="tech-font">JSON → Java</span></button>
+            </div>
+
+            <!-- Editor Section -->
+            <div class="flex-grow grid grid-cols-1 md:grid-cols-2 gap-4 min-h-0">
+                <!-- Input Panel -->
+                <div class="flex flex-col h-full min-h-0">
+                    <div class="flex justify-between items-center mb-2 px-1">
+                        <h2 class="text-lg text-cyan-400 tech-font">输入</h2>
+                        <button id="clear-input" class="text-gray-400 hover:text-white text-xs tech-font">清空</button>
+                    </div>
+                    <textarea id="input-area" class="dark-input w-full h-full p-3 rounded-lg shadow-sm font-mono text-sm" placeholder="在此处粘贴您的 JSON 或 YAML..."></textarea>
+                </div>
+                
+                <!-- Output Panel -->
+                <div class="flex flex-col h-full min-h-0">
+                    <div class="flex justify-between items-center mb-2 px-1">
+                        <h2 class="text-lg text-cyan-400 tech-font">输出</h2>
+                        <button id="copy-output" class="text-gray-400 hover:text-white text-xs tech-font">复制</button>
+                    </div>
+                    <textarea id="output-area" readonly class="dark-input w-full h-full p-3 rounded-lg shadow-sm font-mono text-sm" placeholder="结果将显示在此处..."></textarea>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // DOM Element References
+        const inputArea = document.getElementById('input-area');
+        const outputArea = document.getElementById('output-area');
+        const notificationContainer = document.getElementById('notification-container');
+        
+        // Buttons
+        const formatJsonBtn = document.getElementById('format-json');
+        const compressJsonBtn = document.getElementById('compress-json');
+        const toYamlBtn = document.getElementById('to-yaml');
+        const toJsonBtn = document.getElementById('to-json');
+        const toJavaBtn = document.getElementById('to-java');
+        const clearInputBtn = document.getElementById('clear-input');
+        const copyOutputBtn = document.getElementById('copy-output');
+        
+        // --- Utility Functions ---
+
+        /**
+         * 自定义消息提醒函数
+         * @param {string} message - The message to display.
+         * @param {string} type - 'success' or 'error'.
+         */
+        function showNotification(message, type = 'error') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            notificationContainer.appendChild(notification);
+            
+            notification.onclick = () => {
+                notification.style.animation = 'slideOut 0.5s forwards';
+                setTimeout(() => notification.remove(), 500);
+            };
+
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.style.animation = 'slideOut 0.5s forwards';
+                    setTimeout(() => notification.remove(), 500);
+                }
+            }, 5000);
+        }
+
+        /**
+         * Sets the output area content and handles styling for errors.
+         * @param {string} content - The content to display.
+         * @param {boolean} isError - If true, styles the output as an error.
+         */
+        function setOutput(content, isError = false) {
+            outputArea.value = content;
+            if (isError) {
+                outputArea.style.borderColor = '#ef4444'; // red-500
+            } else {
+                outputArea.style.borderColor = '#30363d';
+            }
+        }
+        
+        // --- Core Functionality ---
+
+        formatJsonBtn.addEventListener('click', () => {
+            const rawJson = inputArea.value.trim();
+            if (!rawJson) { setOutput('错误：输入为空。', true); return; }
+            try {
+                const parsed = JSON.parse(rawJson);
+                setOutput(JSON.stringify(parsed, null, 4));
+                showNotification('JSON 美化成功！', 'success');
+            } catch (error) {
+                setOutput(`JSON 解析错误：\n\n${error.message}`, true);
+                showNotification('无效的 JSON！', 'error');
+            }
+        });
+
+        compressJsonBtn.addEventListener('click', () => {
+            const rawJson = inputArea.value.trim();
+            if (!rawJson) { setOutput('错误：输入为空。', true); return; }
+            try {
+                const parsed = JSON.parse(rawJson);
+                setOutput(JSON.stringify(parsed));
+                showNotification('JSON 压缩成功！', 'success');
+            } catch (error) {
+                setOutput(`JSON 解析错误：\n\n${error.message}`, true);
+                showNotification('无效的 JSON！', 'error');
+            }
+        });
+
+        toYamlBtn.addEventListener('click', () => {
+            const rawJson = inputArea.value.trim();
+            if (!rawJson) { setOutput('错误：输入为空。', true); return; }
+            try {
+                const parsedJson = JSON.parse(rawJson);
+                setOutput(jsyaml.dump(parsedJson));
+                showNotification('JSON -> YAML 转换成功！', 'success');
+            } catch (error) {
+                setOutput(`JSON 解析或转换错误：\n\n${error.message}`, true);
+                showNotification('转换失败！无效的 JSON。', 'error');
+            }
+        });
+
+        toJsonBtn.addEventListener('click', () => {
+            const rawYaml = inputArea.value.trim();
+            if (!rawYaml) { setOutput('错误：输入为空。', true); return; }
+            try {
+                const parsedYaml = jsyaml.load(rawYaml);
+                setOutput(JSON.stringify(parsedYaml, null, 4));
+                showNotification('YAML -> JSON 转换成功！', 'success');
+            } catch (error) {
+                setOutput(`YAML 解析或转换错误：\n\n${error.message}`, true);
+                showNotification('转换失败！无效的 YAML。', 'error');
+            }
+        });
+
+        clearInputBtn.addEventListener('click', () => {
+            inputArea.value = '';
+            setOutput('');
+            inputArea.focus();
+        });
+
+        copyOutputBtn.addEventListener('click', () => {
+            const content = outputArea.value;
+            if (content && outputArea.style.borderColor !== 'rgb(239, 68, 68)') {
+                // Create a temporary textarea to hold the content
+                const tempTextArea = document.createElement('textarea');
+                tempTextArea.value = content;
+                // Make it invisible and append it to the body
+                tempTextArea.style.position = 'absolute';
+                tempTextArea.style.left = '-9999px';
+                document.body.appendChild(tempTextArea);
+                
+                // Select and copy the content
+                tempTextArea.select();
+                try {
+                    document.execCommand('copy');
+                    showNotification('已复制到剪贴板！', 'success');
+                } catch (err) {
+                    showNotification('复制失败！', 'error');
+                } finally {
+                    // Clean up and remove the temporary textarea
+                    document.body.removeChild(tempTextArea);
+                }
+            } else if (!content) {
+                showNotification('输出为空，无需复制。', 'error');
+            } else {
+                 showNotification('不能复制错误信息。', 'error');
+            }
+        });
+
+        // --- JSON to Java Conversion ---
+        
+        /**
+         * Capitalizes the first letter of a string.
+         * @param {string} s The string to capitalize.
+         * @returns {string} The capitalized string.
+         */
+        const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+
+        /**
+         * Infers the Java type from a JavaScript value.
+         * @param {*} value The JavaScript value.
+         * @param {string} key The key associated with the value (for naming nested classes).
+         * @returns {{type: string, innerClass: string}} The inferred Java type and any generated inner class.
+         */
+        function getJavaType(value, key) {
+            if (typeof value === 'string') return { type: 'String' };
+            if (typeof value === 'number') {
+                return Number.isInteger(value) ? { type: 'Integer' } : { type: 'Double' };
+            }
+            if (typeof value === 'boolean') return { type: 'Boolean' };
+            if (Array.isArray(value)) {
+                if (value.length === 0) {
+                    return { type: 'List<Object>' }; // Default for empty array
+                }
+                // Infer type from the first element
+                const { type: firstElementType, innerClass: firstElementInnerClass } = getJavaType(value[0], key);
+                return { type: `List<${firstElementType}>`, innerClass: firstElementInnerClass };
+            }
+            if (typeof value === 'object' && value !== null) {
+                const className = capitalize(key);
+                const innerClass = generateJavaClass(className, value, '    ');
+                return { type: className, innerClass };
+            }
+            return { type: 'Object' }; // Default fallback
+        }
+
+        /**
+         * Generates a Java class string from a JSON object.
+         * @param {string} className The name of the class to generate.
+         * @param {object} jsonObject The JSON object.
+         * @param {string} indent The indentation string.
+         * @returns {string} The generated Java class as a string.
+         */
+        function generateJavaClass(className, jsonObject, indent = '') {
+            let fields = [];
+            let gettersSetters = [];
+            let innerClasses = [];
+
+            for (const key in jsonObject) {
+                const value = jsonObject[key];
+                const { type, innerClass } = getJavaType(value, key);
+
+                fields.push(`${indent}    private ${type} ${key};`);
+                
+                const capitalizedKey = capitalize(key);
+                gettersSetters.push(`${indent}    public ${type} get${capitalizedKey}() {`);
+                gettersSetters.push(`${indent}        return ${key};`);
+                gettersSetters.push(`${indent}    }`);
+                gettersSetters.push('');
+                gettersSetters.push(`${indent}    public void set${capitalizedKey}(${type} ${key}) {`);
+                gettersSetters.push(`${indent}        this.${key} = ${key};`);
+                gettersSetters.push(`${indent}    }`);
+                gettersSetters.push('');
+
+                if (innerClass) {
+                    innerClasses.push(innerClass);
+                }
+            }
+
+            let classString = `${indent}public class ${className} {\n`;
+            classString += fields.join('\n') + '\n\n';
+            classString += gettersSetters.join('\n');
+            if(innerClasses.length > 0) {
+                classString += '\n' + innerClasses.join('\n');
+            }
+            classString += `\n${indent}}`;
+
+            return classString;
+        }
+
+        toJavaBtn.addEventListener('click', () => {
+            const rawJson = inputArea.value.trim();
+            if (!rawJson) {
+                setOutput('错误：输入为空。', true);
+                showNotification('请输入 JSON 以转换为 Java 对象。', 'error');
+                return;
+            }
+            try {
+                const parsed = JSON.parse(rawJson);
+                if (typeof parsed !== 'object' || Array.isArray(parsed) || parsed === null) {
+                    throw new Error('输入必须是一个 JSON 对象，而不是数组或基本类型。');
+                }
+                const javaClass = "import java.util.List;\n\n" + generateJavaClass('Root', parsed);
+                setOutput(javaClass);
+                showNotification('JSON -> Java 转换成功！', 'success');
+            } catch (error) {
+                setOutput(`转换失败：\n\n${error.message}`, true);
+                showNotification('转换失败！', 'error');
+            }
+        });
+
+
+    </script>
+</body>
+</html>
