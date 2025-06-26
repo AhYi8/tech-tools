@@ -17,4 +17,13 @@ const toolsData = {
       targetPage: './tools/json-yaml-java.html' // 指向独立的HTML文件
     }
   ],
+  '字符串工具': [
+    {
+      name: '正则表达式',
+      desc: '正则表达式在线测试',
+      icon: 'regex',
+      keywords: 'regex regexp 正则 正则表达式',
+      targetPage: './tools/regexp.html'
+    }
+  ],
 };
