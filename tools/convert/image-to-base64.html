@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>图片转 Base64 - 在线工具</title>
+    <script src="../../vendor/js/tailwind.js"></script>
+    <link href="../../vendor/css/google-fonts.css" rel="stylesheet" />
+    <style>
+      /* --- 沿用自项目其他页面的暗色科技风格 --- */
+      body {
+        font-family: "Noto Sans SC", sans-serif;
+        background-color: #0d1117;
+        color: #c9d1d9;
+        overflow-x: hidden;
+      }
+
+      /* -- 动态背景 (与项目其他页面保持一致) -- */
+      .background-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        background: radial-gradient(
+          ellipse at bottom,
+          #1b2735 0%,
+          #090a0f 100%
+        );
+        overflow: hidden;
+      }
+
+      @keyframes move-stars {
+        from {
+          transform: translateY(0px);
+        }
+        to {
+          transform: translateY(-2000px);
+        }
+      }
+
+      .stars,
+      .stars2,
+      .stars3 {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 200%; /* 增加高度以实现更无缝的循环 */
+        background-repeat: repeat;
+        animation: move-stars 200s linear infinite;
+      }
+      .stars {
+        background-image: url("data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjEwMHB4IiBoZWlnaHQ9IjEwMHB4IiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTAwIDEwMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTkyLjUsNjEuNWMwLDAsMCwwLDBsLTIsMC4xYy0wLjUsMC0xLTAuNS0xLTF2LTJjMC0wLjUsMC41LTEsMS0xaDIsMVY2MS41eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik04My4yLDQyLjRjMCwwLDAsMCwwbDAsMEM4My4yLDQyLjQsODMuMiw0Mi40LDgzLjIsNDIuNHoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzkuNCwyNC43YzAsMCwwLDAsMGwwLDBDNzkuNCwyNC43LDc5LjQsMjQuNyw3OS45LDI0Ljd6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTgwLjYsNDEuNWMwLDAsMCwwLDBsMCwwQzgwLjYsNDEuNSw4MC42LDQxLjUsODAuNiw0MS41eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik0yNC4zLDQxYzAsMCwwLDAsMGwtMC4yLTAuMmMwLDAsMCwwLDBMMjQuMyw0MXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNMzEuOCwzOS43YzAsMCwwLDAsMEwzMS44LDM5LjdMMzEuOCwzOS45eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik0zNy4xLDQwLjljMCwwLDAsMCwwbDAsMEMzNy4xLDQwLjksMzcuMSw0MC45LDM3LjIsNDAuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzMuNCwzMS45YzAsMCwwLDAsMEw3My40LDMxLjlMNzMuNCwzMS45eiIvPjwvc3ZnPg==");
+      }
+      .stars2 {
+        background-image: url("data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjEwMHB4IiBoZWlnaHQ9IjEwMHB4IiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTAwIDEwMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTc2LjksMjEuNGMwLDAsMCwwLDBsMCwwQzc2LjksMjEuNCw3Ni45LDIxLjQsNzYuOSwyMS40eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik04NS4yLDU5LjljMCwwLDAsMCwwbDAsMEM4NS4yLDU5LjksODUuMiw1OS45LDg1LjIsNTkuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzAuMywzOS45YzAsMCwwLDAsMEw3MC4zLDM5LjlMNzAuMywzOS45eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik00Ni43LDIwLjlDNDYuNywyMC45LDQ2LjcsMjAuOSw0Ni43LDIwLjlsMCwwQzQ2LjdsMjAuOSw0Ni43LDIwLjksNDYuNywyMC45eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik0yMS44LDIxLjljMCwwLDAsMCwwbDAsMEMyMS44LDIxLjksMjEuOCwyMS45LDIxLjgsMjEuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNMzEuNyw0OS4xYzAsMCwwLDAsMEwzMS43LDQ5LjFMMzEuNyw0OS4xeiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik0zNy44LDI1LjdjMCwwLDAsMCwwbDAsMEMzNy44LDI1LjcsMzcuOCwyNS43LDM3LjgsMjUuN3oiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNTEuOCwxMy43YzAsMCwwLDAsMEw1MS44LDEzLjdMNTIuMiwxMy45YzAsMCwwLDAsMEw1MS44LDEzLjd6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTI3LjEsMTQuNGMwLDAsMCwwLDBsMCwwQzI3LjEsMTQuNCwyNy4xLDE0LjQsMjcuMSwxNC40eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik0zNy41LDMuNGMwLDAsMCwwLDBsMCwwQzM3LjUsMy40LDM3LjUsMy40LDM3LjUsMy40eiIvPjwvc3ZnPg==");
+        animation-duration: 150s;
+      }
+      .stars3 {
+        background-image: url("data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjEwMHB4IiBoZWlnaHQ9IjEwMHB4IiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTAwIDEwMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTQ5LjIsMTcuMWMwLDAsMCwwLDBsMCwwQzQ5LjIsMTcuMSw0OS4yLDE3LjEsNDkuMiwxNy4xeiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik0zMy44LDguNGMwLDAsMCwwLDBsMCwwQzMzLjgsOC40LDMzLjgsOC44LDMzLjgsOC40eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik04NS4xLDguN2MwLDAsMCwwLDBsMCwwQzg1LjEsOC43LDg1LjEsOC43LDg1LjEsOC43eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik04Ny44LDE0LjljMCwwLDAsMCwwbDAsMEM4Ny44LDE0LjksODcuOCwxNC45LDg3LjgsMTQuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzkuOSwzOS45YzAsMCwwLDAsMEw3OS45LDM5LjlMNzkuOSwzOS45eiIvPjwvc3ZnPg==");
+        animation-duration: 100s;
+      }
+
+      /* --- 动画与字体 --- */
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .main-container-anim {
+        animation: fadeInUp 0.8s 0.2s ease-out backwards;
+      }
+      .header-anim {
+        animation: fadeInUp 0.8s ease-out backwards;
+      }
+      h1,
+      h2,
+      .tech-font {
+        font-family: "Exo 2", sans-serif;
+      }
+
+      /* --- 主容器与边框 --- */
+      .main-container {
+        position: relative;
+        border-radius: 1rem;
+        background-color: #161b2299; /* 半透明背景 */
+        backdrop-filter: blur(5px);
+        z-index: 1;
+      }
+      .main-container::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        padding: 2px; /* 边框宽度 */
+        background: linear-gradient(135deg, #a97eff, #58a6ff, #00c3ff);
+        -webkit-mask: linear-gradient(#fff 0 0) content-box,
+          linear-gradient(#fff 0 0);
+        -webkit-mask-composite: exclude;
+        mask-composite: exclude;
+        pointer-events: none;
+      }
+
+      /* --- 拖拽区域 --- */
+      #drop-zone {
+        border: 2px dashed #30363d;
+        border-radius: 0.75rem;
+        transition: all 0.3s ease-in-out;
+      }
+      #drop-zone.drag-over {
+        border-color: #58a6ff;
+        background-color: rgba(88, 166, 255, 0.1);
+        box-shadow: 0 0 15px rgba(88, 166, 255, 0.3);
+      }
+      #drop-zone.has-image {
+        border-style: solid;
+        border-color: rgba(88, 166, 255, 0.4);
+      }
+      #image-preview {
+        max-width: 100%;
+        max-height: 200px;
+        border-radius: 0.5rem;
+        object-fit: contain;
+      }
+
+      /* --- 文本域与按钮样式 (统一) --- */
+      .dark-textarea {
+        background-color: #0d1117;
+        border: 1px solid #30363d;
+        color: #c9d1d9;
+        font-family: "Consolas", "Monaco", monospace;
+        resize: vertical;
+      }
+      .dark-textarea:focus {
+        border-color: #58a6ff;
+        box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.2);
+        outline: none;
+      }
+      textarea::-webkit-scrollbar {
+        width: 12px;
+      }
+      textarea::-webkit-scrollbar-track {
+        background: #0d1117;
+        border-radius: 10px;
+      }
+      textarea::-webkit-scrollbar-thumb {
+        background-color: #30363d;
+        border-radius: 10px;
+        border: 3px solid #0d1117;
+      }
+      textarea::-webkit-scrollbar-thumb:hover {
+        background-color: #58a6ff;
+      }
+      /* -- [新增] 与 base64-encrypt-decrypt.html 页面一致的拖拽角标 -- */
+      .dark-textarea::-webkit-resizer {
+        background-image: url("data:image/svg+xml;utf8,%3Csvg%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M8%204L4%208%22%20stroke%3D%22%2358a6ff%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22/%3E%3Cpath%20d%3D%22M10%206L6%2010%22%20stroke%3D%22%2358a6ff%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: bottom right;
+        border: 2px solid transparent;
+      }
+      .dark-textarea::-webkit-scrollbar-corner {
+        background-color: transparent;
+      }
+
+      .btn-sci-fi {
+        position: relative;
+        padding: 10px 24px;
+        border: 2px solid #30363d;
+        background-color: transparent;
+        color: #c9d1d9;
+        font-weight: 700;
+        cursor: pointer;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        transform: skew(-15deg);
+      }
+      .btn-sci-fi > span {
+        display: inline-block;
+        transform: skew(15deg);
+        transition: color 0.3s ease;
+      }
+      .btn-sci-fi::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -150%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--glow-color, rgba(0, 191, 255, 0.5)),
+          transparent
+        );
+        transition: left 0.5s ease;
+        transform: skew(-15deg) translateX(50%);
+      }
+      .btn-sci-fi:not(:disabled):hover {
+        color: white;
+        border-color: var(--glow-color, rgba(0, 191, 255, 0.8));
+        box-shadow: 0 0 15px var(--glow-color, rgba(0, 191, 255, 0.5));
+      }
+      .btn-sci-fi:not(:disabled):hover > span {
+        color: white;
+      }
+      .btn-sci-fi:not(:disabled):hover::before {
+        left: 150%;
+      }
+      .btn-sci-fi.cyan {
+        --glow-color: #0891b2;
+      }
+      .btn-sci-fi.red {
+        --glow-color: #ef4444;
+      }
+      .btn-sci-fi:disabled {
+        border-color: #4b5563;
+        color: #4b5563;
+        cursor: not-allowed;
+        box-shadow: none;
+      }
+
+      /* --- 通知样式 (统一) --- */
+      #notification-container {
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .notification {
+        background-color: #161b22cc;
+        backdrop-filter: blur(5px);
+        color: #f87171; /* red-400 */
+        padding: 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid #ef4444; /* red-500 */
+        box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        opacity: 0;
+        transform: translateX(100%);
+        animation: slideIn 0.5s forwards;
+      }
+      .notification.success {
+        color: #4ade80; /* green-400 */
+        border-color: #22c55e; /* green-500 */
+        box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
+      }
+      @keyframes slideIn {
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+      @keyframes slideOut {
+        from {
+          opacity: 1;
+          transform: translateX(0);
+        }
+        to {
+          opacity: 0;
+          transform: translateX(100%);
+        }
+      }
+    </style>
+  </head>
+  <body class="min-h-screen">
+    <!-- 动态背景 -->
+    <div class="background-container">
+      <div class="stars"></div>
+      <div class="stars2"></div>
+      <div class="stars3"></div>
+    </div>
+    <!-- 通知容器 -->
+    <div id="notification-container"></div>
+
+    <div
+      class="w-full max-w-5xl mx-auto p-4 sm:p-8 flex flex-col min-h-screen relative z-10"
+    >
+      <header class="text-center mb-8 header-anim">
+        <h1
+          class="text-3xl sm:text-4xl font-bold text-cyan-400"
+          style="text-shadow: 0 0 10px rgba(0, 255, 255, 0.5)"
+        >
+          图片转 Base64
+        </h1>
+        <p class="text-gray-400 mt-2">
+          将图片文件转换为 Base64 编码，方便嵌入 CSS、HTML 或 JSON。
+        </p>
+      </header>
+
+      <main
+        class="main-container main-container-anim flex-grow flex flex-col p-4 sm:p-6"
+      >
+        <div class="flex flex-col md:flex-row gap-6 flex-grow">
+          <!-- Left: Image Upload & Preview -->
+          <div class="md:w-1/2 flex flex-col gap-4">
+            <h2 class="text-lg text-cyan-400 tech-font">上传图片</h2>
+            <div
+              id="drop-zone"
+              class="flex-grow flex flex-col items-center justify-center p-6 text-center cursor-pointer min-h-[200px]"
+            >
+              <div id="upload-prompt" class="space-y-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="48"
+                  height="48"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="mx-auto text-gray-500"
+                >
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="17 8 12 3 7 8" />
+                  <line x1="12" x2="12" y1="3" y2="15" />
+                </svg>
+                <p class="text-gray-400">
+                  将图片拖拽至此，或
+                  <span class="font-semibold text-cyan-400">点击上传</span>
+                </p>
+                <p class="text-xs text-gray-500">
+                  支持 PNG, JPG, GIF, WEBP, SVG 等格式
+                </p>
+              </div>
+              <img id="image-preview" class="hidden" />
+              <div id="image-info" class="text-sm mt-2 text-gray-400"></div>
+            </div>
+            <input
+              type="file"
+              id="file-input"
+              class="hidden"
+              accept="image/*"
+            />
+            <div class="flex flex-wrap gap-4 mt-2 justify-center">
+              <button id="re-upload-btn" class="btn-sci-fi cyan hidden">
+                <span>重新上传</span>
+              </button>
+              <button id="clear-btn" class="btn-sci-fi red">
+                <span>清空</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Right: Base64 Output -->
+          <!-- [修改] 此区域结构已更新，以匹配 base64-encrypt-decrypt.html -->
+          <div class="md:w-1/2 flex flex-col flex-grow">
+            <div class="flex justify-between items-center mb-2 px-1">
+              <h2 class="text-lg text-cyan-400 tech-font">Base64 结果</h2>
+              <button
+                id="copy-btn"
+                class="text-gray-400 hover:text-white text-xs tech-font disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                disabled
+              >
+                复制
+              </button>
+            </div>
+            <textarea
+              id="base64-output"
+              class="dark-textarea w-full flex-grow p-3 rounded-lg shadow-sm text-sm"
+              readonly
+              placeholder="上传图片后，Base64 编码将显示在此处..."
+            ></textarea>
+          </div>
+        </div>
+      </main>
+
+      <footer class="text-center mt-8 text-gray-500 text-sm">
+        <p>Powered by @AhYi8 ✨ &copy; 2024</p>
+      </footer>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // --- DOM Elements ---
+        const dropZone = document.getElementById("drop-zone");
+        const fileInput = document.getElementById("file-input");
+        const uploadPrompt = document.getElementById("upload-prompt");
+        const imagePreview = document.getElementById("image-preview");
+        const imageInfo = document.getElementById("image-info");
+        const base64Output = document.getElementById("base64-output");
+        const copyBtn = document.getElementById("copy-btn");
+        const clearBtn = document.getElementById("clear-btn");
+        const reUploadBtn = document.getElementById("re-upload-btn");
+        const notificationContainer = document.getElementById(
+          "notification-container"
+        );
+
+        // --- Event Listeners ---
+        dropZone.addEventListener("click", () => fileInput.click());
+        fileInput.addEventListener("change", handleFileSelect);
+        reUploadBtn.addEventListener("click", () => fileInput.click());
+        copyBtn.addEventListener("click", copyToClipboard);
+        clearBtn.addEventListener("click", clearAll);
+
+        // --- Drag and Drop ---
+        dropZone.addEventListener("dragover", (e) => {
+          e.preventDefault();
+          dropZone.classList.add("drag-over");
+        });
+        dropZone.addEventListener("dragleave", () => {
+          dropZone.classList.remove("drag-over");
+        });
+        dropZone.addEventListener("drop", (e) => {
+          e.preventDefault();
+          dropZone.classList.remove("drag-over");
+          const files = e.dataTransfer.files;
+          if (files.length > 0) {
+            handleFile(files[0]);
+          }
+        });
+
+        // --- Functions ---
+
+        function handleFileSelect(e) {
+          const files = e.target.files;
+          if (files.length > 0) {
+            handleFile(files[0]);
+          }
+        }
+
+        function handleFile(file) {
+          if (!file.type.startsWith("image/")) {
+            showNotification("请上传图片文件。", "error");
+            return;
+          }
+
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const base64String = e.target.result;
+            imagePreview.src = base64String;
+            base64Output.value = base64String;
+
+            displayImageUI(file);
+          };
+          reader.onerror = () => {
+            showNotification("文件读取失败。", "error");
+            clearAll();
+          };
+          reader.readAsDataURL(file);
+        }
+
+        function displayImageUI(file) {
+          imagePreview.classList.remove("hidden");
+          uploadPrompt.classList.add("hidden");
+          dropZone.classList.add("has-image");
+          reUploadBtn.classList.remove("hidden");
+
+          const sizeInKB = (file.size / 1024).toFixed(2);
+          imageInfo.textContent = `${file.name} (${sizeInKB} KB)`;
+
+          // [修改] 使用 disabled 属性控制按钮状态
+          copyBtn.disabled = false;
+        }
+
+        function clearAll() {
+          fileInput.value = ""; // 清空文件输入
+          imagePreview.src = "";
+          imagePreview.classList.add("hidden");
+          uploadPrompt.classList.remove("hidden");
+          dropZone.classList.remove("has-image");
+          reUploadBtn.classList.add("hidden");
+          imageInfo.textContent = "";
+          base64Output.value = "";
+
+          // [修改] 使用 disabled 属性控制按钮状态
+          copyBtn.disabled = true;
+        }
+
+        function copyToClipboard() {
+          // [修改] 使用 disabled 属性检查按钮状态
+          if (!base64Output.value || copyBtn.disabled) return;
+          navigator.clipboard.writeText(base64Output.value).then(
+            () => {
+              showNotification("已成功复制到剪贴板！", "success");
+            },
+            () => {
+              showNotification("复制失败，请手动复制。", "error");
+            }
+          );
+        }
+
+        function showNotification(message, type = "error") {
+          const notification = document.createElement("div");
+          notification.className = `notification ${type}`;
+          notification.textContent = message;
+          notificationContainer.appendChild(notification);
+          notification.addEventListener("click", () => {
+            notification.style.animation = "slideOut 0.5s forwards";
+            setTimeout(() => notification.remove(), 500);
+          });
+          setTimeout(() => {
+            if (notification.parentElement) {
+              notification.style.animation = "slideOut 0.5s forwards";
+              setTimeout(() => notification.remove(), 500);
+            }
+          }, 3000);
+        }
+      });
+    </script>
+  </body>
+</html>

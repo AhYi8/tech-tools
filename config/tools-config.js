@@ -22,6 +22,13 @@ const toolsData = {
       icon: 'file-spreadsheet',
       keywords: 'json csv',
       targetPage: './tools/convert/json-to-csv.html' // 指向独立的HTML文件
+    },
+    {
+      name: '图片转 Base64',
+      desc: '将图片文件转换为 Base64 编码字符串',
+      icon: 'image-upscale',
+      keywords: 'base64 图片 image',
+      targetPage: './tools/convert/image-to-base64.html' // 指向独立的HTML文件
     }
   ],
   '字符串工具': [
