@@ -6,15 +6,10 @@
     <title>Tech-Tools - 在线工具箱</title>
     <link rel="icon" href="./favicon.ico" type="image/x-icon" />
 
-    <!-- 引入 Tailwind CSS for styling -->
-    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
     <script src="./vendor/js/tailwind.js"></script>
 
-    <!-- 引入 Lucide Icons for icons -->
-    <!-- <script src="https://unpkg.com/lucide@latest"></script> -->
     <script src="./vendor/js/lucide.js"></script>
 
-    <!-- 引入 Google Fonts -->
     <link href="./vendor/css/google-fonts.css" rel="stylesheet" />
 
     <style>
@@ -209,13 +204,11 @@
   </head>
   <body class="min-h-screen text-sm md:text-base">
     <div class="flex">
-      <!-- 侧边栏 -->
       <aside
         id="sidebar"
         class="sidebar fixed top-0 left-0 h-full w-[var(--sidebar-width)] z-40 transform -translate-x-full md:translate-x-0 flex-shrink-0"
       >
         <div class="flex flex-col h-full">
-          <!-- LOGO/标题 -->
           <header class="p-6 border-b border-b-[var(--border-color)]">
             <a
               href="#"
@@ -231,12 +224,8 @@
             <p class="text-xs text-gray-500 mt-1">科技版在线工具箱</p>
           </header>
 
-          <!-- 导航列表 -->
-          <nav id="sidebarNav" class="flex-grow p-4 overflow-y-auto">
-            <!-- 分类导航将由JS动态生成 -->
-          </nav>
+          <nav id="sidebarNav" class="flex-grow p-4 overflow-y-auto"></nav>
 
-          <!-- 页脚 -->
           <footer
             class="p-4 text-center text-gray-500 text-xs border-t border-t-[var(--border-color)]"
           >
@@ -245,15 +234,12 @@
         </div>
       </aside>
 
-      <!-- 主内容区域 -->
       <div
         id="mainContent"
         class="w-full transition-all duration-300 md:ml-[var(--sidebar-width)]"
       >
-        <!-- 首页工具列表容器 -->
         <div id="home-page-container">
           <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
-            <!-- 移动端汉堡菜单 -->
             <div class="md:hidden mb-6 flex items-center justify-between">
               <h1 class="font-exo text-2xl font-bold">Tech-Tools</h1>
               <button id="menu-toggle" class="p-2">
@@ -261,7 +247,6 @@
               </button>
             </div>
 
-            <!-- 搜索框 -->
             <div class="mb-8 md:mb-12 relative">
               <div
                 class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"
@@ -276,25 +261,17 @@
               />
             </div>
 
-            <!-- 工具列表 -->
-            <main id="toolsContainer">
-              <!-- 工具数据将由JS动态生成并插入此处 -->
-            </main>
+            <main id="toolsContainer"></main>
 
-            <!-- 未找到结果的提示 -->
-            <div id="noResults" class="hidden text-center py-16">
-              <!-- JS动态生成提示内容 -->
-            </div>
+            <div id="noResults" class="hidden text-center py-16"></div>
           </div>
         </div>
-        <!-- Iframe 容器 -->
         <div id="tool-iframe-container" class="hidden h-screen">
           <iframe id="tool-iframe" title="Tool Content"></iframe>
         </div>
       </div>
     </div>
 
-    <!-- 遮罩层 -->
     <div
       id="overlay"
       class="fixed inset-0 bg-black/50 z-30 hidden md:hidden"
@@ -335,10 +312,67 @@
         initNavigation();
       });
 
+      // --- MODIFICATION: Helper function to get grid classes with override logic ---
+      function getGridClassString() {
+        let columns = 4; // 4. Default value
+
+        // 3. Read from tools-config.js
+        if (
+          typeof styleConfig !== "undefined" &&
+          styleConfig.tool_card_columns
+        ) {
+          columns = styleConfig.tool_card_columns;
+        }
+
+        // 2. Read from localStorage (overwrites config file)
+        const columnsFromStorage = localStorage.getItem("tech-tools-columns");
+        if (columnsFromStorage && !isNaN(parseInt(columnsFromStorage, 10))) {
+          columns = parseInt(columnsFromStorage, 10);
+        }
+
+        // 1. Read from URL query parameter (overwrites everything)
+        const urlParams = new URLSearchParams(window.location.search);
+        const columnsFromUrl = urlParams.get("columns");
+        if (columnsFromUrl && !isNaN(parseInt(columnsFromUrl, 10))) {
+          columns = parseInt(columnsFromUrl, 10);
+        }
+
+        let gridClasses = "grid-cols-1";
+
+        switch (columns) {
+          case 6:
+            gridClasses =
+              "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6";
+            break;
+          case 5:
+            gridClasses =
+              "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5";
+            break;
+          case 4:
+            gridClasses =
+              "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
+            break;
+          case 3:
+            gridClasses = "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3";
+            break;
+          case 2:
+            gridClasses = "grid-cols-1 sm:grid-cols-2";
+            break;
+          case 1:
+            gridClasses = "grid-cols-1";
+            break;
+          default:
+            gridClasses =
+              "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
+        }
+
+        return `grid ${gridClasses} gap-6`;
+      }
+
       // --- 卡片创建辅助函数 ---
       function createToolCard(tool) {
         const card = document.createElement("div");
-        card.className = "tool-card group block p-6";
+        card.className = "tool-card group flex space-x-4 p-6";
         card.dataset.name = tool.name.toLowerCase();
         card.dataset.toolId = tool.name;
         card.dataset.keywords = (tool.keywords + " " + tool.name).toLowerCase();
@@ -360,17 +394,20 @@
         favBtn.addEventListener("click", (e) => toggleFavorite(e, tool.name));
         card.appendChild(favBtn);
 
-        const cardContent = document.createElement("div");
-        cardContent.innerHTML = `
-            <div class="flex items-center space-x-4">
-                <i data-lucide="${tool.icon}" class="w-10 h-10 tool-card-icon flex-shrink-0"></i>
-                <div class="text-left">
-                    <h3 class="font-bold text-lg text-gray-100">${tool.name}</h3>
-                    <p class="text-sm text-gray-400">${tool.desc}</p>
-                </div>
-            </div>
+        const iconWrapper = document.createElement("div");
+        iconWrapper.className = "self-center flex-shrink-0";
+        iconWrapper.innerHTML = `<i data-lucide="${tool.icon}" class="w-10 h-10 tool-card-icon"></i>`;
+
+        const textWrapper = document.createElement("div");
+        textWrapper.className = "text-left self-start";
+        textWrapper.innerHTML = `
+            <h3 class="font-bold text-lg text-gray-100">${tool.name}</h3>
+            <p class="text-sm text-gray-400">${tool.desc}</p>
         `;
-        card.appendChild(cardContent);
+
+        card.appendChild(iconWrapper);
+        card.appendChild(textWrapper);
+
         return card;
       }
 
@@ -460,8 +497,7 @@
             newSection.appendChild(categoryTitle);
 
             const grid = document.createElement("div");
-            grid.className =
-              "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6";
+            grid.className = getGridClassString();
             favoriteTools.forEach((tool) => {
               const card = createToolCard(tool);
               grid.appendChild(card);
@@ -531,8 +567,7 @@
           categorySection.appendChild(categoryTitle);
 
           const grid = document.createElement("div");
-          grid.className =
-            "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6";
+          grid.className = getGridClassString();
 
           toolsData[category].forEach((tool) => {
             const card = createToolCard(tool);
@@ -547,7 +582,7 @@
       function resetToAllToolsView() {
         document
           .querySelectorAll(".tool-card")
-          .forEach((c) => (c.style.display = "block"));
+          .forEach((c) => (c.style.display = "flex")); // Must be flex now
         document
           .querySelectorAll(".category-section")
           .forEach((s) => (s.style.display = "block"));
@@ -652,7 +687,7 @@
             const keywords = card.dataset.keywords;
             const categorySection = card.closest(".category-section");
             if (keywords.includes(searchTerm)) {
-              card.style.display = "block";
+              card.style.display = "flex"; // Must be flex now
               visibleCategories.add(categorySection.id);
             } else {
               card.style.display = "none";

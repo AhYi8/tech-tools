@@ -50,3 +50,7 @@ const toolsData = {
     }
   ]
 };
+
+const styleConfig = {
+  tool_card_columns: 4
+};
