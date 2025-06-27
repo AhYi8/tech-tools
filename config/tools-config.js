@@ -33,4 +33,13 @@ const toolsData = {
       targetPage: './tools/string/regexp.html'
     }
   ],
+  '密码学': [
+    {
+      name: 'Base64 编码/解码',
+      desc: 'Base64 编码/解码字符串',
+      icon: 'arrow-left-right',
+      keywords: 'base64',
+      targetPage: './tools/cryptology/base64-encrypt-decrypt.html'
+    }
+  ]
 };
