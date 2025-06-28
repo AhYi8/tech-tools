@@ -11,9 +11,9 @@ const toolsData = {
   '转换工具': [
     {
       name: 'JSON ↔ YAML ↔ JAVA',
-      desc: 'JSON、YAML、JAVA 格式相互转换',
+      desc: 'JSON、YAML、JAVA 格式相互转换，以及 JSON 格式化',
       icon: 'pencil-ruler',
-      keywords: 'json yaml java',
+      keywords: 'json yaml java 美化 格式化',
       targetPage: './tools/convert/json-yaml-java.html' // 指向独立的HTML文件
     },
     {
@@ -29,6 +29,13 @@ const toolsData = {
       icon: 'image-upscale',
       keywords: 'base64 图片 image',
       targetPage: './tools/convert/image-to-base64.html' // 指向独立的HTML文件
+    },
+    {
+      name: 'CSS 压缩/解压缩',
+      desc: '压缩或解压缩 CSS 代码',
+      icon: 'image-upscale',
+      keywords: 'css',
+      targetPage: './tools/convert/css-min-unmin.html' // 指向独立的HTML文件
     }
   ],
   '字符串工具': [
