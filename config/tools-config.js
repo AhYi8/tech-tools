@@ -33,7 +33,7 @@ const toolsData = {
     {
       name: 'CSS 压缩/解压缩',
       desc: '压缩或解压缩 CSS 代码',
-      icon: 'image-upscale',
+      icon: 'braces',
       keywords: 'css',
       targetPage: './tools/convert/css-min-unmin.html' // 指向独立的HTML文件
     }
