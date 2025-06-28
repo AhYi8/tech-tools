@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI 幸运大转盘</title>
+    <script src="../../vendor/js/tailwind.js"></script>
+    <script src="../../vendor/js/lucide.js"></script>
+    <link href="../../vendor/css/google-fonts.css" rel="stylesheet" />
+    <style>
+        /* 基础样式 */
+        body {
+            font-family: "Noto Sans SC", sans-serif;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            overflow-x: hidden;
+        }
+
+        .background-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+            overflow: hidden;
+        }
+
+        @keyframes move-stars {
+            from {
+                transform: translateY(0px);
+            }
+
+            to {
+                transform: translateY(-2000px);
+            }
+        }
+
+        .stars,
+        .stars2,
+        .stars3 {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 200%;
+            display: block;
+            background: transparent;
+            background-repeat: repeat;
+            animation: move-stars 200s linear infinite;
+        }
+
+        .stars {
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjEwMHB4IiBoZWlnaHQ9IjEwMHB4IiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTAwIDEwMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTkyLjUsNjEuNWMwLDAsMCwwLDBsLTIsMC4xYy0wLjUsMC0xLTAuNS0xLTF2LTJjMC0wLjUsMC41LTEsMS0xaDIsMVY2MS41eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik04My4yLDQyLjRjMCwwLDAsMCwwbDAsMEM4My4yLDQyLjQsODMuMiw0Mi40LDgzLjIsNDIuNHoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzkuNCwyNC43YzAsMCwwLDAsMGwwLDBDNzkuNCwyNC43LDc5LjQsMjQuNyw3OS45LDI0Ljd6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTgwLjYsNDEuNWMwLDAsMCwwLDBsMCwwQzgwLjYsNDEuNSw4MC42LDQxLjUsODAuNiw0MS41eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik0yNC4zLDQxYzAsMCwwLDAsMGwtMC4yLTAuMmMwLDAsMCwwLDBMMjQuMyw0MXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNMzEuOCwzOS43YzAsMCwwLDAsMEwzMS44LDM5LjdMMzEuOCwzOS45eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik0zNy4xLDQwLjljMCwwLDAsMCwwbDAsMEMzNy4xLDQwLjksMzcuMSw0MC45LDM3LjIsNDAuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzMuNCwzMS45YzAsMCwwLDAsMEw3My40LDMxLjlMNzMuNCwzMS45eiIvPjwvc3ZnPg==');
+        }
+
+        .stars2 {
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjEwMHB4IiBoZWlnaHQ9IjEwMHB4IiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTAwIDEwMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTc2LjksMjEuNGMwLDAsMCwwLDBsMCwwQzc2LjksMjEuNCw3Ni45LDIxLjQsNzYuOSwyMS40eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik04NS4yLDU5LjljMCwwLDAsMCwwbDAsMEM4NS4yLDU5LjksODUuMiw1OS45LDg1LjIsNTkuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzAuMywzOS45YzAsMCwwLDAsMEw3MC4zLDM5LjlMNzAuMywzOS45eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik00Ni43LDIwLjlDNDYuNywyMC45LDQ2LjcsMjAuOSw0Ni43LDIwLjlsMCwwQzQ2LjdsMjAuOSw0Ni43LDIwLjksNDYuNywyMC45eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik0yMS44LDIxLjljMCwwLDAsMCwwbDAsMEMyMS44LDIxLjksMjEuOCwyMS45LDIxLjgsMjEuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNMzEuNyw0OS4xYzAsMCwwLDAsMEwzMS43LDQ5LjFMMzEuNyw0OS4xeiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik0zNy44LDI1LjdjMCwwLDAsMCwwbDAsMEMzNy44LDI1LjcsMzcuOCwyNS43LDM3LjgsMjUuN3oiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNTEuOCwxMy43YzAsMCwwLDAsMEw1MS44LDEzLjdMNTIuMiwxMy45YzAsMCwwLDAsMEw1MS44LDEzLjd6IiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik0yNy4xLDE0LjRjMCwwLDAsMCwwbDAsMEMyNy4xLDE0LjQsMjcuMSwxNC40LDIxLjEsMTQuNHoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNMzcuNSwzLjRjMCwwLDAsMCwwbDAsMEMzNy41LDMuNCwzNy41LDMuNCwzNy41LDMuNHoiLz48L3N2Zz4=');
+            animation-duration: 150s;
+        }
+
+        .stars3 {
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjEwMHB4IiBoZWlnaHQ9IjEwMHB4IiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTAwIDEwMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTQ5LjIsMTcuMWMwLDAsMCwwLDBsMCwwQzQ5LjIsMTcuMSw0OS4yLDE3LjEsNDkuMiwxNy4xeiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik0zMy44LDguNGMwLDAsMCwwLDBsMCwwQzMzLjgsOC44LDMzLjgsOC40LDMzLjgsOC40eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik04NS4xLDguN2MwLDAsMCwwLDBsMCwwQzg1LjEsOC43LDg1LjEsOC43LDg1LjIsOC43eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik04Ny44LDE0LjljMCwwLDAsMCwwbDAsMEM4Ny44LDE0LjksODcuOCwxNC45LDg3LjgsMTQuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzkuOSwzOS45YzAsMCwwLDAsMEw3OS45LDM5LjlMNzkuOSwzOS45eiIvPjwvc3ZnPg==');
+            animation-duration: 100s;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .main-container-anim {
+            animation: fadeInUp 0.8s 0.2s ease-out backwards;
+        }
+
+        h1,
+        h2,
+        h3,
+        .tech-font {
+            font-family: "Exo 2", sans-serif;
+        }
+
+        .main-container {
+            position: relative;
+            border-radius: 1rem;
+            background-color: #161b2299;
+            backdrop-filter: blur(5px);
+            z-index: 1;
+        }
+
+        .main-container::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            padding: 2px;
+            background: linear-gradient(135deg, #a97eff, #58a6ff, #00c3ff);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: exclude;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .dark-input,
+        textarea.dark-input,
+        select.dark-input {
+            background-color: #0d1117;
+            border: 1px solid #30363d;
+            color: #c9d1d9;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            padding: 0.5rem 0.75rem;
+        }
+
+        .dark-input:focus,
+        textarea.dark-input:focus,
+        select.dark-input:focus {
+            border-color: #58a6ff;
+            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.25);
+            outline: none;
+        }
+
+        .btn-sci-fi {
+            position: relative;
+            padding: 12px 30px;
+            border: 2px solid #30363d;
+            background-color: transparent;
+            color: #c9d1d9;
+            font-weight: 700;
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            transform: skew(-15deg);
+        }
+
+        .btn-sci-fi>span {
+            display: inline-block;
+            transform: skew(15deg);
+            transition: color 0.3s ease;
+        }
+
+        .btn-sci-fi::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, var(--glow-color, rgba(0, 191, 255, 0.5)), transparent);
+            transition: left 0.5s ease;
+            transform: skew(-15deg) translateX(50%);
+        }
+
+        .btn-sci-fi:not(:disabled):hover {
+            color: white;
+            border-color: var(--glow-color, rgba(0, 191, 255, 0.8));
+            box-shadow: 0 0 15px var(--glow-color, rgba(0, 191, 255, 0.5));
+        }
+
+        .btn-sci-fi:not(:disabled):hover>span {
+            color: white;
+        }
+
+        .btn-sci-fi:not(:disabled):hover::before {
+            left: 150%;
+        }
+
+        .btn-sci-fi.cyan {
+            --glow-color: #0891b2;
+        }
+
+        .btn-sci-fi.green {
+            --glow-color: #16a34a;
+        }
+
+        .btn-sci-fi.red {
+            --glow-color: #ef4444;
+        }
+
+        .btn-sci-fi:disabled {
+            border-color: #4b5563;
+            color: #4b5563;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        #wheel-wrapper {
+            position: relative;
+            width: 300px;
+            height: 300px;
+        }
+
+        #lucky-wheel-canvas {
+            transition: transform 6s cubic-bezier(0.25, 0.1, 0.25, 1);
+            border-radius: 50%;
+            box-shadow: inset 0 0 15px rgba(0, 195, 255, 0.5), 0 0 15px rgba(0, 195, 255, 0.3);
+        }
+
+        #pointer {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 24px;
+            height: 24px;
+            z-index: 20;
+            background: linear-gradient(135deg, #a97eff, #58a6ff, #00c3ff);
+            clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
+            filter: drop-shadow(0 4px 5px rgba(0, 0, 0, 0.5));
+        }
+
+        .color-picker {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 30px;
+            height: 30px;
+            border: none;
+            cursor: pointer;
+            background-color: transparent;
+            padding: 0;
+        }
+
+        .color-picker::-webkit-color-swatch {
+            border-radius: 4px;
+            border: 1px solid #30363d;
+        }
+
+        .color-picker::-moz-color-swatch {
+            border-radius: 4px;
+            border: 1px solid #30363d;
+        }
+
+        .remove-option-btn {
+            background: transparent;
+            border: none;
+            color: #8b949e;
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 6px;
+        }
+
+        .remove-option-btn:hover {
+            background-color: rgba(255, 171, 171, 0.15);
+            color: #ffabab;
+        }
+
+        .btn-ai-style {
+            position: relative;
+            background: #0d1117;
+            color: #c9d1d9;
+            border: 1px solid #30363d;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 191, 255, 0.2);
+        }
+
+        .btn-ai-style:not(:disabled):hover {
+            color: white;
+            border-color: #58a6ff;
+            box-shadow: 0 0 20px rgba(88, 166, 255, 0.5);
+        }
+
+        .btn-ai-style:disabled {
+            cursor: not-allowed;
+            color: #4b5563;
+            background-color: #161b22;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 22px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #30363d;
+            transition: 0.4s;
+            border-radius: 22px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 4px;
+            bottom: 4px;
+            background-color: #c9d1d9;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: #2563eb;
+            box-shadow: 0 0 5px #2563eb;
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(18px);
+        }
+
+        #notification-container {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .notification {
+            background-color: #161b22cc;
+            backdrop-filter: blur(5px);
+            color: #f87171;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid #ef4444;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateX(100%);
+            animation: slideIn 0.5s forwards;
+        }
+
+        .notification.success {
+            color: #4ade80;
+            border-color: #22c55e;
+            box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
+        }
+
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+            to {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
+
+        #thinking-process-output::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        #thinking-process-output::-webkit-scrollbar-track {
+            background: #0d1117;
+            border-radius: 10px;
+        }
+
+        #thinking-process-output::-webkit-scrollbar-thumb {
+            background-color: #30363d;
+            border-radius: 10px;
+            border: 3px solid #0d1117;
+        }
+
+        #thinking-process-output::-webkit-scrollbar-thumb:hover {
+            background-color: #58a6ff;
+        }
+
+        #thinking-process-output::-webkit-scrollbar-corner {
+            background-color: transparent;
+        }
+
+        #options-container {
+            counter-reset: option-counter;
+        }
+
+        .option-item::before {
+            content: counter(option-counter);
+            counter-increment: option-counter;
+            color: #58a6ff;
+            font-weight: bold;
+            min-width: 20px;
+            text-align: right;
+            margin-right: 8px;
+            font-size: 0.875rem;
+        }
+
+        /* 新增: 高亮样式 */
+        @keyframes highlight-glow {
+            0% {
+                box-shadow: 0 0 5px #58a6ff, 0 0 10px #58a6ff, inset 0 0 5px #58a6ff;
+            }
+
+            50% {
+                box-shadow: 0 0 15px #00c3ff, 0 0 20px #00c3ff, inset 0 0 10px #00c3ff;
+            }
+
+            100% {
+                box-shadow: 0 0 5px #58a6ff, 0 0 10px #58a6ff, inset 0 0 5px #58a6ff;
+            }
+        }
+
+        .option-item.highlight {
+            border-color: #58a6ff;
+            animation: highlight-glow 2s infinite;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="background-container">
+        <div class="stars"></div>
+        <div class="stars2"></div>
+        <div class="stars3"></div>
+    </div>
+    <div id="notification-container"></div>
+
+    <div class="w-full max-w-5xl mx-auto p-4 sm:p-8 relative z-10">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl sm:text-4xl font-bold text-cyan-400 tech-font"
+                style="text-shadow: 0 0 10px rgba(0, 255, 255, 0.5)">AI 幸运大转盘</h1>
+            <p class="text-gray-400 mt-2">输入一个想法，让 AI 为你生成转盘选项，或手动编辑。</p>
+        </header>
+
+        <main class="main-container main-container-anim">
+            <div class="p-6 sm:p-8 flex flex-col lg:flex-row gap-8">
+
+                <section class="flex-grow space-y-6">
+                    <div class="p-4 bg-transparent border-2 border-dashed border-blue-800 rounded-lg">
+                        <h2 class="text-lg font-medium text-cyan-400 mb-2 tech-font">1. AI 智能生成</h2>
+                        <p class="text-sm text-gray-400 mb-3">输入一个主题，AI 将自动生成转盘选项。</p>
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <input type="text" id="ai-topic-input" class="dark-input flex-grow p-3 rounded-lg shadow-sm"
+                                placeholder="例如：今天吃什么？周末去哪玩？">
+                            <button id="ai-generate-btn"
+                                class="btn-ai-style flex items-center justify-center font-bold py-3 px-6"><span
+                                    id="ai-btn-text" class="tech-font">🚀 AI 生成</span></button>
+                            <button id="stop-generate-btn"
+                                class="btn-ai-style flex items-center justify-center font-bold py-3 px-6" disabled><span
+                                    id="stop-btn-text" class="tech-font">🚫 停止</span></button>
+                        </div>
+                        <div id="ai-error-message" class="text-red-400 mt-2 text-sm font-medium"></div>
+
+                        <div class="mt-4 border-t border-gray-700 pt-4">
+                            <details>
+                                <summary class="cursor-pointer text-gray-400 hover:text-white tech-font">高级 API 设置
+                                </summary>
+                                <div id="api-settings-form" class="mt-4 space-y-4">
+                                    <div><label for="api-type-select"
+                                            class="block text-sm font-medium text-gray-400">API 类型</label><select
+                                            id="api-type-select"
+                                            class="dark-input mt-1 block w-full rounded-md shadow-sm"></select></div>
+                                    <div><label for="api-url" class="block text-sm font-medium text-gray-400">API 地址
+                                            (URL)</label><input type="text" id="api-url"
+                                            class="dark-input mt-1 block w-full rounded-md shadow-sm" readonly /></div>
+                                    <div><label for="api-key" class="block text-sm font-medium text-gray-400">API 密钥
+                                            (Key)</label>
+                                        <div class="relative mt-1"><input type="password" id="api-key"
+                                                class="dark-input block w-full rounded-md shadow-sm pr-10"
+                                                placeholder="在此输入您的 API Key" /><button type="button" id="toggle-api-key"
+                                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-blue-400 hover:text-cyan-300 focus:outline-none"><svg
+                                                    id="eye-open" xmlns="http://www.w3.org/2000/svg"
+                                                    class="h-4 w-4 hidden" viewBox="0 0 24 24" fill="none"
+                                                    stroke="currentColor" stroke-width="2">
+                                                    <path
+                                                        d="M1 12C1 12 5 4 12 4C19 4 23 12 23 12C23 12 19 20 12 20C5 20 1 12 1 12Z" />
+                                                    <path
+                                                        d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" />
+                                                </svg><svg id="eye-closed" xmlns="http://www.w3.org/2000/svg"
+                                                    class="h-4 w-4" viewBox="0 0 24 24" fill="none"
+                                                    stroke="currentColor" stroke-width="2">
+                                                    <path
+                                                        d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                                                    <path d="M1 1L23 23" />
+                                                </svg></button></div>
+                                    </div>
+                                    <div><label for="api-model" class="block text-sm font-medium text-gray-400">模型
+                                            ID</label><input type="text" id="api-model"
+                                            class="dark-input mt-1 block w-full rounded-md shadow-sm"
+                                            placeholder="例如: gpt-4, gemini-pro" /></div>
+                                    <div><label for="system-prompt"
+                                            class="block text-sm font-medium text-gray-400">系统提示词</label><textarea
+                                            id="system-prompt" rows="4"
+                                            class="dark-input mt-1 block w-full rounded-md shadow-sm font-mono text-sm"
+                                            placeholder="留空则使用默认提示词。"></textarea></div>
+                                    <div class="flex items-center justify-between"><label for="enable-thinking"
+                                            class="text-sm font-medium text-gray-400">开启思考过程</label><label
+                                            class="switch"><input type="checkbox" id="enable-thinking" /><span
+                                                class="slider"></span></label></div>
+                                    <div class="flex items-center justify-between"><label for="enable-stream"
+                                            class="text-sm font-medium text-gray-400">开启流式输出</label><label
+                                            class="switch"><input type="checkbox" id="enable-stream" checked /><span
+                                                class="slider"></span></label></div>
+                                    <button id="save-settings-btn" class="btn-sci-fi cyan w-full sm:w-auto"><span
+                                            class="tech-font">保存设置</span></button>
+                                    <p id="save-feedback" class="text-green-400 text-sm mt-2"></p>
+                                </div>
+                            </details>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h2 class="text-lg font-medium text-cyan-400 mb-4 tech-font">2. 手动选项设置</h2>
+                        <div id="options-container" class="space-y-2"></div>
+                        <div class="flex gap-4 mt-3">
+                            <button id="add-option-btn" class="btn-sci-fi cyan text-sm"><span
+                                    class="tech-font">增加选项</span></button>
+                            <button id="clear-options-btn" class="btn-sci-fi red text-sm"><span
+                                    class="tech-font">清空选项</span></button>
+                        </div>
+                    </div>
+
+                    <div id="thinking-process-container" class="hidden">
+                        <h3 class="text-cyan-400 tech-font mb-2">AI 思考过程...</h3>
+                        <div id="thinking-process-output"
+                            class="p-4 bg-black/30 rounded-lg text-sm font-mono whitespace-pre-wrap h-24 overflow-y-auto">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="flex-shrink-0 lg:w-72 flex flex-col items-center justify-center">
+                    <div id="wheel-wrapper">
+                        <div id="pointer"></div>
+                        <canvas id="lucky-wheel-canvas" width="300" height="300"></canvas>
+                    </div>
+                    <button id="spin-btn" class="btn-sci-fi green mt-8 text-sm"><span
+                            class="tech-font">开始抽奖</span></button>
+                </section>
+            </div>
+        </main>
+
+        <footer class="text-center mt-6 text-gray-500 text-xs">
+            <p>Powered by @AhYi8 ✨ &copy; 2024</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const canvas = document.getElementById('lucky-wheel-canvas'), ctx = canvas.getContext('2d'), spinBtn = document.getElementById('spin-btn'), addOptionBtn = document.getElementById('add-option-btn'), clearOptionsBtn = document.getElementById('clear-options-btn'), optionsContainer = document.getElementById('options-container'), aiTopicInput = document.getElementById('ai-topic-input'), aiGenerateBtn = document.getElementById('ai-generate-btn'), stopGenerateBtn = document.getElementById('stop-generate-btn'), aiErrorMessage = document.getElementById('ai-error-message'), aiBtnText = document.getElementById('ai-btn-text'), thinkingProcessContainer = document.getElementById('thinking-process-container'), thinkingProcessOutput = document.getElementById('thinking-process-output'), notificationContainer = document.getElementById('notification-container'), apiTypeSelect = document.getElementById('api-type-select'), apiUrlInput = document.getElementById('api-url'), apiKeyInput = document.getElementById('api-key'), apiModelInput = document.getElementById('api-model'), systemPromptInput = document.getElementById('system-prompt'), enableThinkingSwitch = document.getElementById('enable-thinking'), enableStreamSwitch = document.getElementById('enable-stream'), saveSettingsBtn = document.getElementById('save-settings-btn'), toggleApiKeyBtn = document.getElementById('toggle-api-key');
+            let options = [], currentAngle = 0, isSpinning = false, abortController = new AbortController, streamState = {}, DEFAULT_SYSTEM_PROMPT = `You are an assistant that generates a simple JSON array of strings for a lucky wheel. Based on the user's prompt, provide at least 4 and at most 10 concise, fun, and relevant options. Your response must be a single, parseable JSON array of strings, without any markdown formatting like \`\`\`json or explanatory text.`, commonApiEndpoints = [{ name: "Gemini", apiUrl: "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:streamGenerateContent" }, { name: "OpenAI", apiUrl: "https://api.openai.com/v1/chat/completions" }, { name: "硅基流动", apiUrl: "https://api.siliconflow.cn/v1/chat/completions" }, { name: "Grok", apiUrl: "https://api.x.ai/v1/chat/completions" }, { name: "DeepSeek", apiUrl: "https://api.deepseek.com/v1/chat/completions" }, { name: "OpenRouter", apiUrl: "https://openrouter.ai/api/v1/chat/completions" }, { name: "302.AI", apiUrl: "https://api.302.ai/v1/chat/completions" }, { name: "MiniMax", apiUrl: "https://api.minimax.chat/v1/chat/completions" }, { name: "阿里云百炼", apiUrl: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions" }, { name: "GPTGOD", apiUrl: "https://api.gptgod.online/v1/chat/completions" }], defaultWheelOptions = [{ name: '吃大餐', color: '#1e40af' }, { name: '看电影', color: '#1d4ed8' }, { name: '下次一定', color: '#2563eb' }, { name: '再来一次', color: '#3b82f6' }];
+
+            function drawWheel() {
+                const numOptions = options.length;
+                if (numOptions === 0) { ctx.clearRect(0, 0, canvas.width, canvas.height); return; }
+                const arc = Math.PI * 2 / numOptions;
+                const centerX = canvas.width / 2, centerY = canvas.height / 2;
+                const radius = centerX;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.strokeStyle = '#0d1117'; ctx.lineWidth = 3;
+                ctx.textBaseline = 'middle'; ctx.textAlign = 'center';
+                options.forEach((option, i) => {
+                    const angle = i * arc;
+                    ctx.fillStyle = option.color;
+                    ctx.beginPath();
+                    ctx.arc(centerX, centerY, radius, angle, angle + arc, false);
+                    ctx.lineTo(centerX, centerY);
+                    ctx.closePath();
+                    ctx.fill(); ctx.stroke();
+                    ctx.save();
+                    ctx.fillStyle = '#f0f9ff';
+                    const textRadius = radius * 0.65;
+                    const x = centerX + Math.cos(angle + arc / 2) * textRadius;
+                    const y = centerY + Math.sin(angle + arc / 2) * textRadius;
+                    ctx.translate(x, y); ctx.rotate(angle + arc / 2 + Math.PI / 2);
+                    const numberText = (i + 1).toString();
+                    ctx.font = `bold ${radius / 4}px "Exo 2", sans-serif`;
+                    ctx.fillText(numberText, 0, 0);
+                    ctx.restore();
+                });
+            }
+
+            function spin() {
+                if (isSpinning || options.length < 2) return;
+                isSpinning = true; spinBtn.disabled = true;
+                const spinAngle = Math.random() * 360 + 360 * 5;
+                currentAngle += spinAngle;
+                canvas.style.transition = 'transform 6s cubic-bezier(0.25, 0.1, 0.25, 1)';
+                canvas.style.transform = `rotate(${currentAngle}deg)`;
+                setTimeout(() => {
+                    const degrees = currentAngle % 360;
+                    const arc = 360 / options.length;
+                    const winningAngle = (360 - degrees + 270) % 360;
+                    const index = Math.floor(winningAngle / arc);
+                    const winner = options?.[index];
+                    if (winner) {
+                        showNotification(`恭喜！“${winner.name}”被选中了！ (选项 ${index + 1})`, 'success');
+                    }
+                    // 清除所有选项的高亮状态
+                    document.querySelectorAll('.option-item').forEach(el => el.classList.remove('highlight'));
+                    // 高亮当前被选中的选项
+                    const selectedOption = document.querySelectorAll('.option-item')[index];
+                    if (selectedOption) {
+                        selectedOption.classList.add('highlight');
+                        selectedOption.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                    isSpinning = false; spinBtn.disabled = false;
+                    canvas.style.transition = 'none';
+                    canvas.style.transform = `rotate(${degrees}deg)`;
+                }, 6100);
+            }
+
+            function updateOptionsFromUI() {
+                options = Array.from(document.querySelectorAll('.option-item')).map(item => {
+                    const nameInput = item.querySelector('input.dark-input');
+                    const colorInput = item.querySelector('input.color-picker');
+                    return nameInput.value.trim() ? { name: nameInput.value.trim(), color: colorInput.value } : null;
+                }).filter(Boolean);
+                spinBtn.disabled = options.length < 2;
+                drawWheel();
+                lucide.createIcons();
+            }
+
+            function populateOptionsFromAI(newOptions) {
+                optionsContainer.innerHTML = '';
+                const colors = ['#1e40af', '#1d4ed8', '#2563eb', '#3b82f6', '#4f46e5', '#6d28d9', '#5b21b6', '#7e22ce', '#9333ea', '#a855f7'];
+                newOptions.forEach((opt, index) => {
+                    const name = typeof opt === 'string' ? opt : opt.name;
+                    const color = colors[index % colors.length];
+                    optionsContainer.appendChild(createOptionElement(name, color));
+                });
+                updateOptionsFromUI();
+            }
+
+            function createOptionElement(name = '', color = '#3b82f6') {
+                const div = document.createElement('div');
+                div.className = 'option-item flex items-center gap-2';
+                div.innerHTML = `<input type="text" class="dark-input flex-grow text-sm" value="${name}" placeholder="选项名称"><input type="color" class="color-picker" value="${color}"><button class="remove-option-btn"><i data-lucide="trash-2" class="w-3 h-3"></i></button>`;
+                return div;
+            }
+
+            function populateApiEndpoints() { commonApiEndpoints.forEach(e => { const t = document.createElement("option"); t.value = e.apiUrl, t.textContent = e.name, apiTypeSelect.appendChild(t) }); const e = document.createElement("option"); e.value = "custom", e.textContent = "自定义", apiTypeSelect.appendChild(e) }
+            function handleApiTypeChange() { const e = apiTypeSelect.value, t = getSettings(); let i = {}; "custom" === e ? (apiUrlInput.readOnly = !1, i = t.providers.custom || {}, apiUrlInput.value = i.apiUrl || "", apiUrlInput.placeholder = "请输入您的自定义 API 地址") : (apiUrlInput.readOnly = !0, apiUrlInput.value = e, i = t.providers[e] || {}), apiKeyInput.value = i.apiKey || "", apiModelInput.value = i.modelId || "", enableThinkingSwitch.checked = i.enableThinking || !1, enableStreamSwitch.checked = i.enableStream !== !1, systemPromptInput.value = i.systemPrompt || "" }
+            function getSettings() { const e = localStorage.getItem("cardGenApiSettings"); return e ? JSON.parse(e) : { lastSelected: commonApiEndpoints[0].apiUrl, providers: {} } }
+            function saveSettings() { const e = apiUrlInput.value.trim(), t = apiKeyInput.value.trim(), i = apiModelInput.value.trim(); if (!e || !t || !i) return void showNotification("API 地址、密钥和模型 ID 不能为空！", "error"); const n = getSettings(), s = apiTypeSelect.value; n.lastSelected = s; const a = { apiKey: apiKeyInput.value, modelId: i, enableThinking: enableThinkingSwitch.checked, enableStream: enableStreamSwitch.checked, systemPrompt: systemPromptInput.value }; "custom" === s ? (a.apiUrl = apiUrlInput.value, n.providers.custom = a) : n.providers[s] = a, localStorage.setItem("cardGenApiSettings", JSON.stringify(n)), showNotification("设置已保存！", "success") }
+            function loadSettings() { const e = getSettings(); apiTypeSelect.value = e.lastSelected || commonApiEndpoints[0].apiUrl, handleApiTypeChange() }
+            function showNotification(e, t = "error", i = "") { const n = document.createElement("div"); n.className = `notification ${t}`, n.textContent = e, i && (n.title = "点击复制", n.onclick = () => { const s = document.createElement("input"); document.body.appendChild(s), s.value = i, s.select(), document.execCommand("copy"), document.body.removeChild(s), showNotification("失败的 Key 已复制到剪贴板", "success"), n.style.animation = "slideOut 0.5s forwards", setTimeout(() => n.remove(), 500) }), notificationContainer.appendChild(n), setTimeout(() => { n.style.animation = "slideOut 0.5s forwards", setTimeout(() => n.remove(), 5e3) }, 5e3) }
+            function toggleApiKeyVisibility() { const e = "password" === apiKeyInput.type; apiKeyInput.type = e ? "text" : "password", document.getElementById('eye-open').classList.toggle("hidden", !e), document.getElementById('eye-closed').classList.toggle("hidden", e) }
+            function resetStreamState() { streamState.animationFrameId && cancelAnimationFrame(streamState.animationFrameId), streamState = { fullText: "", thinkingText: "", isStreaming: !1, animationFrameId: null, thinkingProcessChecked: false } }
+
+            async function generateWithAI() {
+                const topic = aiTopicInput.value.trim(); if (!topic) { aiErrorMessage.textContent = "请输入一个有效的主题。"; return; }
+                const apiUrl = apiUrlInput.value.trim(), apiKeys = apiKeyInput.value.split(",").map(k => k.trim()).filter(Boolean), model = apiModelInput.value.trim();
+                if (!apiUrl || apiKeys.length === 0 || !model) { aiErrorMessage.textContent = "请在高级设置中完整配置 API 地址、密钥和模型 ID。"; return; }
+                aiErrorMessage.textContent = ""; aiGenerateBtn.disabled = true; stopGenerateBtn.disabled = false; aiBtnText.textContent = "生成中...";
+                resetStreamState(); streamState.isStreaming = true; renderLoop();
+                abortController = new AbortController();
+                const systemPrompt = systemPromptInput.value.trim() || DEFAULT_SYSTEM_PROMPT;
+                const userPrompt = `为关于“${topic}”的主题生成转盘选项。`;
+                let success = false;
+                for (const key of apiKeys) {
+                    if (abortController.signal.aborted) { aiErrorMessage.textContent = "生成已取消。"; break; }
+                    try {
+                        let fetchOptions, requestUrl, body = {};
+                        if (apiUrl.includes("completions")) {
+                            requestUrl = apiUrl;
+                            body = { model, messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }], stream: enableStreamSwitch.checked };
+                            if (enableThinkingSwitch.checked) { body.stream_options = { include_usage: true }; body.enable_thinking = true; }
+                            fetchOptions = { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` }, body: JSON.stringify(body), signal: abortController.signal };
+                        } else {
+                            const fullPrompt = `${systemPrompt}\n\n任务: ${userPrompt}`;
+                            requestUrl = enableStreamSwitch.checked ? `${apiUrl.replace(":generateContent", ":streamGenerateContent")}?key=${key}&alt=sse` : `${apiUrl}?key=${key}`;
+                            fetchOptions = { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: fullPrompt }] }] }), signal: abortController.signal };
+                        }
+                        const response = await fetch(requestUrl, fetchOptions);
+                        if (!response.ok) { const errBody = await response.json(); throw new Error(errBody.error?.message || `请求失败: ${response.status}`); }
+                        await handleStreamResponse(response);
+                        success = true; break;
+                    } catch (error) {
+                        if (error.name === "AbortError") { aiErrorMessage.textContent = "生成已取消。"; break; }
+                        showNotification(`Key "${key.slice(0, 4)}...${key.slice(-4)}" 失败`, "error", key);
+                    }
+                }
+                streamState.isStreaming = false;
+                if (!success && !abortController.signal.aborted) aiErrorMessage.textContent = "所有 API Key 均请求失败。";
+                aiGenerateBtn.disabled = false; stopGenerateBtn.disabled = true; aiBtnText.textContent = "🚀 AI 生成";
+            }
+
+            async function handleStreamResponse(response) {
+                const reader = response.body.getReader(), decoder = new TextDecoder; let buffer = "";
+                while (true) {
+                    if (abortController.signal.aborted) { reader.cancel(); break; }
+                    const { done, value } = await reader.read(); if (done) break;
+                    buffer += decoder.decode(value, { stream: true });
+                    const lines = buffer.split("\n"); buffer = lines.pop();
+                    for (const line of lines) {
+                        if (line.startsWith("data: ")) {
+                            const data = line.substring(6); if (data.trim() === "[DONE]") return;
+                            try {
+                                const chunk = JSON.parse(data), delta = chunk.choices?.[0]?.delta;
+                                if (!streamState.thinkingProcessChecked) {
+                                    const hasReasoning = (delta?.reasoning_content != null) || (chunk.candidates?.[0]?.reasoning_content != null);
+                                    thinkingProcessContainer.classList.toggle('hidden', !hasReasoning);
+                                    streamState.thinkingProcessChecked = true;
+                                }
+                                if (delta?.content) { streamState.fullText += delta.content; }
+                                else if (chunk.candidates?.[0]?.content?.parts?.[0]?.text) { streamState.fullText += chunk.candidates[0].content.parts[0].text; }
+                                if (delta?.reasoning_content) { streamState.thinkingText += delta.reasoning_content; }
+                            } catch { }
+                        }
+                    }
+                }
+            }
+            function renderLoop() {
+                if (thinkingProcessOutput.textContent !== streamState.thinkingText) { thinkingProcessOutput.textContent = streamState.thinkingText; thinkingProcessOutput.scrollTop = thinkingProcessOutput.scrollHeight; }
+                try {
+                    if (streamState.fullText) {
+                        const parsableText = streamState.fullText.replace(/```json|```/g, "").trim().replace(/,(\s*\])/, "$1");
+                        const parsedData = JSON.parse(parsableText);
+                        if (Array.isArray(parsedData) && parsedData.every(i => typeof i === 'string')) {
+                            populateOptionsFromAI(parsedData);
+                        }
+                    }
+                } catch { }
+                if (streamState.isStreaming) streamState.animationFrameId = requestAnimationFrame(renderLoop);
+            }
+
+            function setupEventListeners() {
+                optionsContainer.addEventListener('input', (e) => { if (e.target.matches('input')) updateOptionsFromUI(); });
+                optionsContainer.addEventListener('click', (e) => { const removeBtn = e.target.closest('.remove-option-btn'); if (removeBtn) { removeBtn.closest('.option-item').remove(); updateOptionsFromUI(); } });
+                addOptionBtn.addEventListener('click', () => {
+                    const defaultColors = ['#1e40af', '#1d4ed8', '#2563eb', '#3b82f6', '#6366f1', '#818cf8'];
+                    const randomColor = defaultColors[Math.floor(Math.random() * defaultColors.length)];
+                    optionsContainer.appendChild(createOptionElement('新选项', randomColor));
+                    updateOptionsFromUI();
+                    lucide.createIcons();
+                });
+                clearOptionsBtn.addEventListener('click', () => {
+                    optionsContainer.innerHTML = '';
+                    updateOptionsFromUI();
+                });
+                spinBtn.addEventListener('click', spin);
+                aiGenerateBtn.addEventListener('click', generateWithAI);
+                stopGenerateBtn.addEventListener('click', () => abortController.abort());
+                saveSettingsBtn.addEventListener('click', saveSettings);
+                apiTypeSelect.addEventListener('change', handleApiTypeChange);
+                toggleApiKeyBtn.addEventListener('click', toggleApiKeyVisibility);
+            }
+
+            function initialize() {
+                populateOptionsFromAI(defaultWheelOptions);
+                populateApiEndpoints();
+                loadSettings();
+                setupEventListeners();
+                lucide.createIcons();
+            }
+
+            initialize();
+        });
+    </script>
+</body>
+
+</html>

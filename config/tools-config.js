@@ -6,6 +6,13 @@ const toolsData = {
       icon: 'brain-circuit',
       keywords: 'ai generator knowledge card chatgpt gemini',
       targetPage: './tools/ai/ai-card-generator.html' // 指向独立的HTML文件
+    },
+    {
+      name: '幸运大转盘',
+      desc: '自定义选项和颜色，来一次命运的抉择吧！',
+      icon: 'award',
+      keywords: 'lucky wheel draw prize raffle 抽奖 转盘 随机',
+      targetPage: './tools/fun/lucky-wheel.html'
     }
   ],
   '转换工具': [
@@ -61,6 +68,15 @@ const toolsData = {
       icon: 'hash',
       keywords: 'MD5 SHA1 SHA256 SHA224 SHA512 SHA384 SHA3 RIPEMD160',
       targetPage: './tools/cryptology/hash.html'
+    }
+  ],
+  '趣味工具': [
+    {
+      name: '幸运大转盘',
+      desc: '自定义选项和颜色，来一次命运的抉择吧！',
+      icon: 'award',
+      keywords: 'lucky wheel draw prize raffle 抽奖 转盘 随机',
+      targetPage: './tools/fun/lucky-wheel.html'
     }
   ]
 };
