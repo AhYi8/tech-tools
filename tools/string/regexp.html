@@ -280,6 +280,32 @@
       details[open] > summary .details-marker {
         transform: rotate(90deg);
       }
+
+      /* --- 全局滚动条样式 (与 index.html 统一) --- */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background-color: rgba(
+          139,
+          148,
+          158,
+          0.2
+        ); /* 对应 index.html 的 --border-color */
+        border-radius: 10px;
+        border: 2px solid #0d1117; /* 对应 index.html 的 --bg-color，制造边距感 */
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background-color: #58a6ff; /* 对应 index.html 的 --accent-color */
+      }
+      /* --- 结束 --- */
     </style>
   </head>
   <body>
