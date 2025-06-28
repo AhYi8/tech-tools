@@ -58,7 +58,7 @@ const toolsData = {
     {
       name: '文本 Hash',
       desc: '实时计算文本哈希值：MD5、SHA1、SHA256等',
-      icon: 'arrow-left-right',
+      icon: 'hash',
       keywords: 'MD5 SHA1 SHA256 SHA224 SHA512 SHA384 SHA3 RIPEMD160',
       targetPage: './tools/cryptology/hash.html'
     }
