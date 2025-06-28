@@ -4,11 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AI 知识卡片生成器</title>
-    <!-- 引入 Tailwind CSS for styling -->
     <script src="../../vendor/js/tailwind.js"></script>
-    <!-- 引入 html2canvas for exporting image -->
     <script src="../../vendor/js/html2canvas.min.js"></script>
-    <!-- 引入 Google Fonts -->
     <link href="../../vendor/css/google-fonts.css" rel="stylesheet" />
     <style>
       /* 暗色科技风格自定义样式 (样式无变化，保持原样) */
@@ -646,7 +643,6 @@
                         </svg>
                       </button>
                     </div>
-                    <!-- D1: API 密钥安全警告 -->
                     <p class="text-xs text-gray-500 mt-2">
                       提示：API
                       密钥仅存储在您的浏览器中，不会发送到任何服务器。但请注意在公共或不安全的网络环境下的潜在风险。
@@ -665,7 +661,6 @@
                       placeholder="例如: gpt-4, gemini-pro"
                     />
                   </div>
-                  <!-- C1: 自定义系统提示词 -->
                   <div>
                     <label
                       for="system-prompt"
@@ -722,7 +717,6 @@
             ></div>
           </div>
 
-          <!-- JSON 手动输入区域 -->
           <div class="mb-6">
             <label
               for="json-input"
@@ -958,6 +952,17 @@
 
       // 保存设置
       function saveSettings() {
+        // [MODIFIED] - START: Add validation check
+        const apiUrl = apiUrlInput.value.trim();
+        const apiKey = apiKeyInput.value.trim();
+        const modelId = apiModelInput.value.trim();
+
+        if (!apiUrl || !apiKey || !modelId) {
+          showNotification("API 地址、密钥和模型 ID 不能为空！", "error");
+          return;
+        }
+        // [MODIFIED] - END
+
         const allSettings = getSettings();
         const selectedType = apiTypeSelect.value;
 
@@ -1033,22 +1038,23 @@
           aiErrorMessage.textContent = "请输入一个有效的主题。";
           return;
         }
-
-        const apiUrl = apiUrlInput.value;
+        
+        // [MODIFIED] - START: Add validation check
+        const apiUrl = apiUrlInput.value.trim();
         const apiKeys = apiKeyInput.value
           .split(",")
           .map((k) => k.trim())
           .filter(Boolean);
-        const model =
-          apiModelInput.value ||
-          (apiUrl.includes("openai") ? "gpt-3.5-turbo" : "gemini-pro");
-        const enableThinking = enableThinkingSwitch.checked;
-        const enableStream = enableStreamSwitch.checked;
-
-        if (!apiUrl || apiKeys.length === 0) {
-          aiErrorMessage.textContent = "请在高级设置中配置 API 地址和密钥。";
+        const model = apiModelInput.value.trim();
+        
+        if (!apiUrl || apiKeys.length === 0 || !model) {
+          aiErrorMessage.textContent = "请在高级设置中完整配置 API 地址、密钥和模型 ID。";
           return;
         }
+        // [MODIFIED] - END
+
+        const enableThinking = enableThinkingSwitch.checked;
+        const enableStream = enableStreamSwitch.checked;
 
         aiErrorMessage.textContent = "";
         aiGenerateBtn.disabled = true;
