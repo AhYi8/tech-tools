@@ -1,4 +1,4 @@
-const toolsData = {
+let toolsData = {
   'AI 模块': [
     {
       name: 'AI 知识卡片生成器',
