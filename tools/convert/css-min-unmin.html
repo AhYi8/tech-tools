@@ -1,347 +1,455 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>实时 CSS 美化/压缩工具</title>
     <script src="../../vendor/js/tailwind.js"></script>
     <link href="../vendor/css/google-fonts.css" rel="stylesheet" />
     <style>
-        /* 暗色科技风格自定义样式 (与原版完全一致) */
-        body {
-            font-family: 'Noto Sans SC', sans-serif;
-            background-color: #0d1117;
-            color: #c9d1d9;
-            overflow: hidden; /* 防止滚动条 */
-        }
-        
-        /* -- 动态背景 -- */
-        .background-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
-            overflow: hidden;
-        }
+      /* 暗色科技风格自定义样式 (与原版完全一致) */
+      body {
+        font-family: "Noto Sans SC", sans-serif;
+        background-color: #0d1117;
+        color: #c9d1d9;
+        overflow: hidden; /* 防止滚动条 */
+      }
 
-        @keyframes move-stars {
-            from {transform: translateY(0px);}
-            to {transform: translateY(-2000px);}
-        }
+      /* -- 动态背景 -- */
+      .background-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        background: radial-gradient(
+          ellipse at bottom,
+          #1b2735 0%,
+          #090a0f 100%
+        );
+        overflow: hidden;
+      }
 
-        .stars, .stars2, .stars3 {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            width: 100%;
-            height: 100%;
-            display: block;
-            background: transparent;
-            background-size: cover;
-            animation: move-stars 200s linear infinite;
+      @keyframes move-stars {
+        from {
+          transform: translateY(0px);
         }
-        .stars { background-image: url('data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjEwMHB4IiBoZWlnaHQ9IjEwMHB4IiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTAwIDEwMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTkyLjUsNjEuNWMwLDAsMCwwLDBsLTIsMC4xYy0wLjUsMC0xLTAuNS0xLTF2LTJjMC0wLjUsMC41LTEsMS0xaDIsMVY2MS41eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik04My4yLDQyLjRjMCwwLDAsMCwwbDAsMEM4My4yLDQyLjQsODMuMiw0Mi40LDgzLjIsNDIuNHoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzkuNCwyNC43YzAsMCwwLDAsMGwwLDBDNzkuNCwyNC43LDc5LjQsMjQuNyw3OS40LDI0Ljd6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTgwLjYsNDEuNWMwLDAsMCwwLDBsMCwwQzgwLjYsNDEuNSw4MC42LDQxLjUsODAuNiw0MS41eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik0yNC4zLDQxYzAsMCwwLDAsMGwtMC4yLTAuMmMwLDAsMCwwLDBMMjQuMyw0MXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNMzEuOCwzOS43YzAsMCwwLDAsMEwzMS44LDM5LjdMMzEuOCwzOS45eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik0zNy4xLDQwLjljMCwwLDAsMCwwbDAsMEMzNy4xLDQwLjksMzcuMSw0MC45LDM3LjIsNDAuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzMuNCwzMS45YzAsMCwwLDAsMEw3My40LDMxLjlMNzMuNCwzMS45eiIvPjwvc3ZnPg=='); }
-        .stars2 { background-image: url('data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjEwMHB4IiBoZWlnaHQ9IjEwMHB4IiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTAwIDEwMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTc2LjksMjEuNGMwLDAsMCwwLDBsMCwwQzc2LjksMjEuNCw3Ni45LDIxLjQsNzYuOSwyMS40eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik04NS4yLDU5LjljMCwwLDAsMCwwbDAsMEM4NS4yLDU5LjksODUuMiw1OS45LDg1LjIsNTkuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzAuMywzOS45YzAsMCwwLDAsMEw3MC4zLDM5LjlMNzAuMywzOS45eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik00Ni43LDIwLjlDNDYuNywyMC45LDQ2LjcsMjAuOSw0Ni43LDIwLjlsMCwwQzQ2LjdsMjAuOSw0Ni44LDIwLjksNDYuNywyMC45eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik0yMS44LDIxLjljMCwwLDAsMCwwbDAsMEMyMS44LDIxLjksMjEuOCwyMS45LDIxLjgsMjEuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNMzEuNyw0OS4xYzAsMCwwLDAsMEwzMS43LDQ5LjFMMzEuNyw0OS4xeiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik0zNy44LDI1LjdjMCwwLDAsMCwwbDAsMEMzNy44LDI1LjcsMzcuOCwyNS43LDM3LjgsMjUuN3oiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNTEuOCwxMy43YzAsMCwwLDAsMEw1MS44LDEzLjdMNTIuMiwxMy45YzAsMCwwLDAsMEw1MS44LDEzLjd6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTI3LjEsMTQuNGMwLDAsMCwwLDBsMCwwQzI3LjEsMTQuNCwyNy4xLDE0LjQsMjcuMSwxNC40eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik0zNy41LDMuNGMwLDAsMCwwLDBsMCwwQzM3LjUsMy40LDM3LjUsMy40LDM3LjUsMy40eiIvPjwvc3ZnPg=='); animation-duration: 150s; }
-        .stars3 { background-image: url('data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjEwMHB4IiBoZWlnaHQ9IjEwMHB4IiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTAwIDEwMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTQ5LjIsMTcuMWMwLDAsMCwwLDBsMCwwQzQ5LjIsMTcuMSw0OS4yLDE3LjEsNDkuMiwxNy4xeiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik0zMy44LDguNGMwLDAsMCwwLDBsMCwwQzMzLjgsOC40LDMzLjgsOC44LDMzLjgsOC40eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik04NS4xLDguN2MwLDAsMCwwLDBsMCwwQzg1LjEsOC43LDg1LjEsOC43LDg1LjEsOC43eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik04Ny44LDE0LjljMCwwLDAsMCwwbDAsMEM4Ny44LDE0LjksODcuOCwxNC45LDg3LjgsMTQuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzkuOSwzOS45YzAsMCwwLDAsMEw3OS45LDM5LjlMNzkuOSwzOS45eiIvPjwvc3ZnPg=='); animation-duration: 100s; }
+        to {
+          transform: translateY(-2000px);
+        }
+      }
 
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+      .stars,
+      .stars2,
+      .stars3 {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+        background: transparent;
+        background-size: cover;
+        animation: move-stars 200s linear infinite;
+      }
+      .stars {
+        background-image: url("data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjEwMHB4IiBoZWlnaHQ9IjEwMHB4IiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTAwIDEwMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTkyLjUsNjEuNWMwLDAsMCwwLDBsLTIsMC4xYy0wLjUsMC0xLTAuNS0xLTF2LTJjMC0wLjUsMC41LTEsMS0xaDIsMVY2MS41eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik04My4yLDQyLjRjMCwwLDAsMCwwbDAsMEM4My4yLDQyLjQsODMuMiw0Mi40LDgzLjIsNDIuNHoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzkuNCwyNC43YzAsMCwwLDAsMGwwLDBDNzkuNCwyNC43LDc5LjQsMjQuNyw3OS40LDI0Ljd6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTgwLjYsNDEuNWMwLDAsMCwwLDBsMCwwQzgwLjYsNDEuNSw4MC42LDQxLjUsODAuNiw0MS41eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik0yNC4zLDQxYzAsMCwwLDAsMGwtMC4yLTAuMmMwLDAsMCwwLDBMMjQuMyw0MXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNMzEuOCwzOS43YzAsMCwwLDAsMEwzMS44LDM5LjdMMzEuOCwzOS45eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik0zNy4xLDQwLjljMCwwLDAsMCwwbDAsMEMzNy4xLDQwLjksMzcuMSw0MC45LDM3LjIsNDAuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzMuNCwzMS45YzAsMCwwLDAsMEw3My40LDMxLjlMNzMuNCwzMS45eiIvPjwvc3ZnPg==");
+      }
+      .stars2 {
+        background-image: url("data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjEwMHB4IiBoZWlnaHQ9IjEwMHB4IiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTAwIDEwMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTc2LjksMjEuNGMwLDAsMCwwLDBsMCwwQzc2LjksMjEuNCw3Ni45LDIxLjQsNzYuOSwyMS40eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik04NS4yLDU5LjljMCwwLDAsMCwwbDAsMEM4NS4yLDU5LjksODUuMiw1OS45LDg1LjIsNTkuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzAuMywzOS45YzAsMCwwLDAsMEw3MC4zLDM5LjlMNzAuMywzOS45eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik00Ni43LDIwLjlDNDYuNywyMC45LDQ2LjcsMjAuOSw0Ni43LDIwLjlsMCwwQzQ2LjdsMjAuOSw0Ni44LDIwLjksNDYuNywyMC45eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik0yMS44LDIxLjljMCwwLDAsMCwwbDAsMEMyMS44LDIxLjksMjEuOCwyMS45LDIxLjgsMjEuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNMzEuNyw0OS4xYzAsMCwwLDAsMEwzMS43LDQ5LjFMMzEuNyw0OS4xeiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik0zNy44LDI1LjdjMCwwLDAsMCwwbDAsMEMzNy44LDI1LjcsMzcuOCwyNS43LDM3LjgsMjUuN3oiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNTEuOCwxMy43YzAsMCwwLDAsMEw1MS44LDEzLjdMNTIuMiwxMy45YzAsMCwwLDAsMEw1MS44LDEzLjd6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTI3LjEsMTQuNGMwLDAsMCwwLDBsMCwwQzI3LjEsMTQuNCwyNy4xLDE0LjQsMjcuMSwxNC40eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik0zNy41LDMuNGMwLDAsMCwwLDBsMCwwQzM3LjUsMy40LDM3LjUsMy40LDM3LjUsMy40eiIvPjwvc3ZnPg==");
+        animation-duration: 150s;
+      }
+      .stars3 {
+        background-image: url("data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjEwMHB4IiBoZWlnaHQ9IjEwMHB4IiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTAwIDEwMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTQ5LjIsMTcuMWMwLDAsMCwwLDBsMCwwQzQ5LjIsMTcuMSw0OS4yLDE3LjEsNDkuMiwxNy4xeiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik0zMy44LDguNGMwLDAsMCwwLDBsMCwwQzMzLjgsOC40LDMzLjgsOC44LDMzLjgsOC40eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik04NS4xLDguN2MwLDAsMCwwLDBsMCwwQzg1LjEsOC43LDg1LjEsOC43LDg1LjEsOC43eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik04Ny44LDE0LjljMCwwLDAsMCwwbDAsMEM4Ny44LDE0LjksODcuOCwxNC45LDg3LjgsMTQuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzkuOSwzOS45YzAsMCwwLDAsMEw3OS45LDM5LjlMNzkuOSwzOS45eiIvPjwvc3ZnPg==");
+        animation-duration: 100s;
+      }
 
-        .header-anim { animation: fadeInUp 0.8s ease-out backwards; }
-        .main-container-anim { animation: fadeInUp 0.8s 0.2s ease-out backwards; }
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
 
-        .main-container {
-            position: relative;
-            border-radius: 1rem;
-            background-color: #161b2288;
-            backdrop-filter: blur(5px);
-        }
+      .header-anim {
+        animation: fadeInUp 0.8s ease-out backwards;
+      }
+      .main-container-anim {
+        animation: fadeInUp 0.8s 0.2s ease-out backwards;
+      }
 
-        .main-container::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            border-radius: inherit;
-            padding: 2px;
-            background: linear-gradient(135deg, #a97eff, #58a6ff, #00c3ff);
-            -webkit-mask:
-                linear-gradient(#fff 0 0) content-box,
-                linear-gradient(#fff 0 0);
-            mask-composite: exclude;
-            z-index: 0;
-            pointer-events: none;
-        }
+      .main-container {
+        position: relative;
+        border-radius: 1rem;
+        background-color: #161b2288;
+        backdrop-filter: blur(5px);
+      }
 
-        h1, h2, .tech-font { font-family: 'Exo 2', sans-serif; }
-        
-        .dark-input {
-            background-color: #0d1117;
-            border: 1px solid #30363d;
-            color: #c9d1d9;
-            resize: vertical;
-        }
-        .dark-input:focus {
-            border-color: #58a6ff;
-            box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.2);
-            outline: none;
-        }
-        
-        textarea::-webkit-scrollbar { width: 12px; }
-        textarea::-webkit-scrollbar-track { background: #0d1117; border-radius: 10px; }
-        textarea::-webkit-scrollbar-thumb { background-color: #30363d; border-radius: 10px; border: 3px solid #0d1117; }
-        textarea::-webkit-scrollbar-thumb:hover { background-color: #58a6ff; }
-        
-        textarea::-webkit-resizer {
-            background-image: url('data:image/svg+xml;utf8,%3Csvg%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M8%204L4%208%22%20stroke%3D%22%2358a6ff%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22/%3E%3Cpath%20d%3D%22M10%206L6%2010%22%20stroke%3D%22%2358a6ff%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22/%3E%3C/svg%3E');
-            background-repeat: no-repeat;
-            background-position: bottom right;
-            border: 2px solid transparent;
-        }
-        textarea::-webkit-scrollbar-corner {
-            background-color: transparent;
-        }
+      .main-container::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        padding: 2px;
+        background: linear-gradient(135deg, #a97eff, #58a6ff, #00c3ff);
+        -webkit-mask: linear-gradient(#fff 0 0) content-box,
+          linear-gradient(#fff 0 0);
+        mask-composite: exclude;
+        z-index: 0;
+        pointer-events: none;
+      }
 
-        #notification-container {
-            position: fixed;
-            top: 1rem;
-            right: 1rem;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
+      h1,
+      h2,
+      .tech-font {
+        font-family: "Exo 2", sans-serif;
+      }
+
+      .dark-input {
+        background-color: #0d1117;
+        border: 1px solid #30363d;
+        color: #c9d1d9;
+        resize: vertical;
+      }
+      .dark-input:focus {
+        border-color: #58a6ff;
+        box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.2);
+        outline: none;
+      }
+
+      textarea::-webkit-scrollbar {
+        width: 12px;
+      }
+      textarea::-webkit-scrollbar-track {
+        background: #0d1117;
+        border-radius: 10px;
+      }
+      textarea::-webkit-scrollbar-thumb {
+        background-color: #30363d;
+        border-radius: 10px;
+        border: 3px solid #0d1117;
+      }
+      textarea::-webkit-scrollbar-thumb:hover {
+        background-color: #58a6ff;
+      }
+
+      textarea::-webkit-resizer {
+        background-image: url("data:image/svg+xml;utf8,%3Csvg%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M8%204L4%208%22%20stroke%3D%22%2358a6ff%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22/%3E%3Cpath%20d%3D%22M10%206L6%2010%22%20stroke%3D%22%2358a6ff%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: bottom right;
+        border: 2px solid transparent;
+      }
+      textarea::-webkit-scrollbar-corner {
+        background-color: transparent;
+      }
+
+      #notification-container {
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .notification {
+        background-color: #161b22cc;
+        backdrop-filter: blur(5px);
+        color: #f87171; /* red-400 */
+        padding: 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid #ef4444; /* red-500 */
+        box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        opacity: 0;
+        transform: translateX(100%);
+        animation: slideIn 0.5s forwards;
+      }
+      .notification.success {
+        color: #4ade80; /* green-400 */
+        border-color: #22c55e; /* green-500 */
+        box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
+      }
+      @keyframes slideIn {
+        to {
+          opacity: 1;
+          transform: translateX(0);
         }
-        .notification {
-            background-color: #161b22CC;
-            backdrop-filter: blur(5px);
-            color: #f87171; /* red-400 */
-            padding: 1rem;
-            border-radius: 0.5rem;
-            border: 1px solid #ef4444; /* red-500 */
-            box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            opacity: 0;
-            transform: translateX(100%);
-            animation: slideIn 0.5s forwards;
+      }
+      @keyframes slideOut {
+        from {
+          opacity: 1;
+          transform: translateX(0);
         }
-        .notification.success {
-            color: #4ade80; /* green-400 */
-            border-color: #22c55e; /* green-500 */
-            box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
+        to {
+          opacity: 0;
+          transform: translateX(100%);
         }
-        @keyframes slideIn { to { opacity: 1; transform: translateX(0); } }
-        @keyframes slideOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(100%); } }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="background-container">
-        <div class="stars"></div>
-        <div class="stars2"></div>
-        <div class="stars3"></div>
+      <div class="stars"></div>
+      <div class="stars2"></div>
+      <div class="stars3"></div>
     </div>
     <div id="notification-container"></div>
-    
+
     <div class="w-full max-w-7xl mx-auto p-4 sm:p-8 flex flex-col h-screen">
-        <header class="text-center mb-6 header-anim">
-            <h1 class="text-3xl sm:text-4xl font-bold text-cyan-400" style="text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);">实时 CSS 美化 & 压缩</h1>
-            <p class="text-gray-400 mt-2">在任意一侧编辑，另一侧将实时同步</p>
-        </header>
+      <header class="text-center mb-6 header-anim">
+        <h1
+          class="text-3xl sm:text-4xl font-bold text-cyan-400"
+          style="text-shadow: 0 0 10px rgba(0, 255, 255, 0.5)"
+        >
+          实时 CSS 美化 & 压缩
+        </h1>
+        <p class="text-gray-400 mt-2">在任意一侧编辑，另一侧将实时同步</p>
+      </header>
 
-        <main class="main-container main-container-anim flex-grow flex flex-col p-4 sm:p-6">
-            <div class="flex-grow grid grid-cols-1 md:grid-cols-2 gap-4 min-h-0">
-                <div class="flex flex-col h-full min-h-0">
-                    <div class="flex justify-between items-center mb-2 px-1">
-                        <h2 class="text-lg text-cyan-400 tech-font">美化 (Readable)</h2>
-                        <div>
-                            <button id="copy-beautified" class="text-gray-400 hover:text-white text-xs tech-font px-2">复制</button>
-                            <button id="clear-beautified" class="text-gray-400 hover:text-white text-xs tech-font px-2">清空</button>
-                        </div>
-                    </div>
-                    <textarea id="beautified-area" class="dark-input w-full h-full p-3 rounded-lg shadow-sm font-mono text-sm" placeholder="在此处粘贴或编写 CSS 代码..."></textarea>
-                </div>
-                
-                <div class="flex flex-col h-full min-h-0">
-                    <div class="flex justify-between items-center mb-2 px-1">
-                        <h2 class="text-lg text-cyan-400 tech-font">压缩 (Minified)</h2>
-                         <div>
-                            <button id="copy-minified" class="text-gray-400 hover:text-white text-xs tech-font px-2">复制</button>
-                            <button id="clear-minified" class="text-gray-400 hover:text-white text-xs tech-font px-2">清空</button>
-                        </div>
-                    </div>
-                    <textarea id="minified-area" class="dark-input w-full h-full p-3 rounded-lg shadow-sm font-mono text-sm" placeholder="压缩后的 CSS 将显示在此处..."></textarea>
-                </div>
+      <main
+        class="main-container main-container-anim flex-grow flex flex-col p-4 sm:p-6"
+      >
+        <div class="flex-grow grid grid-cols-1 md:grid-cols-2 gap-4 min-h-0">
+          <div class="flex flex-col h-full min-h-0">
+            <div class="flex justify-between items-center mb-2 px-1">
+              <h2 class="text-lg text-cyan-400 tech-font">美化 (Readable)</h2>
+              <div>
+                <button
+                  id="copy-beautified"
+                  class="text-gray-400 hover:text-white text-xs tech-font px-2"
+                >
+                  复制
+                </button>
+                <button
+                  id="clear-beautified"
+                  class="text-gray-400 hover:text-white text-xs tech-font px-2"
+                >
+                  清空
+                </button>
+              </div>
             </div>
-        </main>
+            <textarea
+              id="beautified-area"
+              class="dark-input w-full h-full p-3 rounded-lg shadow-sm font-mono text-sm"
+              placeholder="在此处粘贴或编写 CSS 代码..."
+            ></textarea>
+          </div>
 
-        <footer class="text-center mt-8 text-gray-500 text-sm">
-            <p>Powered by Gemini &copy; 2024</p>
-        </footer>
+          <div class="flex flex-col h-full min-h-0">
+            <div class="flex justify-between items-center mb-2 px-1">
+              <h2 class="text-lg text-cyan-400 tech-font">压缩 (Minified)</h2>
+              <div>
+                <button
+                  id="copy-minified"
+                  class="text-gray-400 hover:text-white text-xs tech-font px-2"
+                >
+                  复制
+                </button>
+                <button
+                  id="clear-minified"
+                  class="text-gray-400 hover:text-white text-xs tech-font px-2"
+                >
+                  清空
+                </button>
+              </div>
+            </div>
+            <textarea
+              id="minified-area"
+              class="dark-input w-full h-full p-3 rounded-lg shadow-sm font-mono text-sm"
+              placeholder="压缩后的 CSS 将显示在此处..."
+            ></textarea>
+          </div>
+        </div>
+      </main>
+
+      <footer class="text-center mt-8 text-gray-500 text-sm">
+        <p>Powered by Gemini &copy; 2024</p>
+      </footer>
     </div>
 
     <script>
-        // DOM Element References
-        const beautifiedArea = document.getElementById('beautified-area');
-        const minifiedArea = document.getElementById('minified-area');
-        const notificationContainer = document.getElementById('notification-container');
-        
-        // Buttons
-        const copyBeautifiedBtn = document.getElementById('copy-beautified');
-        const clearBeautifiedBtn = document.getElementById('clear-beautified');
-        const copyMinifiedBtn = document.getElementById('copy-minified');
-        const clearMinifiedBtn = document.getElementById('clear-minified');
-        
-        // State to prevent event loops
-        let isUpdating = false;
+      // DOM Element References
+      const beautifiedArea = document.getElementById("beautified-area");
+      const minifiedArea = document.getElementById("minified-area");
+      const notificationContainer = document.getElementById(
+        "notification-container"
+      );
 
-        // --- Utility Functions ---
+      // Buttons
+      const copyBeautifiedBtn = document.getElementById("copy-beautified");
+      const clearBeautifiedBtn = document.getElementById("clear-beautified");
+      const copyMinifiedBtn = document.getElementById("copy-minified");
+      const clearMinifiedBtn = document.getElementById("clear-minified");
 
-        function showNotification(message, type = 'error') {
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            notification.textContent = message;
-            notificationContainer.appendChild(notification);
-            
-            const removeNotif = () => {
-                notification.style.animation = 'slideOut 0.5s forwards';
-                setTimeout(() => notification.remove(), 500);
-            };
+      // State to prevent event loops
+      let isUpdating = false;
 
-            notification.onclick = removeNotif;
-            setTimeout(() => {
-                if (notification.parentElement) removeNotif();
-            }, 3000);
+      // --- Utility Functions ---
+
+      function showNotification(message, type = "error") {
+        const notification = document.createElement("div");
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+        notificationContainer.appendChild(notification);
+
+        const removeNotif = () => {
+          notification.style.animation = "slideOut 0.5s forwards";
+          setTimeout(() => notification.remove(), 500);
+        };
+
+        notification.onclick = removeNotif;
+        setTimeout(() => {
+          if (notification.parentElement) removeNotif();
+        }, 3000);
+      }
+
+      function copyToClipboard(content, sourceName) {
+        if (!content) {
+          showNotification(`${sourceName}内容为空`, "error");
+          return;
         }
+        navigator.clipboard.writeText(content).then(
+          () => {
+            showNotification(`已复制${sourceName}内容！`, "success");
+          },
+          () => {
+            showNotification("复制失败！请检查浏览器权限。", "error");
+          }
+        );
+      }
 
-        function copyToClipboard(content, sourceName) {
-            if (!content) {
-                showNotification(`${sourceName}内容为空`, 'error');
-                return;
+      // --- Core Formatting Functions ---
+
+      function compressCss(css) {
+        if (!css) return "";
+        return css
+          .replace(/\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/gm, "$1") // 移除注释
+          .replace(/;}/g, "}") // 移除规则块中最后一个分号
+          .replace(/\s*([,>+~{}:;])\s*/g, "$1") // 移除选择器和属性周围的空格
+          .replace(/\s\s+/g, " ") // 将多个空格合并为一个
+          .replace(/; /g, ";") // 移除分号后的空格
+          .trim();
+      }
+
+      function decompressCss(css) {
+        if (!css) return "";
+        let beautified = "";
+        let depth = 0;
+        const indentChar = "    "; // 4 spaces
+
+        css = css
+          .replace(/\s*{\s*/g, "{")
+          .replace(/\s*}\s*/g, "}")
+          .replace(/\s*;\s*/g, ";")
+          .replace(/\s*,\s*/g, ",");
+
+        for (let i = 0; i < css.length; i++) {
+          const char = css[i];
+          if (char === "{") {
+            beautified += " {\n";
+            depth++;
+            beautified += indentChar.repeat(depth);
+          } else if (char === "}") {
+            beautified = beautified.trimEnd();
+            beautified += "\n";
+            depth--;
+            beautified += indentChar.repeat(depth) + "}\n";
+            if (i < css.length - 1 && css[i + 1] !== "}") {
+              beautified += indentChar.repeat(depth);
             }
-            navigator.clipboard.writeText(content).then(() => {
-                showNotification(`已复制${sourceName}内容！`, 'success');
-            }, () => {
-                showNotification('复制失败！请检查浏览器权限。', 'error');
-            });
+          } else if (char === ";") {
+            beautified += ";\n" + indentChar.repeat(depth);
+          } else if (char === ",") {
+            beautified += ",\n" + indentChar.repeat(depth);
+          } else {
+            beautified += char;
+          }
         }
-        
-        // --- Core Formatting Functions ---
+        return beautified.trim().replace(/\n\s*\n/g, "\n");
+      }
 
-        function compressCss(css) {
-            if (!css) return '';
-            return css
-                .replace(/\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/gm, '$1') // 移除注释
-                .replace(/;}/g, '}')                             // 移除规则块中最后一个分号
-                .replace(/\s*([,>+~{}:;])\s*/g, '$1')            // 移除选择器和属性周围的空格
-                .replace(/\s\s+/g, ' ')                           // 将多个空格合并为一个
-                .replace(/; /g, ';')                              // 移除分号后的空格
-                .trim();
+      // --- Event Listeners ---
+
+      beautifiedArea.addEventListener("input", () => {
+        if (isUpdating) return;
+        isUpdating = true;
+        try {
+          minifiedArea.value = compressCss(beautifiedArea.value);
+        } catch (e) {
+          /* Fail silently */
         }
+        isUpdating = false;
+      });
 
-        function decompressCss(css) {
-            if (!css) return '';
-            let beautified = '';
-            let depth = 0;
-            const indentChar = '    '; // 4 spaces
-
-            css = css.replace(/\s*{\s*/g, '{')
-                     .replace(/\s*}\s*/g, '}')
-                     .replace(/\s*;\s*/g, ';')
-                     .replace(/\s*,\s*/g, ',');
-            
-            for (let i = 0; i < css.length; i++) {
-                const char = css[i];
-                if (char === '{') {
-                    beautified += ' {\n';
-                    depth++;
-                    beautified += indentChar.repeat(depth);
-                } else if (char === '}') {
-                    beautified = beautified.trimEnd();
-                    beautified += '\n';
-                    depth--;
-                    beautified += indentChar.repeat(depth) + '}\n';
-                    if (i < css.length - 1 && css[i+1] !== '}') {
-                         beautified += indentChar.repeat(depth);
-                    }
-                } else if (char === ';') {
-                    beautified += ';\n' + indentChar.repeat(depth);
-                } else if (char === ',') {
-                    beautified += ',\n' + indentChar.repeat(depth);
-                }
-                else {
-                    beautified += char;
-                }
-            }
-            return beautified.trim().replace(/\n\s*\n/g, '\n');
+      minifiedArea.addEventListener("input", () => {
+        if (isUpdating) return;
+        isUpdating = true;
+        try {
+          beautifiedArea.value = decompressCss(minifiedArea.value);
+        } catch (e) {
+          /* Fail silently */
         }
+        isUpdating = false;
+      });
 
-        // --- Event Listeners ---
+      // ** NEW: Smart paste handler for the minified textarea **
+      minifiedArea.addEventListener("paste", (event) => {
+        const pastedText = (
+          event.clipboardData || window.clipboardData
+        ).getData("text");
 
-        beautifiedArea.addEventListener('input', () => {
-            if (isUpdating) return;
-            isUpdating = true;
-            try {
-                minifiedArea.value = compressCss(beautifiedArea.value);
-            } catch (e) { /* Fail silently */ }
+        // Heuristic to check if pasted text is likely beautified (contains newlines)
+        if (pastedText.includes("\n")) {
+          event.preventDefault(); // Stop the default paste
+          if (isUpdating) return;
+          isUpdating = true;
+
+          try {
+            // Correct logic: compress the pasted text and update BOTH textareas
+            const compressed = compressCss(pastedText);
+            minifiedArea.value = compressed;
+            beautifiedArea.value = decompressCss(compressed);
+          } catch (e) {
+            /* Fail silently */
+          }
+
+          // Use a short timeout to prevent immediate re-triggering of input events
+          setTimeout(() => {
             isUpdating = false;
-        });
+          }, 10);
+        }
+        // If it doesn't contain newlines, do nothing and let the default 'input' event handle it.
+      });
 
-        minifiedArea.addEventListener('input', () => {
-            if (isUpdating) return;
-            isUpdating = true;
-            try {
-                beautifiedArea.value = decompressCss(minifiedArea.value);
-            } catch (e) { /* Fail silently */ }
-            isUpdating = false;
-        });
+      // Button events
+      copyBeautifiedBtn.addEventListener("click", () => {
+        copyToClipboard(beautifiedArea.value, "美化");
+      });
 
-        // ** NEW: Smart paste handler for the minified textarea **
-        minifiedArea.addEventListener('paste', (event) => {
-            const pastedText = (event.clipboardData || window.clipboardData).getData('text');
-            
-            // Heuristic to check if pasted text is likely beautified (contains newlines)
-            if (pastedText.includes('\n')) {
-                event.preventDefault(); // Stop the default paste
-                if (isUpdating) return;
-                isUpdating = true;
-                
-                try {
-                    // Correct logic: compress the pasted text and update BOTH textareas
-                    const compressed = compressCss(pastedText);
-                    minifiedArea.value = compressed;
-                    beautifiedArea.value = decompressCss(compressed);
-                } catch(e) { /* Fail silently */ }
-                
-                // Use a short timeout to prevent immediate re-triggering of input events
-                setTimeout(() => { isUpdating = false; }, 10);
-            }
-            // If it doesn't contain newlines, do nothing and let the default 'input' event handle it.
-        });
+      copyMinifiedBtn.addEventListener("click", () => {
+        copyToClipboard(minifiedArea.value, "压缩");
+      });
 
-        // Button events
-        copyBeautifiedBtn.addEventListener('click', () => {
-            copyToClipboard(beautifiedArea.value, '美化');
-        });
+      clearBeautifiedBtn.addEventListener("click", () => {
+        beautifiedArea.value = "";
+        beautifiedArea.dispatchEvent(new Event("input", { bubbles: true }));
+        beautifiedArea.focus();
+      });
 
-        copyMinifiedBtn.addEventListener('click', () => {
-            copyToClipboard(minifiedArea.value, '压缩');
-        });
-
-        clearBeautifiedBtn.addEventListener('click', () => {
-            beautifiedArea.value = '';
-            beautifiedArea.dispatchEvent(new Event('input', { bubbles: true }));
-            beautifiedArea.focus();
-        });
-        
-        clearMinifiedBtn.addEventListener('click', () => {
-            minifiedArea.value = '';
-            minifiedArea.dispatchEvent(new Event('input', { bubbles: true }));
-            minifiedArea.focus();
-        });
-
+      clearMinifiedBtn.addEventListener("click", () => {
+        minifiedArea.value = "";
+        minifiedArea.dispatchEvent(new Event("input", { bubbles: true }));
+        minifiedArea.focus();
+      });
     </script>
-</body>
+  </body>
 </html>

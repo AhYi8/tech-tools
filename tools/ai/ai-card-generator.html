@@ -1038,7 +1038,7 @@
           aiErrorMessage.textContent = "请输入一个有效的主题。";
           return;
         }
-        
+
         // [MODIFIED] - START: Add validation check
         const apiUrl = apiUrlInput.value.trim();
         const apiKeys = apiKeyInput.value
@@ -1046,9 +1046,10 @@
           .map((k) => k.trim())
           .filter(Boolean);
         const model = apiModelInput.value.trim();
-        
+
         if (!apiUrl || apiKeys.length === 0 || !model) {
-          aiErrorMessage.textContent = "请在高级设置中完整配置 API 地址、密钥和模型 ID。";
+          aiErrorMessage.textContent =
+            "请在高级设置中完整配置 API 地址、密钥和模型 ID。";
           return;
         }
         // [MODIFIED] - END

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>文本 Hash 工具</title>
@@ -56,17 +56,37 @@
         background-repeat: repeat;
         animation: move-stars 200s linear infinite;
       }
-      .stars { background-image: url('data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjEwMHB4IiBoZWlnaHQ9IjEwMHB4IiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTAwIDEwMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTkyLjUsNjEuNWMwLDAsMCwwLDBsLTIsMC4xYy0wLjUsMC0xLTAuNS0xLTF2LTJjMC0wLjUsMC41LTEsMS0xaDIsMVY2MS41eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik04My4yLDQyLjRjMCwwLDAsMCwwbDAsMEM4My4yLDQyLjQsODMuMiw0Mi40LDgzLjIsNDIuNHoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzkuNCwyNC43YzAsMCwwLDAsMGwwLDBDNzkuNCwyNC43LDc5LjQsMjQuNyw3OS45LDI0Ljd6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTgwLjYsNDEuNWMwLDAsMCwwLDBsMCwwQzgwLjYsNDEuNSw4MC42LDQxLjUsODAuNiw0MS41eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik0yNC4zLDQxYzAsMCwwLDAsMGwtMC4yLTAuMmMwLDAsMCwwLDBMMjQuMyw0MXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNMzEuOCwzOS43YzAsMCwwLDAsMEwzMS44LDM5LjdMMzEuOCwzOS45eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik0zNy4xLDQwLjljMCwwLDAsMCwwbDAsMEMzNy4xLDQwLjksMzcuMSw0MC45LDM3LjIsNDAuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzMuNCwzMS45YzAsMCwwLDAsMEw3My40LDMxLjlMNzMuNCwzMS45eiIvPjwvc3ZnPg=='); }
-      .stars2 { background-image: url('data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjEwMHB4IiBoZWlnaHQ9IjEwMHB4IiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTAwIDEwMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTc2LjksMjEuNGMwLDAsMCwwLDBsMCwwQzc2LjksMjEuNCw3Ni45LDIxLjQsNzYuOSwyMS40eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik04NS4yLDU5LjljMCwwLDAsMCwwbDAsMEM4NS4yLDU5LjksODUuMiw1OS45LDg1LjIsNTkuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzAuMywzOS45YzAsMCwwLDAsMEw3MC4zLDM5LjlMNzAuMywzOS45eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik00Ni43LDIwLjlDNDYuNywyMC45LDQ2LjcsMjAuOSw0Ni43LDIwLjlsMCwwQzQ2LjdsMjAuOSw0Ni43LDIwLjksNDYuNywyMC45eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik0yMS44LDIxLjljMCwwLDAsMCwwbDAsMEMyMS44LDIxLjksMjEuOCwyMS45LDIxLjgsMjEuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNMzEuNyw0OS4xYzAsMCwwLDAsMEwzMS43LDQ5LjFMMzEuNyw0OS4xeiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik0zNy44LDI1LjdjMCwwLDAsMCwwbDAsMEMzNy44LDI1LjcsMzcuOCwyNS43LDM3LjgsMjUuN3oiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNTEuOCwxMy43YzAsMCwwLDAsMEw1MS44LDEzLjdMNTIuMiwxMy45YzAsMCwwLDAsMEw1MS44LDEzLjd6IiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik0yNy4xLDE0LjRjMCwwLDAsMCwwbDAsMEMyNy4xLDE0LjQsMjcuMSwxNC40LDI3LjEsMTQuNHoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNMzcuNSwzLjRjMCwwLDAsMCwwbDAsMEMzNy41LDMuNCwzNy41LDMuNCwzNy41LDMuNHoiLz48L3N2Zz4='); animation-duration: 150s; }
-      .stars3 { background-image: url('data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjEwMHB4IiBoZWlnaHQ9IjEwMHB4IiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTAwIDEwMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTQ5LjIsMTcuMWMwLDAsMCwwLDBsMCwwQzQ5LjIsMTcuMSw0OS4yLDE3LjEsNDkuMiwxNy4xeiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik0zMy44LDguNGMwLDAsMCwwLDBsMCwwQzMzLjgsOC44LDMzLjgsOC40LDMzLjgsOC40eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik04NS4xLDguN2MwLDAsMCwwLDBsMCwwQzg1LjEsOC43LDg1LjEsOC43LDg1LjEsOC43eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik04Ny44LDE0LjljMCwwLDAsMCwwbDAsMEM4Ny44LDE0LjksODcuOCwxNC45LDg3LjgsMTQuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzkuOSwzOS45YzAsMCwwLDAsMEw3OS45LDM5LjlMNzkuOSwzOS45eiIvPjwvc3ZnPg=='); animation-duration: 100s; }
-
-      @keyframes fadeInUp {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
+      .stars {
+        background-image: url("data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjEwMHB4IiBoZWlnaHQ9IjEwMHB4IiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTAwIDEwMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTkyLjUsNjEuNWMwLDAsMCwwLDBsLTIsMC4xYy0wLjUsMC0xLTAuNS0xLTF2LTJjMC0wLjUsMC41LTEsMS0xaDIsMVY2MS41eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik04My4yLDQyLjRjMCwwLDAsMCwwbDAsMEM4My4yLDQyLjQsODMuMiw0Mi40LDgzLjIsNDIuNHoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzkuNCwyNC43YzAsMCwwLDAsMGwwLDBDNzkuNCwyNC43LDc5LjQsMjQuNyw3OS45LDI0Ljd6Ii8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTgwLjYsNDEuNWMwLDAsMCwwLDBsMCwwQzgwLjYsNDEuNSw4MC42LDQxLjUsODAuNiw0MS41eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik0yNC4zLDQxYzAsMCwwLDAsMGwtMC4yLTAuMmMwLDAsMCwwLDBMMjQuMyw0MXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNMzEuOCwzOS43YzAsMCwwLDAsMEwzMS44LDM5LjdMMzEuOCwzOS45eiIvPjxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik0zNy4xLDQwLjljMCwwLDAsMCwwbDAsMEMzNy4xLDQwLjksMzcuMSw0MC45LDM3LjIsNDAuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzMuNCwzMS45YzAsMCwwLDAsMEw3My40LDMxLjlMNzMuNCwzMS45eiIvPjwvc3ZnPg==");
+      }
+      .stars2 {
+        background-image: url("data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjEwMHB4IiBoZWlnaHQ9IjEwMHB4IiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTAwIDEwMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTc2LjksMjEuNGMwLDAsMCwwLDBsMCwwQzc2LjksMjEuNCw3Ni45LDIxLjQsNzYuOSwyMS40eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik04NS4yLDU5LjljMCwwLDAsMCwwbDAsMEM4NS4yLDU5LjksODUuMiw1OS45LDg1LjIsNTkuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzAuMywzOS45YzAsMCwwLDAsMEw3MC4zLDM5LjlMNzAuMywzOS45eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik00Ni43LDIwLjlDNDYuNywyMC45LDQ2LjcsMjAuOSw0Ni43LDIwLjlsMCwwQzQ2LjdsMjAuOSw0Ni43LDIwLjksNDYuNywyMC45eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik0yMS44LDIxLjljMCwwLDAsMCwwbDAsMEMyMS44LDIxLjksMjEuOCwyMS45LDIxLjgsMjEuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNMzEuNyw0OS4xYzAsMCwwLDAsMEwzMS43LDQ5LjFMMzEuNyw0OS4xeiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik0zNy44LDI1LjdjMCwwLDAsMCwwbDAsMEMzNy44LDI1LjcsMzcuOCwyNS43LDM3LjgsMjUuN3oiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNTEuOCwxMy43YzAsMCwwLDAsMEw1MS44LDEzLjdMNTIuMiwxMy45YzAsMCwwLDAsMEw1MS44LDEzLjd6IiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik0yNy4xLDE0LjRjMCwwLDAsMCwwbDAsMEMyNy4xLDE0LjQsMjcuMSwxNC40LDI3LjEsMTQuNHoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNMzcuNSwzLjRjMCwwLDAsMCwwbDAsMEMzNy41LDMuNCwzNy41LDMuNCwzNy41LDMuNHoiLz48L3N2Zz4=");
+        animation-duration: 150s;
+      }
+      .stars3 {
+        background-image: url("data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjEwMHB4IiBoZWlnaHQ9IjEwMHB4IiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTAwIDEwMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTQ5LjIsMTcuMWMwLDAsMCwwLDBsMCwwQzQ5LjIsMTcuMSw0OS4yLDE3LjEsNDkuMiwxNy4xeiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik0zMy44LDguNGMwLDAsMCwwLDBsMCwwQzMzLjgsOC44LDMzLjgsOC40LDMzLjgsOC40eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik04NS4xLDguN2MwLDAsMCwwLDBsMCwwQzg1LjEsOC43LDg1LjEsOC43LDg1LjEsOC43eiIvPjxwYXRoIGZpbGw=IiNGRkYiIGQ9Ik04Ny44LDE0LjljMCwwLDAsMCwwbDAsMEM4Ny44LDE0LjksODcuOCwxNC45LDg3LjgsMTQuOXoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNNzkuOSwzOS45YzAsMCwwLDAsMEw3OS45LDM5LjlMNzkuOSwzOS45eiIvPjwvc3ZnPg==");
+        animation-duration: 100s;
       }
 
-      .main-container-anim { animation: fadeInUp 0.8s 0.2s ease-out backwards; }
-      h1, h2, .tech-font { font-family: "Exo 2", sans-serif; }
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .main-container-anim {
+        animation: fadeInUp 0.8s 0.2s ease-out backwards;
+      }
+      h1,
+      h2,
+      .tech-font {
+        font-family: "Exo 2", sans-serif;
+      }
 
       .main-container {
         position: relative;
@@ -82,7 +102,8 @@
         border-radius: inherit;
         padding: 2px;
         background: linear-gradient(135deg, #a97eff, #58a6ff, #00c3ff);
-        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask: linear-gradient(#fff 0 0) content-box,
+          linear-gradient(#fff 0 0);
         -webkit-mask-composite: exclude;
         mask-composite: exclude;
         pointer-events: none;
@@ -103,11 +124,22 @@
         outline: none;
       }
 
-      textarea::-webkit-scrollbar { width: 12px; }
-      textarea::-webkit-scrollbar-track { background: #0d1117; border-radius: 10px; }
-      textarea::-webkit-scrollbar-thumb { background-color: #30363d; border-radius: 10px; border: 3px solid #0d1117; }
-      textarea::-webkit-scrollbar-thumb:hover { background-color: #58a6ff; }
-      
+      textarea::-webkit-scrollbar {
+        width: 12px;
+      }
+      textarea::-webkit-scrollbar-track {
+        background: #0d1117;
+        border-radius: 10px;
+      }
+      textarea::-webkit-scrollbar-thumb {
+        background-color: #30363d;
+        border-radius: 10px;
+        border: 3px solid #0d1117;
+      }
+      textarea::-webkit-scrollbar-thumb:hover {
+        background-color: #58a6ff;
+      }
+
       .hash-result-item {
         background-color: rgba(88, 166, 255, 0.05);
         border-left: 3px solid #58a6ff;
@@ -145,41 +177,55 @@
         border-color: #58a6ff;
         color: #c9d1d9;
       }
-       .copy-btn svg {
-            width: 16px;
-            height: 16px;
+      .copy-btn svg {
+        width: 16px;
+        height: 16px;
       }
 
       #notification-container {
-            position: fixed;
-            top: 1rem;
-            right: 1rem;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
       }
       .notification {
-          background-color: #161b22CC;
-          backdrop-filter: blur(5px);
-          color: #f87171;
-          padding: 1rem;
-          border-radius: 0.5rem;
-          border: 1px solid #ef4444;
-          box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
-          cursor: pointer;
-          transition: all 0.3s ease;
-          opacity: 0;
-          transform: translateX(100%);
-          animation: slideIn 0.5s forwards;
+        background-color: #161b22cc;
+        backdrop-filter: blur(5px);
+        color: #f87171;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid #ef4444;
+        box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        opacity: 0;
+        transform: translateX(100%);
+        animation: slideIn 0.5s forwards;
       }
       .notification.success {
-          color: #4ade80;
-          border-color: #22c55e;
-          box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
+        color: #4ade80;
+        border-color: #22c55e;
+        box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
       }
-      @keyframes slideIn { to { opacity: 1; transform: translateX(0); } }
-      @keyframes slideOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(100%); } }
+      @keyframes slideIn {
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+      @keyframes slideOut {
+        from {
+          opacity: 1;
+          transform: translateX(0);
+        }
+        to {
+          opacity: 0;
+          transform: translateX(100%);
+        }
+      }
 
       /* --- 全局滚动条样式 (与 index.html 统一) --- */
       ::-webkit-scrollbar {
@@ -207,8 +253,8 @@
       }
       /* --- 结束 --- */
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="background-container">
       <div class="stars"></div>
       <div class="stars2"></div>
@@ -218,7 +264,10 @@
 
     <div class="w-full max-w-4xl mx-auto p-4 sm:p-8 relative z-10">
       <header class="text-center mb-8">
-        <h1 class="text-3xl sm:text-4xl font-bold text-cyan-400 tech-font" style="text-shadow: 0 0 10px rgba(0, 255, 255, 0.5)">
+        <h1
+          class="text-3xl sm:text-4xl font-bold text-cyan-400 tech-font"
+          style="text-shadow: 0 0 10px rgba(0, 255, 255, 0.5)"
+        >
           文本 Hash 工具
         </h1>
         <p class="text-gray-400 mt-2">
@@ -229,8 +278,17 @@
       <main class="main-container main-container-anim">
         <div class="p-6 sm:p-8 flex flex-col gap-8">
           <section>
-            <label for="input-area" class="block text-lg font-medium text-cyan-400 mb-2 tech-font">源文本</label>
-            <textarea id="input-area" rows="8" class="dark-textarea w-full p-3 shadow-sm text-base" placeholder="在此输入需要测试的字符串..."></textarea>
+            <label
+              for="input-area"
+              class="block text-lg font-medium text-cyan-400 mb-2 tech-font"
+              >源文本</label
+            >
+            <textarea
+              id="input-area"
+              rows="8"
+              class="dark-textarea w-full p-3 shadow-sm text-base"
+              placeholder="在此输入需要测试的字符串..."
+            ></textarea>
           </section>
 
           <section>
@@ -238,7 +296,7 @@
               哈希计算结果
             </h2>
             <div id="results-container" class="space-y-2 pr-2">
-                 <p class="text-gray-500 p-4 text-center">正在计算默认值...</p>
+              <p class="text-gray-500 p-4 text-center">正在计算默认值...</p>
             </div>
           </section>
         </div>
@@ -250,64 +308,80 @@
     </div>
 
     <script>
-        function showNotification(message, type = 'error') {
-            const container = document.getElementById('notification-container');
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            notification.textContent = message;
-            container.appendChild(notification);
-            
-            notification.onclick = () => {
-                notification.style.animation = 'slideOut 0.5s forwards';
-                setTimeout(() => notification.remove(), 500);
-            };
+      function showNotification(message, type = "error") {
+        const container = document.getElementById("notification-container");
+        const notification = document.createElement("div");
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+        container.appendChild(notification);
 
-            setTimeout(() => {
-                if (notification.parentElement) {
-                    notification.style.animation = 'slideOut 0.5s forwards';
-                    setTimeout(() => notification.remove(), 500);
-                }
-            }, 3000);
+        notification.onclick = () => {
+          notification.style.animation = "slideOut 0.5s forwards";
+          setTimeout(() => notification.remove(), 500);
+        };
+
+        setTimeout(() => {
+          if (notification.parentElement) {
+            notification.style.animation = "slideOut 0.5s forwards";
+            setTimeout(() => notification.remove(), 500);
+          }
+        }, 3000);
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const inputArea = document.getElementById("input-area");
+        const resultsContainer = document.getElementById("results-container");
+
+        const HASH_ALGORITHMS = [
+          "MD5",
+          "SHA1",
+          "SHA256",
+          "SHA224",
+          "SHA512",
+          "SHA384",
+          "SHA3",
+          "RIPEMD160",
+        ];
+
+        function calculateHashes() {
+          const text = inputArea.value;
+
+          // 如果结果UI是占位符或未生成，则先生成它
+          if (
+            resultsContainer.querySelector("p") ||
+            !resultsContainer.querySelector(".hash-result-item")
+          ) {
+            generateResultUI();
+          }
+
+          HASH_ALGORITHMS.forEach((algo) => {
+            const outputField = document.getElementById(`hash-output-${algo}`);
+            if (!outputField) return; // 如果UI还没渲染好，就跳过
+            let hash;
+            try {
+              const algoObj = CryptoJS.algo[algo] || CryptoJS[algo];
+              if (algo === "SHA3") {
+                hash = CryptoJS.SHA3(text, { outputLength: 512 }).toString(
+                  CryptoJS.enc.Hex
+                );
+              } else {
+                hash = algoObj
+                  .create()
+                  .update(text)
+                  .finalize()
+                  .toString(CryptoJS.enc.Hex);
+              }
+              outputField.value = hash;
+            } catch (e) {
+              console.error(`Error hashing with ${algo}:`, e);
+              outputField.value = "Error";
+            }
+          });
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const inputArea = document.getElementById('input-area');
-            const resultsContainer = document.getElementById('results-container');
-
-            const HASH_ALGORITHMS = [
-                'MD5', 'SHA1', 'SHA256', 'SHA224', 
-                'SHA512', 'SHA384', 'SHA3', 'RIPEMD160'
-            ];
-
-            function calculateHashes() {
-                const text = inputArea.value;
-                
-                // 如果结果UI是占位符或未生成，则先生成它
-                if(resultsContainer.querySelector('p') || !resultsContainer.querySelector('.hash-result-item')) {
-                   generateResultUI();
-                }
-
-                HASH_ALGORITHMS.forEach(algo => {
-                    const outputField = document.getElementById(`hash-output-${algo}`);
-                    if (!outputField) return; // 如果UI还没渲染好，就跳过
-                    let hash;
-                    try {
-                        const algoObj = CryptoJS.algo[algo] || CryptoJS[algo];
-                        if (algo === 'SHA3') {
-                            hash = CryptoJS.SHA3(text, { outputLength: 512 }).toString(CryptoJS.enc.Hex);
-                        } else {
-                            hash = algoObj.create().update(text).finalize().toString(CryptoJS.enc.Hex);
-                        }
-                        outputField.value = hash;
-                    } catch (e) {
-                       console.error(`Error hashing with ${algo}:`, e);
-                       outputField.value = 'Error';
-                    }
-                });
-            }
-            
-            function generateResultUI(){
-                 resultsContainer.innerHTML = HASH_ALGORITHMS.map(algo => `
+        function generateResultUI() {
+          resultsContainer.innerHTML = HASH_ALGORITHMS.map(
+            (algo) => `
                     <div class="hash-result-item p-3 rounded-md">
                         <span class="algo-name">${algo}</span>
                         <input type="text" id="hash-output-${algo}" class="hash-value p-2 rounded-md w-full" readonly>
@@ -315,32 +389,34 @@
                             <svg data-lucide="copy"></svg>
                         </button>
                     </div>
-                `).join('');
-                lucide.createIcons();
-            }
+                `
+          ).join("");
+          lucide.createIcons();
+        }
 
-            inputArea.addEventListener('input', calculateHashes);
+        inputArea.addEventListener("input", calculateHashes);
 
-            resultsContainer.addEventListener('click', (event) => {
-                const button = event.target.closest('.copy-btn');
-                if (!button) return;
+        resultsContainer.addEventListener("click", (event) => {
+          const button = event.target.closest(".copy-btn");
+          if (!button) return;
 
-                const algo = button.dataset.algo;
-                const outputField = document.getElementById(`hash-output-${algo}`);
-                const content = outputField.value;
+          const algo = button.dataset.algo;
+          const outputField = document.getElementById(`hash-output-${algo}`);
+          const content = outputField.value;
 
-                if (content && content !== 'Error') {
-                    navigator.clipboard.writeText(content)
-                        .then(() => showNotification(`${algo} 哈希值已复制!`, 'success'))
-                        .catch(err => showNotification('复制失败!', 'error'));
-                } else if (!content) {
-                    showNotification('内容为空，无需复制。', 'error');
-                }
-            });
-            
-            // **MODIFIED**: Initial calculation on page load for empty string.
-            calculateHashes();
+          if (content && content !== "Error") {
+            navigator.clipboard
+              .writeText(content)
+              .then(() => showNotification(`${algo} 哈希值已复制!`, "success"))
+              .catch((err) => showNotification("复制失败!", "error"));
+          } else if (!content) {
+            showNotification("内容为空，无需复制。", "error");
+          }
         });
+
+        // **MODIFIED**: Initial calculation on page load for empty string.
+        calculateHashes();
+      });
     </script>
   </body>
 </html>
