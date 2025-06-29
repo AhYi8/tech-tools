@@ -9,7 +9,6 @@
     <link href="../../vendor/css/google-fonts.css" rel="stylesheet" />
     <link href="../../css/common.css" rel="stylesheet" />
     <style>
-
       .flashcard {
         background: #1a202cdd;
         backdrop-filter: blur(3px);
@@ -526,8 +525,7 @@
       const commonApiEndpoints = [
         {
           name: "Gemini",
-          apiUrl:
-            "https://generativelanguage.googleapis.com/v1beta/models",
+          apiUrl: "https://generativelanguage.googleapis.com/v1beta/models",
         },
         {
           name: "OpenAI",
@@ -779,17 +777,38 @@
             } else {
               // Gemini
               const geminiUserPrompt = `${systemPrompt}\n\n任务: ${userPrompt}`;
-              requestUrl = `${apiUrl}/${model}:${enableStream ? 'streamGenerateContent' : 'generateContent'}?key=${key}`
-              fetchOptions = {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  contents: [
-                    { role: "user", parts: [{ text: geminiUserPrompt }] },
-                  ],
-                }),
-                signal: abortController.signal,
-              };
+              requestUrl = `${apiUrl}/${model}:${
+                enableStream ? "streamGenerateContent" : "generateContent"
+              }?key=${key}&alt=sse`;
+              if (enableThinking) {
+                fetchOptions = {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    contents: [
+                      { role: "user", parts: [{ text: geminiUserPrompt }] },
+                    ],
+                    generationConfig: {
+                      thinkingConfig: {
+                        includeThoughts: true,
+                        thinkingBudget: -1,
+                      },
+                    },
+                  }),
+                  signal: abortController.signal,
+                };
+              } else {
+                fetchOptions = {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    contents: [
+                      { role: "user", parts: [{ text: geminiUserPrompt }] },
+                    ],
+                  }),
+                  signal: abortController.signal,
+                };
+              }
               if (!enableStream) {
                 fetchOptions.body = JSON.stringify({
                   contents: [
@@ -904,6 +923,7 @@
               }
               try {
                 const chunk = JSON.parse(data);
+                console.log(chunk);
                 const delta = chunk.choices?.[0]?.delta;
 
                 // 新增：只在第一次接收到数据时检查思考过程
@@ -914,8 +934,7 @@
                       delta.reasoning_content !== undefined) ||
                     (chunk.candidates &&
                       chunk.candidates[0] &&
-                      chunk.candidates[0].reasoning_content !== null &&
-                      chunk.candidates[0].reasoning_content !== undefined);
+                      chunk.candidates[0]?.content?.parts?.[0]?.thought === true);
                   if (hasReasoning) {
                     thinkingProcessContainer.classList.remove("hidden");
                   } else {
@@ -925,15 +944,25 @@
                 }
 
                 if (delta?.content) {
-                  streamState.fullText += delta.content;
+                  streamState.fullText += delta.content
+                    .replace("```json", "")
+                    .replace("```", "");
                 } else if (
                   chunk.candidates &&
-                  chunk.candidates[0]?.content?.parts?.[0]?.text
+                  chunk.candidates[0]?.content?.parts?.[0]?.text &&
+                  chunk.candidates[0]?.content?.parts?.[0]?.thought !== true
                 ) {
                   streamState.fullText +=
-                    chunk.candidates[0].content.parts[0].text;
+                    chunk.candidates[0].content.parts[0].text
+                      .replace("```json", "")
+                      .replace("```", "");
                 } else if (delta?.reasoning_content) {
                   streamState.thinkingText += delta.reasoning_content;
+                } else if (
+                  chunk.candidates &&
+                  chunk.candidates[0]?.content?.parts?.[0]?.thought === true
+                ) {
+                  streamState.thinkingText += chunk.candidates[0].content.parts[0].text;
                 }
               } catch (e) {
                 // 忽略无法解析的块
