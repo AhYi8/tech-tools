@@ -17,6 +17,13 @@ const toolsData = {
   ],
   '转换工具': [
     {
+      name: 'JSON 树状解析',
+      desc: '将 JSON 解析为可交互的树状视图，方便查看和分析。',
+      icon: 'file-json-2',
+      keywords: 'json parser tree view format',
+      targetPage: './tools/convert/json-parser.html'
+    },
+    {
       name: 'JSON ↔ YAML ↔ JAVA',
       desc: 'JSON、YAML、JAVA 格式相互转换，以及 JSON 格式化',
       icon: 'pencil-ruler',

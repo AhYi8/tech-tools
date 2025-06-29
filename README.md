@@ -21,6 +21,15 @@
 4. 选择 `Import`，导入你 Fork 的项目
 5. 点击 `Deploy`，等待部署完成
 
+# 项目结构介绍
+
+- `index.html`：主页面，所有工具的入口
+- `tools`：工具目录，每个工具为一个独立的html文件
+- `tools-config.js`：工具配置文件，定义了所有工具的名称、图标、描述等信息
+- `css`：css文件目录，存放了本项目使用的一些css样式
+- `css/common.css`：本项目使用的一些公共css样式
+- `vendor`：第三方库目录，存放了本项目使用的一些第三方库，如 `fontawesome`、`lucide.js` 等
+
 # 4. 注意
 
 - 本项目使用了一些第三方库，如 `fontawesome`、`highlight.js` 等，请自行分析是否符合自己的需求

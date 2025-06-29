@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JSON 在线解析</title>
+    <script src="../../vendor/js/tailwind.js"></script>
+    <link href="../../vendor/css/google-fonts.css" rel="stylesheet" />
+    <link href="../../css/common.css" rel="stylesheet" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/10.2.0/jsoneditor.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/10.2.0/jsoneditor.min.js"></script>
+
+    <style>
+      /* 页面特定样式 */
+      .main-container {
+        background-color: #161b2288; /* 半透明背景 */
+      }
+
+      /* --- JSON Editor 主题覆盖 --- */
+
+      /* 1. 【解决】强制设置编辑器和输入框的深色背景 */
+      #json-input,
+      div.jsoneditor,
+      div.jsoneditor-tree,
+      .ace-jsoneditor .ace_scroller,
+      .ace-jsoneditor .ace_content,
+      .ace-jsoneditor .ace_gutter,
+      .jsoneditor-menu {
+        background: #0d1117 !important;
+        color: #c9d1d9 !important;
+      }
+
+      .jsoneditor-menu {
+        border: none !important;
+      }
+
+      /* 2. 【解决】强制设置层级悬停时的背景色 */
+      div.jsoneditor-tree tr:hover,
+      div.jsoneditor-tree tr.jsoneditor-hover,
+      .jsoneditor-frame,
+      .jsoneditor-navigation-bar {
+        background: #161b22 !important; /* 使用主题中较亮的深色作为悬停背景 */
+      }
+
+      .jsoneditor-contextmenu .jsoneditor-menu li button.jsoneditor-selected,
+      .jsoneditor-contextmenu .jsoneditor-menu li button.jsoneditor-selected:focus,
+      .jsoneditor-contextmenu .jsoneditor-menu li button.jsoneditor-selected:hover {
+        background-color: #161b22 !important;
+        color: #c9d1d9 !important;
+      }
+
+      div.jsoneditor td.jsoneditor-tree {
+        vertical-align: middle !important;
+      }
+
+      div.jsoneditor-tree button.jsoneditor-button:focus {
+        background-color: rgba(0, 0, 0, 0) !important;
+        outline: rgba(0, 0, 0, 0);
+      }
+
+      div.jsoneditor-field.jsoneditor-highlight,
+      div.jsoneditor-field[contenteditable="true"]:focus,
+      div.jsoneditor-field[contenteditable="true"]:hover,
+      div.jsoneditor-value.jsoneditor-highlight,
+      div.jsoneditor-value[contenteditable="true"]:focus,
+      div.jsoneditor-value[contenteditable="true"]:hover,
+      .jsoneditor-highlight {
+        background: #161b22 !important;
+        border: none !important;
+      }
+
+      /* 3. 编辑器边框和菜单栏样式 */
+      .jsoneditor,
+      div.jsoneditor-menu {
+        border: 1px solid #30363d;
+        border-radius: 0.5rem;
+      }
+      div.jsoneditor-menu {
+        background-color: #161b22;
+        border-bottom: none;
+      }
+      div.jsoneditor-menu > button,
+      div.jsoneditor-menu > .jsoneditor-modes > button {
+        color: #c9d1d9;
+      }
+      div.jsoneditor-menu > button:hover,
+      div.jsoneditor-menu > .jsoneditor-modes > button:hover {
+        background-color: #30363d;
+      }
+
+      /* 4. 树状视图内部元素颜色优化 */
+      div.jsoneditor-field,
+      div.jsoneditor-readonly {
+        color: #c9d1d9;
+      }
+      div.jsoneditor-value.jsoneditor-string {
+        color: #79c0ff; /* 字符串 - 蓝色 */
+      }
+      div.jsoneditor-value.jsoneditor-number {
+        color: #a5d6ff; /* 数字 - 淡蓝色 */
+      }
+      div.jsoneditor-value.jsoneditor-boolean {
+        color: #ffab70; /* 布尔值 - 橙色 */
+      }
+      div.jsoneditor-value.jsoneditor-null {
+        color: #ff7b72; /* null - 红色 */
+      }
+
+      /* 5. 其他视觉效果优化 */
+      .jsoneditor-tree .jsoneditor-selected {
+        background-color: rgba(88, 166, 255, 0.2) !important;
+      }
+      .jsoneditor-tree th,
+      .jsoneditor-tree td,
+      .jsoneditor-tree tr {
+        border-color: #30363d;
+      }
+      div.jsoneditor-contextmenu {
+        background: #161b22;
+        border: 1px solid #30363d;
+      }
+      div.jsoneditor-contextmenu .jsoneditor-menu button:hover {
+        background: rgba(88, 166, 255, 0.2);
+      }
+      .jsoneditor.error {
+        border: 1px solid #ef4444;
+      }
+
+      td.jsoneditor-tree > input[type="checkbox"] {
+        background: #0d1117 !important;
+        border: 1px solid #30363d !important;
+        color: #c9d1d9 !important;
+        padding: 4px;
+        border-radius: 4px;
+        height: 24px;
+        box-sizing: border-box;
+        line-height: 1;
+        margin: 4px;
+      }
+
+      /* 7. 搜索栏输入框焦点样式 */
+      td.jsoneditor-tree > input[type="checkbox"]:focus {
+        border-color: #58a6ff !important;
+        box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.25);
+        outline: none;
+      }
+
+      /* --- 新增：搜索栏样式 --- */
+
+      /* 6. 搜索栏输入框样式 */
+      div.jsoneditor-frame > input[type="text"] {
+        background: #0d1117 !important;
+        border: 1px solid #30363d !important;
+        color: #c9d1d9 !important;
+        padding: 4px;
+        border-radius: 4px;
+        height: 24px;
+        box-sizing: border-box;
+        line-height: 1;
+        margin: 4px;
+      }
+
+      /* 7. 搜索栏输入框焦点样式 */
+      div.jsoneditor-frame > input[type="text"]:focus {
+        border-color: #58a6ff !important;
+        box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.25);
+        outline: none;
+      }
+
+      /* 8. 搜索栏按钮通用样式 */
+      div.jsoneditor-frame > button {
+        background-color: #161b22;
+        border: 1px solid #30363d;
+        border-radius: 4px;
+        margin: 4px 0;
+        /* 图标由库的 background-image 设置 */
+        background-repeat: no-repeat;
+        background-position: center;
+      }
+
+      /* 9. 搜索栏按钮悬停效果 */
+      div.jsoneditor-frame > button:hover {
+        background-color: #30363d;
+        border-color: #58a6ff;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="background-container">
+      <div class="stars"></div>
+      <div class="stars2"></div>
+      <div class="stars3"></div>
+    </div>
+    <div id="notification-container"></div>
+
+    <div class="w-full max-w-7xl mx-auto p-4 sm:p-8 flex flex-col h-screen">
+      <header class="text-center mb-6 header-anim">
+        <h1
+          class="text-3xl sm:text-4xl font-bold text-cyan-400"
+          style="text-shadow: 0 0 10px rgba(0, 255, 255, 0.5)"
+        >
+          JSON 在线解析
+        </h1>
+        <p class="text-gray-400 mt-2">
+          在左侧输入或粘贴您的JSON，右侧将实时显示可交互的树状视图。
+        </p>
+      </header>
+
+      <main
+        class="main-container main-container-anim flex-grow flex flex-col p-4 sm:p-6"
+      >
+        <div class="flex-grow grid grid-cols-1 md:grid-cols-2 gap-4 min-h-0">
+          <div class="flex flex-col h-full min-h-0">
+            <div class="flex justify-between items-center mb-2 px-1">
+              <h2 class="text-lg text-cyan-400 tech-font">JSON 文本</h2>
+              <button
+                id="clear-input"
+                class="text-gray-400 hover:text-white text-xs tech-font"
+              >
+                清空
+              </button>
+            </div>
+            <textarea
+              id="json-input"
+              class="dark-input w-full h-full p-3 rounded-lg shadow-sm font-mono text-sm"
+              placeholder="在此处粘贴您的 JSON..."
+            ></textarea>
+          </div>
+
+          <div class="flex flex-col h-full min-h-0">
+            <div class="flex justify-between items-center mb-2 px-1">
+              <h2 class="text-lg text-cyan-400 tech-font">树状视图</h2>
+              <button
+                id="copy-output"
+                class="text-gray-400 hover:text-white text-xs tech-font"
+              >
+                复制美化后的JSON
+              </button>
+            </div>
+            <div id="json-editor" class="w-full h-full"></div>
+          </div>
+        </div>
+      </main>
+
+      <footer class="text-center mt-8 text-gray-500 text-sm">
+        <p>Powered by @AhYi8 ✨ &copy; 2024</p>
+      </footer>
+    </div>
+
+    <script>
+      // DOM Element References
+      const jsonInput = document.getElementById("json-input");
+      const editorContainer = document.getElementById("json-editor");
+      const clearInputBtn = document.getElementById("clear-input");
+      const copyOutputBtn = document.getElementById("copy-output");
+      const notificationContainer = document.getElementById(
+        "notification-container"
+      );
+
+      // --- Utility Functions ---
+
+      /**
+       * 自定义消息提醒函数
+       * @param {string} message - The message to display.
+       * @param {string} type - 'success' or 'error'.
+       */
+      function showNotification(message, type = "error") {
+        const notification = document.createElement("div");
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+        notificationContainer.appendChild(notification);
+
+        notification.onclick = () => {
+          notification.style.animation = "slideOut 0.5s forwards";
+          setTimeout(() => notification.remove(), 500);
+        };
+
+        setTimeout(() => {
+          if (notification.parentElement) {
+            notification.style.animation = "slideOut 0.5s forwards";
+            setTimeout(() => notification.remove(), 500);
+          }
+        }, 3000);
+      }
+
+      // JSON Editor 初始化
+      const options = {
+        mode: "view",
+        modes: ["tree", "view"],
+        indentation: 2,
+        onModeChange: function (newMode, oldMode) {
+          if (newMode === "code" || newMode === "text") {
+            editor.aceEditor.setTheme("ace/theme/tomorrow_night_eighties");
+          }
+        },
+        // 当编辑器内容改变时（例如，在树状图中编辑）
+        onChange: function () {
+          try {
+            const currentJson = editor.get();
+            const formattedJson = JSON.stringify(currentJson, null, 2);
+            jsonInput.value = formattedJson;
+            editorContainer.classList.remove("error");
+          } catch (error) {
+            // 忽略在编辑过程中可能发生的临时错误
+          }
+        },
+        // 当解析发生错误时
+        onError: function (err) {
+          editorContainer.classList.add("error");
+          showNotification("JSON 格式错误: " + err.toString(), "error");
+        },
+      };
+
+      const editor = new JSONEditor(editorContainer, options);
+
+      // 默认加载的JSON示例
+      const initialJson = {
+        appName: "JSON 在线解析",
+        version: "1.0.0",
+        description: "这是一个JSON在线解析和格式化的工具。",
+        features: [
+          { id: 1, name: "JSON美化", enabled: true },
+          { id: 2, name: "可折叠树状视图", enabled: true },
+          { id: 3, name: "双向数据同步", enabled: true },
+        ],
+        isBeta: false,
+        config: null,
+      };
+
+      // 初始化加载
+      editor.set(initialJson);
+      jsonInput.value = JSON.stringify(initialJson, null, 2);
+
+      // --- Event Listeners ---
+
+      // 监听左侧文本框的输入事件
+      jsonInput.addEventListener("input", () => {
+        const text = jsonInput.value.trim();
+        if (text) {
+          try {
+            const parsedJson = JSON.parse(text);
+            // 格式化并更新回文本框
+            const formattedJson = JSON.stringify(parsedJson, null, 2);
+            if (jsonInput.value !== formattedJson) {
+              const cursorPos = jsonInput.selectionStart;
+              jsonInput.value = formattedJson;
+              jsonInput.selectionStart = jsonInput.selectionEnd = cursorPos;
+            }
+            // 更新右侧编辑器
+            editor.set(parsedJson);
+            editorContainer.classList.remove("error");
+          } catch (e) {
+            // 如果JSON无效，则标记错误，但不清空编辑器
+            editorContainer.classList.add("error");
+          }
+        } else {
+          editor.set({}); // 如果输入为空，清空编辑器
+          editorContainer.classList.remove("error");
+        }
+      });
+
+      // 清空按钮
+      clearInputBtn.addEventListener("click", () => {
+        jsonInput.value = "";
+        editor.set({});
+        editorContainer.classList.remove("error");
+        jsonInput.focus();
+        showNotification("已清空", "success");
+      });
+
+      // 复制按钮
+      copyOutputBtn.addEventListener("click", () => {
+        const content = jsonInput.value;
+        if (content && !editorContainer.classList.contains("error")) {
+          navigator.clipboard
+            .writeText(content)
+            .then(() => {
+              showNotification("已复制到剪贴板！", "success");
+            })
+            .catch((err) => {
+              showNotification("复制失败！", "error");
+            });
+        } else if (!content) {
+          showNotification("内容为空，无需复制。", "error");
+        } else {
+          showNotification("不能复制错误的内容。", "error");
+        }
+      });
+    </script>
+  </body>
+</html>
