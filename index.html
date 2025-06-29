@@ -370,23 +370,39 @@
       // --- 拖拽排序核心逻辑 (SortableJS 最终版) ---
       function initDragSort() {
         const grids = document.querySelectorAll("#toolsContainer .grid");
-        grids.forEach((grid) => {
-          // 确保收藏夹内的项目不可拖动
-          if (grid.closest("#category-favorites")) {
-            return;
-          }
 
-          new Sortable(grid, {
-            group: "shared-tools", // 允许跨容器拖拽的关键
-            animation: 400, // 动画时长
-            ghostClass: "drag-ghost-class", // 占位符的CSS类名
-            dragClass: "card-is-dragging", // 被拖拽项的CSS类名
-            onEnd: function (evt) {
-              // 拖拽结束后，evt.from 和 evt.to 是开始和结束的容器
-              // SortableJS 会自动处理DOM更新，我们只需要保存最终顺序即可
-              updateAndSaveOrder();
-            },
-          });
+        grids.forEach((grid) => {
+          const section = grid.closest(".category-section");
+
+          // 收藏类目特殊处理：只能本类目内排序，不允许跨类目拖拽
+          if (section && section.id === "category-favorites") {
+            new Sortable(grid, {
+              group: {
+                name: "favorites-only",
+                put: false, // 禁止拖入收藏区
+                pull: false, // 允许从收藏区拖出（但你也可以设为 false 禁止）
+              },
+              animation: 400,
+              ghostClass: "drag-ghost-class",
+              dragClass: "card-is-dragging",
+              onEnd: function (evt) {
+                // 收藏排序变化时不持久化顺序（如需保存可另外处理）
+                // renderFavoritesSection(); // 重新渲染收藏区
+                lucide.createIcons();
+              },
+            });
+          } else {
+            // 其他类目允许互相拖拽
+            new Sortable(grid, {
+              group: "shared-tools",
+              animation: 400,
+              ghostClass: "drag-ghost-class",
+              dragClass: "card-is-dragging",
+              onEnd: function (evt) {
+                updateAndSaveOrder(); // 持久化普通类目的顺序
+              },
+            });
+          }
         });
       }
 
@@ -627,7 +643,7 @@
           (d.className = getGridClassString()),
             e.forEach((c) => {
               let o = createToolCard(c);
-              (o.draggable = !1), d.appendChild(o);
+              d.appendChild(o);
             }),
             o.appendChild(d);
         } else o && n();
