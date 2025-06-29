@@ -527,7 +527,7 @@
         {
           name: "Gemini",
           apiUrl:
-            "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:streamGenerateContent",
+            "https://generativelanguage.googleapis.com/v1beta/models",
         },
         {
           name: "OpenAI",
@@ -779,17 +779,7 @@
             } else {
               // Gemini
               const geminiUserPrompt = `${systemPrompt}\n\n任务: ${userPrompt}`;
-              requestUrl = enableStream
-                ? apiUrl.replace(":generateContent", ":streamGenerateContent")
-                : apiUrl;
-              if (enableStream) {
-                requestUrl = `${apiUrl.replace(
-                  ":generateContent",
-                  ":streamGenerateContent"
-                )}?key=${key}&alt=sse`;
-              } else {
-                requestUrl = `${apiUrl}?key=${key}`;
-              }
+              requestUrl = `${apiUrl}/${model}:${enableStream ? 'streamGenerateContent' : 'generateContent'}?key=${key}`
               fetchOptions = {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
