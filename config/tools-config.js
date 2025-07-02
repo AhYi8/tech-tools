@@ -71,6 +71,13 @@ let toolsData = {
       targetPage: './tools/cryptology/base64-encrypt-decrypt.html'
     },
     {
+      name: 'RSA 加密/解密',
+      desc: 'RSA 非对称加密/解密工具，支持密钥对生成',
+      icon: 'key',
+      keywords: 'rsa encrypt decrypt 加密 解密 非对称 密钥',
+      targetPage: './tools/cryptology/rsa-encrypt-decrypt.html'
+    },
+    {
       name: '文本 Hash',
       desc: '实时计算文本哈希值：MD5、SHA1、SHA256等',
       icon: 'hash',
