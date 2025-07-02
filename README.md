@@ -6,6 +6,11 @@
 - 所有工具均为一个完整的 `html` 页面，无任何其他依赖，可以单独启动
 - 首页卡片支持拖拽重排，数据存在 `localStorage` 中
 
+# 启动
+
+1. 克隆项目到本地
+2. 双击打开 `index.html` 文件即可
+
 # 2. 新增工具
 
 1. 所有工具都存放在 `tools` 目录下，每个工具为一个独立的 html 文件
@@ -14,13 +19,9 @@
 
 # 3. 自部署
 
-推荐使用 [Vercel](https://vercel.com) 部署，具体部署步骤如下：
-
-1. Fork 本项目
-2. 注册并登录 https://vercel.com
-3. 点击 `Add New`，选择 `Project`
-4. 选择 `Import`，导入你 Fork 的项目
-5. 点击 `Deploy`，等待部署完成
+- 使用 [Vercel](https://vercel.com) 部署，完全免费，支持自定义域名
+- 使用 [Cloudflare](https://www.cloudflare.com) 部署，完全免费，支持自定义域名，免费 HTTPS，免费 CDN 加速（推荐）。
+- 使用 [GitHub Pages](https://pages.github.com) 部署，免费。
 
 # 项目结构介绍
 
