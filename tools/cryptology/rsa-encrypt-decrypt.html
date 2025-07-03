@@ -41,12 +41,19 @@
         <!-- 密钥设置区域 -->
         <div class="mb-6">
           <h2 class="text-lg text-cyan-400 tech-font mb-4">密钥设置</h2>
-          
+
           <!-- 密钥生成配置 -->
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4 p-4 bg-gray-800/30 rounded-lg border border-gray-700">
+          <div
+            class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4 p-4 bg-gray-800/30 rounded-lg border border-gray-700"
+          >
             <div>
-              <label class="block text-sm text-gray-400 mb-2 tech-font">密钥长度</label>
-              <select id="key-length" class="dark-input w-full p-2 rounded-lg text-sm">
+              <label class="block text-sm text-gray-400 mb-2 tech-font"
+                >密钥长度</label
+              >
+              <select
+                id="key-length"
+                class="dark-input w-full p-2 rounded-lg text-sm"
+              >
                 <option value="512">512 bit</option>
                 <option value="1024">1024 bit</option>
                 <option value="2048" selected>2048 bit</option>
@@ -54,25 +61,42 @@
               </select>
             </div>
             <div>
-              <label class="block text-sm text-gray-400 mb-2 tech-font">密钥格式</label>
-              <select id="key-format" class="dark-input w-full p-2 rounded-lg text-sm">
+              <label class="block text-sm text-gray-400 mb-2 tech-font"
+                >密钥格式</label
+              >
+              <select
+                id="key-format"
+                class="dark-input w-full p-2 rounded-lg text-sm"
+              >
                 <option value="pkcs8" selected>PKCS#8</option>
                 <option value="pkcs1">PKCS#1</option>
               </select>
             </div>
             <div>
-              <label class="block text-sm text-gray-400 mb-2 tech-font">加密模式</label>
-              <select id="encryption-mode" class="dark-input w-full p-2 rounded-lg text-sm">
+              <label class="block text-sm text-gray-400 mb-2 tech-font"
+                >加密模式</label
+              >
+              <select
+                id="encryption-mode"
+                class="dark-input w-full p-2 rounded-lg text-sm"
+              >
                 <option value="RSA-OAEP" selected>RSA-OAEP (推荐)</option>
                 <option value="RSA-PKCS1">PKCS#1 v1.5 (兼容)</option>
               </select>
             </div>
             <div>
-              <label class="block text-sm text-gray-400 mb-2 tech-font">密钥密码 (可选)</label>
-              <input type="password" id="key-password" class="dark-input w-full p-2 rounded-lg text-sm" placeholder="输入密钥保护密码..." />
+              <label class="block text-sm text-gray-400 mb-2 tech-font"
+                >密钥密码 (可选)</label
+              >
+              <input
+                type="password"
+                id="key-password"
+                class="dark-input w-full p-2 rounded-lg text-sm"
+                placeholder="输入密钥保护密码..."
+              />
             </div>
           </div>
-          
+
           <!-- 密钥操作按钮 -->
           <div class="flex flex-wrap gap-4 mb-4 justify-center">
             <button id="generate-keys-btn" class="btn-sci-fi cyan">
@@ -82,39 +106,41 @@
               <span class="tech-font">清空密钥</span>
             </button>
           </div>
-          
+
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <div class="relative flex flex-col h-full min-h-0">
-              <div class="flex justify-between items-center mb-2 px-1">
-                <h2 class="text-lg text-cyan-400 tech-font">公钥 (Public Key)</h2>
-                <button
-                  id="copy-public-key-btn"
-                  class="text-gray-400 hover:text-white text-xs tech-font"
-                >
-                  复制
-                </button>
-              </div>
+            <div class="relative">
+              <label class="block text-sm text-gray-400 mb-2 tech-font"
+                >公钥 (Public Key)</label
+              >
+              <button
+                id="copy-public-key-btn"
+                class="absolute top-8 right-2 z-10 text-gray-400 hover:text-white text-xs tech-font px-2 py-1 rounded"
+                title="复制公钥"
+              >
+                复制
+              </button>
               <textarea
                 id="public-key"
                 rows="4"
-                class="dark-textarea w-full p-3 rounded-lg shadow-sm font-mono text-xs"
+                class="dark-textarea w-full p-3 pr-12 rounded-lg shadow-sm font-mono text-xs"
                 placeholder="请输入RSA公钥或点击生成密钥对..."
               ></textarea>
             </div>
-            <div class="relative flex flex-col h-full min-h-0">
-              <div class="flex justify-between items-center mb-2 px-1">
-                <h2 class="text-lg text-cyan-400 tech-font">私钥 (Private Key)</h2>
-                <button
-                  id="copy-private-key-btn"
-                  class="text-gray-400 hover:text-white text-xs tech-font"
-                >
-                  复制
-                </button>
-              </div>
+            <div class="relative">
+              <label class="block text-sm text-gray-400 mb-2 tech-font"
+                >私钥 (Private Key)</label
+              >
+              <button
+                id="copy-private-key-btn"
+                class="absolute top-8 right-2 z-10 text-gray-400 hover:text-white text-xs tech-font px-2 py-1 rounded"
+                title="复制私钥"
+              >
+                复制
+              </button>
               <textarea
                 id="private-key"
                 rows="4"
-                class="dark-textarea w-full p-3 rounded-lg shadow-sm font-mono text-xs"
+                class="dark-textarea w-full p-3 pr-12 rounded-lg shadow-sm font-mono text-xs"
                 placeholder="请输入RSA私钥或点击生成密钥对..."
               ></textarea>
             </div>
@@ -173,12 +199,6 @@
           <button id="decrypt-btn" class="btn-sci-fi blue">
             <span class="tech-font">解密</span>
           </button>
-          <button id="sign-btn" class="btn-sci-fi purple">
-            <span class="tech-font">签名</span>
-          </button>
-          <button id="verify-btn" class="btn-sci-fi orange">
-            <span class="tech-font">验签</span>
-          </button>
           <button id="clear-btn" class="btn-sci-fi red">
             <span class="tech-font">清空全部</span>
           </button>
@@ -186,32 +206,37 @@
       </main>
 
       <!-- 兼容性说明 -->
-      <div class="mt-6 p-4 bg-yellow-900/20 border border-yellow-600/30 rounded-lg">
-        <h3 class="text-yellow-400 font-semibold mb-2 tech-font">🔧 功能说明</h3>
-        <div class="text-sm text-gray-300 space-y-3">
-          <div>
-            <p><strong>RSA四种操作模式：</strong></p>
-            <ul class="list-disc list-inside space-y-1 ml-4">
-              <li><strong>加密：</strong>使用公钥加密明文，保护数据机密性</li>
-              <li><strong>解密：</strong>使用私钥解密密文，恢复原始数据</li>
-              <li><strong>签名：</strong>使用私钥加密明文，证明数据来源和完整性</li>
-              <li><strong>验签：</strong>使用公钥解密密文，验证签名的有效性</li>
-            </ul>
-          </div>
-          
-          <div>
-            <p><strong>加密模式：</strong></p>
-            <ul class="list-disc list-inside space-y-1 ml-4">
-              <li><strong>RSA-OAEP：</strong>使用浏览器原生Web Crypto API，更安全的现代加密模式</li>
-              <li><strong>PKCS#1 v1.5：</strong>使用JSEncrypt库，传统加密模式，与大多数RSA工具兼容</li>
-            </ul>
-          </div>
-          
-          <div>
-            <p><strong>长文本处理：</strong>PKCS#1 v1.5模式支持自动分块加密/签名，可处理任意长度的文本。</p>
-            <p><strong>注意：</strong>两种加密模式不兼容，所有操作必须使用相同的模式。</p>
-            <p class="text-yellow-300">💡 <strong>建议：</strong>如需与其他RSA工具（如OpenSSL）互操作，推荐使用PKCS#1 v1.5模式。</p>
-          </div>
+      <div
+        class="mt-6 p-4 bg-yellow-900/20 border border-yellow-600/30 rounded-lg"
+      >
+        <h3 class="text-yellow-400 font-semibold mb-2 tech-font">
+          🔧 兼容性说明
+        </h3>
+        <div class="text-sm text-gray-300 space-y-2">
+          <p><strong>加密模式：</strong></p>
+          <ul class="list-disc list-inside space-y-1 ml-4">
+            <li>
+              <strong>RSA-OAEP：</strong>使用浏览器原生Web Crypto
+              API，更安全的现代加密模式
+            </li>
+            <li>
+              <strong>PKCS#1 v1.5：</strong
+              >使用JSEncrypt库，传统加密模式，与大多数RSA工具兼容
+            </li>
+          </ul>
+          <p>
+            <strong>长文本处理：</strong>PKCS#1
+            v1.5模式支持自动分块加密，可处理任意长度的文本。
+          </p>
+          <p>
+            <strong>注意：</strong
+            >两种加密模式不兼容，加密和解密必须使用相同的模式。
+          </p>
+          <p class="text-yellow-300">
+            💡
+            <strong>建议：</strong
+            >如需与其他RSA工具（如OpenSSL）互操作，推荐使用PKCS#1 v1.5模式。
+          </p>
         </div>
       </div>
 
@@ -232,8 +257,6 @@
       const copyPrivateKeyBtn = document.getElementById("copy-private-key-btn");
       const encryptBtn = document.getElementById("encrypt-btn");
       const decryptBtn = document.getElementById("decrypt-btn");
-      const signBtn = document.getElementById("sign-btn");
-      const verifyBtn = document.getElementById("verify-btn");
       const clearBtn = document.getElementById("clear-btn");
       const generateKeysBtn = document.getElementById("generate-keys-btn");
       const clearKeysBtn = document.getElementById("clear-keys-btn");
@@ -335,7 +358,7 @@
           const keyFormat = keyFormatSelect.value;
           const encryptionMode = encryptionModeSelect.value;
           const keyPassword = keyPasswordInput.value;
-          
+
           // 根据加密模式选择算法
           // 注意：对于PKCS#1 v1.5，我们仍然生成RSA-OAEP密钥，因为JSEncrypt可以处理标准的RSA密钥
           const algorithm = {
@@ -344,56 +367,56 @@
             publicExponent: new Uint8Array([1, 0, 1]),
             hash: "SHA-256",
           };
-          
+
           const keyUsages = ["encrypt", "decrypt"];
-          
+
           // 使用Web Crypto API生成RSA密钥对
-          window.crypto.subtle.generateKey(
-            algorithm,
-            true,
-            keyUsages
-          ).then(async (keyPair) => {
-            // 导出公钥
-            const publicKey = await window.crypto.subtle.exportKey(
-              "spki",
-              keyPair.publicKey
-            );
-            const publicKeyPem = arrayBufferToPem(publicKey, "PUBLIC KEY");
-            
-            // 导出私钥
-            let privateKeyFormat = "pkcs8";
-            if (keyFormat === "pkcs1") {
-              // 注意：Web Crypto API不直接支持PKCS#1格式，这里仍使用PKCS#8
-              // 实际应用中可能需要额外的库来转换格式
-              privateKeyFormat = "pkcs8";
-            }
-            
-            const privateKey = await window.crypto.subtle.exportKey(
-              privateKeyFormat,
-              keyPair.privateKey
-            );
-            
-            let privateKeyPem;
-            if (keyFormat === "pkcs1") {
-              // 对于PKCS#1格式，我们需要转换标签
-              privateKeyPem = arrayBufferToPem(privateKey, "RSA PRIVATE KEY");
-            } else {
-              privateKeyPem = arrayBufferToPem(privateKey, "PRIVATE KEY");
-            }
-            
-            // 如果设置了密码，添加密码保护提示（实际加密需要额外实现）
-            if (keyPassword) {
-              privateKeyPem += "\n\n// 注意：此密钥未加密，密码保护功能需要额外实现";
-            }
-            
-            publicKeyInput.value = publicKeyPem;
-            privateKeyInput.value = privateKeyPem;
-            
-            showNotification(`RSA ${keyLength}位密钥对生成成功！`, "success");
-          }).catch((error) => {
-            console.error("Key generation failed:", error);
-            showNotification("密钥生成失败，请检查浏览器支持。", "error");
-          });
+          window.crypto.subtle
+            .generateKey(algorithm, true, keyUsages)
+            .then(async (keyPair) => {
+              // 导出公钥
+              const publicKey = await window.crypto.subtle.exportKey(
+                "spki",
+                keyPair.publicKey
+              );
+              const publicKeyPem = arrayBufferToPem(publicKey, "PUBLIC KEY");
+
+              // 导出私钥
+              let privateKeyFormat = "pkcs8";
+              if (keyFormat === "pkcs1") {
+                // 注意：Web Crypto API不直接支持PKCS#1格式，这里仍使用PKCS#8
+                // 实际应用中可能需要额外的库来转换格式
+                privateKeyFormat = "pkcs8";
+              }
+
+              const privateKey = await window.crypto.subtle.exportKey(
+                privateKeyFormat,
+                keyPair.privateKey
+              );
+
+              let privateKeyPem;
+              if (keyFormat === "pkcs1") {
+                // 对于PKCS#1格式，我们需要转换标签
+                privateKeyPem = arrayBufferToPem(privateKey, "RSA PRIVATE KEY");
+              } else {
+                privateKeyPem = arrayBufferToPem(privateKey, "PRIVATE KEY");
+              }
+
+              // 如果设置了密码，添加密码保护提示（实际加密需要额外实现）
+              if (keyPassword) {
+                privateKeyPem +=
+                  "\n\n// 注意：此密钥未加密，密码保护功能需要额外实现";
+              }
+
+              publicKeyInput.value = publicKeyPem;
+              privateKeyInput.value = privateKeyPem;
+
+              showNotification(`RSA ${keyLength}位密钥对生成成功！`, "success");
+            })
+            .catch((error) => {
+              console.error("Key generation failed:", error);
+              showNotification("密钥生成失败，请检查浏览器支持。", "error");
+            });
         } catch (error) {
           console.error("Key generation error:", error);
           showNotification("密钥生成失败，请检查浏览器支持。", "error");
@@ -405,7 +428,7 @@
        */
       function arrayBufferToPem(buffer, label) {
         const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)));
-        const formatted = base64.match(/.{1,64}/g).join('\n');
+        const formatted = base64.match(/.{1,64}/g).join("\n");
         return `-----BEGIN ${label}-----\n${formatted}\n-----END ${label}-----`;
       }
 
@@ -414,9 +437,9 @@
        */
       function pemToArrayBuffer(pem) {
         const base64 = pem
-          .replace(/-----BEGIN [^-]+-----/, '')
-          .replace(/-----END [^-]+-----/, '')
-          .replace(/\s/g, '');
+          .replace(/-----BEGIN [^-]+-----/, "")
+          .replace(/-----END [^-]+-----/, "")
+          .replace(/\s/g, "");
         const binaryString = atob(base64);
         const bytes = new Uint8Array(binaryString.length);
         for (let i = 0; i < binaryString.length; i++) {
@@ -426,37 +449,37 @@
       }
 
       /**
-       * RSA加密（公钥加密）
+       * RSA加密
        */
       async function handleEncrypt() {
         const plainText = plainTextInput.value;
         const publicKeyPem = publicKeyInput.value;
         const encryptionMode = encryptionModeSelect.value;
-        
+
         if (!plainText) {
           showNotification("请输入要加密的明文。", "error");
           return;
         }
-        
+
         if (!publicKeyPem) {
-          showNotification("公钥不能为空，请输入公钥或生成密钥对。", "error");
+          showNotification("请输入公钥或生成密钥对。", "error");
           return;
         }
-        
+
         try {
           // 导入公钥
           const publicKeyBuffer = pemToArrayBuffer(publicKeyPem);
-          
+
           if (encryptionMode === "RSA-PKCS1") {
             // 使用JSEncrypt库进行PKCS#1 v1.5加密
             try {
               const jsencrypt = new JSEncrypt();
               jsencrypt.setPublicKey(publicKeyPem);
-              
+
               // JSEncrypt有长度限制，需要分块加密
               const maxLength = 117; // 对于1024位密钥，最大明文长度约为117字节
-              let encryptedText = '';
-              
+              let encryptedText = "";
+
               if (plainText.length <= maxLength) {
                 // 短文本直接加密
                 encryptedText = jsencrypt.encrypt(plainText);
@@ -466,28 +489,31 @@
                   const chunk = plainText.substring(i, i + maxLength);
                   const encryptedChunk = jsencrypt.encrypt(chunk);
                   if (!encryptedChunk) {
-                    throw new Error('加密失败，可能是明文过长或密钥格式错误');
+                    throw new Error("加密失败，可能是明文过长或密钥格式错误");
                   }
-                  encryptedText += encryptedChunk + '|';
+                  encryptedText += encryptedChunk + "|";
                 }
                 // 移除最后一个分隔符
                 encryptedText = encryptedText.slice(0, -1);
               }
-              
+
               if (!encryptedText) {
-                throw new Error('加密失败，请检查公钥格式');
+                throw new Error("加密失败，请检查公钥格式");
               }
-              
+
               cipherTextInput.value = encryptedText;
               showNotification("PKCS#1 v1.5加密成功！", "success");
               return;
             } catch (error) {
               console.error("PKCS#1 v1.5 encryption failed:", error);
-              showNotification("PKCS#1 v1.5加密失败：" + error.message, "error");
+              showNotification(
+                "PKCS#1 v1.5加密失败：" + error.message,
+                "error"
+              );
               return;
             }
           }
-          
+
           const publicKey = await window.crypto.subtle.importKey(
             "spki",
             publicKeyBuffer,
@@ -498,7 +524,7 @@
             false,
             ["encrypt"]
           );
-          
+
           // 加密
           const encoder = new TextEncoder();
           const data = encoder.encode(plainText);
@@ -509,11 +535,13 @@
             publicKey,
             data
           );
-          
+
           // 转换为Base64
-          const encryptedBase64 = btoa(String.fromCharCode(...new Uint8Array(encrypted)));
+          const encryptedBase64 = btoa(
+            String.fromCharCode(...new Uint8Array(encrypted))
+          );
           cipherTextInput.value = encryptedBase64;
-          
+
           showNotification("加密成功！", "success");
         } catch (error) {
           console.error("Encryption failed:", error);
@@ -522,43 +550,43 @@
       }
 
       /**
-       * RSA解密（私钥解密）
+       * RSA解密
        */
       async function handleDecrypt() {
         const cipherText = cipherTextInput.value;
         const privateKeyPem = privateKeyInput.value;
         const encryptionMode = encryptionModeSelect.value;
-        
+
         if (!cipherText) {
           showNotification("请输入要解密的密文。", "error");
           return;
         }
-        
+
         if (!privateKeyPem) {
-          showNotification("私钥不能为空，请输入私钥或生成密钥对。", "error");
+          showNotification("请输入私钥或生成密钥对。", "error");
           return;
         }
-        
+
         try {
           // 导入私钥
           const privateKeyBuffer = pemToArrayBuffer(privateKeyPem);
-          
+
           if (encryptionMode === "RSA-PKCS1") {
             // 使用JSEncrypt库进行PKCS#1 v1.5解密
             try {
               const jsencrypt = new JSEncrypt();
               jsencrypt.setPrivateKey(privateKeyPem);
-              
-              let decryptedText = '';
-              
+
+              let decryptedText = "";
+
               // 检查是否是分块加密的密文（包含|分隔符）
-              if (cipherText.includes('|')) {
+              if (cipherText.includes("|")) {
                 // 分块解密
-                const encryptedChunks = cipherText.split('|');
+                const encryptedChunks = cipherText.split("|");
                 for (const chunk of encryptedChunks) {
                   const decryptedChunk = jsencrypt.decrypt(chunk);
                   if (decryptedChunk === false) {
-                    throw new Error('解密失败，可能是私钥格式错误或密文损坏');
+                    throw new Error("解密失败，可能是私钥格式错误或密文损坏");
                   }
                   decryptedText += decryptedChunk;
                 }
@@ -566,21 +594,24 @@
                 // 单块解密
                 decryptedText = jsencrypt.decrypt(cipherText);
                 if (decryptedText === false) {
-                  throw new Error('解密失败，请检查私钥格式和密文');
+                  throw new Error("解密失败，请检查私钥格式和密文");
                 }
               }
-              
+
               plainTextInput.value = decryptedText;
               updateByteCounter();
               showNotification("PKCS#1 v1.5解密成功！", "success");
               return;
             } catch (error) {
               console.error("PKCS#1 v1.5 decryption failed:", error);
-              showNotification("PKCS#1 v1.5解密失败：" + error.message, "error");
+              showNotification(
+                "PKCS#1 v1.5解密失败：" + error.message,
+                "error"
+              );
               return;
             }
           }
-          
+
           const privateKey = await window.crypto.subtle.importKey(
             "pkcs8",
             privateKeyBuffer,
@@ -591,9 +622,11 @@
             false,
             ["decrypt"]
           );
-          
+
           // 解密
-          const encryptedData = Uint8Array.from(atob(cipherText), c => c.charCodeAt(0));
+          const encryptedData = Uint8Array.from(atob(cipherText), (c) =>
+            c.charCodeAt(0)
+          );
           const decrypted = await window.crypto.subtle.decrypt(
             {
               name: "RSA-OAEP",
@@ -601,207 +634,17 @@
             privateKey,
             encryptedData
           );
-          
+
           // 转换为文本
           const decoder = new TextDecoder();
           const decryptedText = decoder.decode(decrypted);
           plainTextInput.value = decryptedText;
           updateByteCounter();
-          
+
           showNotification("解密成功！", "success");
         } catch (error) {
           console.error("Decryption failed:", error);
           showNotification("解密失败，请检查私钥格式和密文。", "error");
-        }
-      }
-
-      /**
-       * RSA签名（私钥加密）
-       */
-      async function handleSign() {
-        const plainText = plainTextInput.value;
-        const privateKeyPem = privateKeyInput.value;
-        const encryptionMode = encryptionModeSelect.value;
-        
-        if (!plainText) {
-          showNotification("请输入要签名的明文。", "error");
-          return;
-        }
-        
-        if (!privateKeyPem) {
-          showNotification("私钥不能为空，请输入私钥或生成密钥对。", "error");
-          return;
-        }
-        
-        try {
-          // 导入私钥
-          const privateKeyBuffer = pemToArrayBuffer(privateKeyPem);
-          
-          if (encryptionMode === "RSA-PKCS1") {
-            // 使用JSEncrypt库进行PKCS#1 v1.5签名（私钥加密）
-            try {
-              const jsencrypt = new JSEncrypt();
-              jsencrypt.setPrivateKey(privateKeyPem);
-              
-              // JSEncrypt有长度限制，需要分块加密
-              const maxLength = 117; // 对于1024位密钥，最大明文长度约为117字节
-              let signedText = '';
-              
-              if (plainText.length <= maxLength) {
-                // 短文本直接签名
-                signedText = jsencrypt.encrypt(plainText);
-              } else {
-                // 长文本分块签名
-                for (let i = 0; i < plainText.length; i += maxLength) {
-                  const chunk = plainText.substring(i, i + maxLength);
-                  const signedChunk = jsencrypt.encrypt(chunk);
-                  if (!signedChunk) {
-                    throw new Error('签名失败，可能是明文过长或私钥格式错误');
-                  }
-                  signedText += signedChunk + '|';
-                }
-                // 移除最后一个分隔符
-                signedText = signedText.slice(0, -1);
-              }
-              
-              if (!signedText) {
-                throw new Error('签名失败，请检查私钥格式');
-              }
-              
-              cipherTextInput.value = signedText;
-              showNotification("PKCS#1 v1.5签名成功！", "success");
-              return;
-            } catch (error) {
-              console.error("PKCS#1 v1.5 signing failed:", error);
-              showNotification("PKCS#1 v1.5签名失败：" + error.message, "error");
-              return;
-            }
-          }
-          
-          const privateKey = await window.crypto.subtle.importKey(
-            "pkcs8",
-            privateKeyBuffer,
-            {
-              name: "RSA-OAEP",
-              hash: "SHA-256",
-            },
-            false,
-            ["encrypt"]
-          );
-          
-          // 签名（私钥加密）
-          const encoder = new TextEncoder();
-          const data = encoder.encode(plainText);
-          const signed = await window.crypto.subtle.encrypt(
-            {
-              name: "RSA-OAEP",
-            },
-            privateKey,
-            data
-          );
-          
-          // 转换为Base64
-          const signedBase64 = btoa(String.fromCharCode(...new Uint8Array(signed)));
-          cipherTextInput.value = signedBase64;
-          
-          showNotification("签名成功！", "success");
-        } catch (error) {
-          console.error("Signing failed:", error);
-          showNotification("签名失败，请检查私钥格式。", "error");
-        }
-      }
-
-      /**
-       * RSA验签（公钥解密）
-       */
-      async function handleVerify() {
-        const cipherText = cipherTextInput.value;
-        const publicKeyPem = publicKeyInput.value;
-        const encryptionMode = encryptionModeSelect.value;
-        
-        if (!cipherText) {
-          showNotification("请输入要验签的密文。", "error");
-          return;
-        }
-        
-        if (!publicKeyPem) {
-          showNotification("公钥不能为空，请输入公钥或生成密钥对。", "error");
-          return;
-        }
-        
-        try {
-          // 导入公钥
-          const publicKeyBuffer = pemToArrayBuffer(publicKeyPem);
-          
-          if (encryptionMode === "RSA-PKCS1") {
-            // 使用JSEncrypt库进行PKCS#1 v1.5验签（公钥解密）
-            try {
-              const jsencrypt = new JSEncrypt();
-              jsencrypt.setPublicKey(publicKeyPem);
-              
-              let verifiedText = '';
-              
-              // 检查是否是分块签名的密文（包含|分隔符）
-              if (cipherText.includes('|')) {
-                // 分块验签
-                const signedChunks = cipherText.split('|');
-                for (const chunk of signedChunks) {
-                  const verifiedChunk = jsencrypt.decrypt(chunk);
-                  if (verifiedChunk === false) {
-                    throw new Error('验签失败，可能是公钥格式错误或密文损坏');
-                  }
-                  verifiedText += verifiedChunk;
-                }
-              } else {
-                // 单块验签
-                verifiedText = jsencrypt.decrypt(cipherText);
-                if (verifiedText === false) {
-                  throw new Error('验签失败，请检查公钥格式和密文');
-                }
-              }
-              
-              plainTextInput.value = verifiedText;
-              updateByteCounter();
-              showNotification("PKCS#1 v1.5验签成功！", "success");
-              return;
-            } catch (error) {
-              console.error("PKCS#1 v1.5 verification failed:", error);
-              showNotification("PKCS#1 v1.5验签失败：" + error.message, "error");
-              return;
-            }
-          }
-          
-          const publicKey = await window.crypto.subtle.importKey(
-            "spki",
-            publicKeyBuffer,
-            {
-              name: "RSA-OAEP",
-              hash: "SHA-256",
-            },
-            false,
-            ["decrypt"]
-          );
-          
-          // 验签（公钥解密）
-          const signedData = Uint8Array.from(atob(cipherText), c => c.charCodeAt(0));
-          const verified = await window.crypto.subtle.decrypt(
-            {
-              name: "RSA-OAEP",
-            },
-            publicKey,
-            signedData
-          );
-          
-          // 转换为文本
-          const decoder = new TextDecoder();
-          const verifiedText = decoder.decode(verified);
-          plainTextInput.value = verifiedText;
-          updateByteCounter();
-          
-          showNotification("验签成功！", "success");
-        } catch (error) {
-          console.error("Verification failed:", error);
-          showNotification("验签失败，请检查公钥格式和密文。", "error");
         }
       }
 
@@ -823,8 +666,6 @@
       generateKeysBtn.addEventListener("click", generateRSAKeys);
       encryptBtn.addEventListener("click", handleEncrypt);
       decryptBtn.addEventListener("click", handleDecrypt);
-      signBtn.addEventListener("click", handleSign);
-      verifyBtn.addEventListener("click", handleVerify);
 
       plainTextInput.addEventListener("input", updateByteCounter);
     </script>

@@ -270,15 +270,6 @@ textarea::-webkit-scrollbar-corner,
 .btn-sci-fi.green {
   --glow-color: #16a34a;
 }
-.btn-sci-fi.blue {
-  --glow-color: #3b82f6;
-}
-.btn-sci-fi.purple {
-  --glow-color: #a855f7;
-}
-.btn-sci-fi.orange {
-  --glow-color: #f97316;
-}
 .btn-sci-fi.red {
   --glow-color: #ef4444;
 }
