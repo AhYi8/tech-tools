@@ -3,7 +3,17 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tech-Tools - 在线工具箱</title>
+    <title id="page-title">Tech-Tools - 在线工具箱</title>
+    <meta
+      name="description"
+      content="科技版在线工具箱，提供各种实用的在线工具，包括转换工具、密码学工具、字符串工具等"
+      id="page-description"
+    />
+    <meta
+      name="keywords"
+      content="tech-tools,在线工具,工具箱,转换工具,密码学,字符串工具,JSON,Base64,正则表达式"
+      id="page-keywords"
+    />
     <link rel="icon" href="./favicon.ico" type="image/x-icon" />
 
     <script src="./vendor/js/tailwind.js"></script>
@@ -219,16 +229,21 @@
               class="font-exo text-2xl font-bold tracking-wider"
               ><span
                 class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-cyan-300"
+                id="sidebar-title"
                 >Tech-Tools</span
               ></a
             >
-            <p class="text-xs text-gray-500 mt-1">科技版在线工具箱</p>
+            <p class="text-xs text-gray-500 mt-1" id="sidebar-description">
+              科技版在线工具箱
+            </p>
           </header>
           <nav id="sidebarNav" class="flex-grow p-4 overflow-y-auto"></nav>
           <footer
             class="p-4 text-xs border-t border-t-[var(--border-color)] flex justify-between items-center"
           >
-            <p class="text-gray-500">Powered by @AhYi8 ✨ &copy; 2024</p>
+            <p class="text-gray-500" id="sidebar-copyright">
+              Powered by @AhYi8 ✨ &copy; 2024
+            </p>
             <button
               id="settings-btn"
               class="text-gray-500 hover:text-accent-color transition-colors"
@@ -246,7 +261,9 @@
         <div id="home-page-container">
           <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
             <div class="md:hidden mb-6 flex items-center justify-between">
-              <h1 class="font-exo text-2xl font-bold">Tech-Tools</h1>
+              <h1 class="font-exo text-2xl font-bold" id="mobile-title">
+                Tech-Tools
+              </h1>
               <button id="menu-toggle" class="p-2">
                 <i data-lucide="menu" class="w-6 h-6"></i>
               </button>
@@ -349,11 +366,13 @@
             console.error("错误：`toolsData` 未定义。");
             return;
           }
+          initializeSiteConfig();
           initializeToolMap();
           loadFavorites();
           loadToolOrder();
           renderContent();
           initFunctionalJS();
+          renderContent();
         } catch (error) {
           console.error("页面初始化时发生严重错误:", error);
         }
@@ -366,6 +385,54 @@
         initNavigation();
         initSettingsModal();
         initDragSort();
+      }
+
+      // --- 初始化网站配置 ---
+      function initializeSiteConfig() {
+        try {
+          if (typeof siteConfig !== "undefined" && siteConfig) {
+            // 更新页面标题和 meta 信息
+            if (siteConfig.title) {
+              document.getElementById("page-title").textContent =
+                siteConfig.title;
+            }
+            if (siteConfig.description) {
+              document
+                .getElementById("page-description")
+                .setAttribute("content", siteConfig.description);
+            }
+            if (siteConfig.keywords) {
+              document
+                .getElementById("page-keywords")
+                .setAttribute("content", siteConfig.keywords);
+            }
+
+            // 更新侧边栏配置
+            if (siteConfig.sidebar) {
+              if (siteConfig.sidebar.header) {
+                if (siteConfig.sidebar.header.title) {
+                  document.getElementById("sidebar-title").textContent =
+                    siteConfig.sidebar.header.title;
+                  document.getElementById("mobile-title").textContent =
+                    siteConfig.sidebar.header.title;
+                }
+                if (siteConfig.sidebar.header.description) {
+                  document.getElementById("sidebar-description").textContent =
+                    siteConfig.sidebar.header.description;
+                }
+              }
+              if (
+                siteConfig.sidebar.footer &&
+                siteConfig.sidebar.footer.copyright
+              ) {
+                document.getElementById("sidebar-copyright").innerHTML =
+                  siteConfig.sidebar.footer.copyright;
+              }
+            }
+          }
+        } catch (error) {
+          console.error("初始化网站配置时发生错误:", error);
+        }
       }
 
       // --- 拖拽排序核心逻辑 (SortableJS 最终版) ---
@@ -490,9 +557,21 @@
           const n = document.createElement("a");
           (n.href = `#category-${d}`),
             (n.className =
-              "sidebar-link block py-2 px-4 rounded-md mb-1 font-medium border-l-2 border-l-transparent"),
-            (n.textContent = d),
-            o.appendChild(n);
+              "sidebar-link flex items-center py-2 px-4 rounded-md mb-1 font-medium border-l-2 border-l-transparent");
+
+          // 添加图标
+          const iconName = siteConfig.sidebar.categoryIcons[d] || "folder";
+          const iconElement = document.createElement("i");
+          iconElement.setAttribute("data-lucide", iconName);
+          iconElement.className = "w-4 h-4 mr-2";
+          n.appendChild(iconElement);
+
+          // 添加文本
+          const textElement = document.createElement("span");
+          textElement.textContent = d;
+          n.appendChild(textElement);
+
+          o.appendChild(n);
           const l = document.createElement("section");
           (l.id = `category-${d}`),
             (l.dataset.categoryName = d),
@@ -511,6 +590,7 @@
             c.appendChild(l);
         }
         lucide.createIcons();
+        initDragSort(); // 重新初始化拖拽功能
       }
       function createToolCard(c) {
         const o = document.createElement("div");
@@ -584,6 +664,13 @@
               (localStorage.setItem("tech-tools-columns", c.target.value),
               renderContent());
           });
+
+        // 添加 Esc 监听器
+        document.addEventListener("keydown", function escHandler(e) {
+          if (e.key === "Escape" && !o.classList.contains("modal-hidden")) {
+            n();
+          }
+        });
       }
       function loadFavorites() {
         favorites =

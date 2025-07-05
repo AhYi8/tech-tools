@@ -99,3 +99,30 @@ let toolsData = {
 const styleConfig = {
   tool_card_columns: 4
 };
+
+// 网站配置
+const siteConfig = {
+  // 网站基本信息
+  title: 'Tech-Tools - 在线工具箱',
+  description: '科技版在线工具箱，提供各种实用的在线工具，包括转换工具、密码学工具、字符串工具等',
+  keywords: 'tech-tools,在线工具,工具箱,转换工具,密码学,字符串工具,JSON,Base64,正则表达式',
+  
+  // 侧边栏配置
+  sidebar: {
+    header: {
+      title: 'Tech-Tools',
+      description: '暗黑科技风格在线工具箱'
+    },
+    footer: {
+      copyright: 'Powered by @AhYi8 ✨ &copy; 2025'
+    },
+    // 类目图标配置
+    categoryIcons: {
+      'AI 模块': 'brain-circuit',
+      '转换工具': 'repeat',
+      '字符串工具': 'type',
+      '密码学': 'shield-check',
+      '趣味工具': 'gamepad-2'
+    }
+  }
+};
