@@ -117,11 +117,37 @@
       </main>
 
       <footer class="text-center mt-8 text-gray-500 text-sm">
-        <p>Powered by @AhYi8 ✨ &copy; 2024</p>
+        <p id="footer-copyright">Powered by @AhYi8 ✨ &copy; 2025</p>
       </footer>
     </div>
 
     <script>
+      // 动态加载版权声明
+      function loadCopyright() {
+        // 尝试从父页面获取配置
+        try {
+          if (window.parent && window.parent.siteConfig && window.parent.siteConfig.copyright) {
+            document.getElementById('footer-copyright').innerHTML = window.parent.siteConfig.copyright;
+            return;
+          }
+        } catch (e) {
+          // 跨域或其他错误，忽略
+        }
+        
+        // 尝试加载配置文件
+        const script = document.createElement('script');
+        script.src = '../../config/tools-config.js';
+        script.onload = function() {
+          if (typeof siteConfig !== 'undefined' && siteConfig.copyright) {
+            document.getElementById('footer-copyright').innerHTML = siteConfig.copyright;
+          }
+        };
+        document.head.appendChild(script);
+      }
+
+      // 页面加载时执行
+      document.addEventListener('DOMContentLoaded', loadCopyright);
+
       // DOM Element References
       const inputArea = document.getElementById("input-area");
       const outputArea = document.getElementById("output-area");

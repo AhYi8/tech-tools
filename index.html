@@ -242,7 +242,7 @@
             class="p-4 text-xs border-t border-t-[var(--border-color)] flex justify-between items-center"
           >
             <p class="text-gray-500" id="sidebar-copyright">
-              Powered by @AhYi8 ✨ &copy; 2024
+              Powered by @AhYi8 ✨ &copy; 2025
             </p>
             <button
               id="settings-btn"
@@ -421,13 +421,12 @@
                     siteConfig.sidebar.header.description;
                 }
               }
-              if (
-                siteConfig.sidebar.footer &&
-                siteConfig.sidebar.footer.copyright
-              ) {
-                document.getElementById("sidebar-copyright").innerHTML =
-                  siteConfig.sidebar.footer.copyright;
-              }
+            }
+            
+            // 更新版权声明
+            if (siteConfig.copyright) {
+              document.getElementById("sidebar-copyright").innerHTML =
+                siteConfig.copyright;
             }
           }
         } catch (error) {
