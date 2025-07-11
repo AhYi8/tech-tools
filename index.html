@@ -129,6 +129,7 @@
       .sidebar-link {
         transition: all 0.2s ease;
         color: var(--text-secondary-color);
+        border-left: 2px solid transparent;
       }
       .sidebar-link:hover,
       .sidebar-link.active {
@@ -138,6 +139,7 @@
       }
       .sidebar-link.active {
         border-left-color: var(--accent-color);
+        box-shadow: 0 0 10px rgba(88, 166, 255, 0.3);
       }
       #home-page-container {
         height: 100vh;
@@ -839,27 +841,166 @@
           : (o.classList.add("-translate-x-full"), e.classList.add("hidden"));
       }
       function initScrollSpy() {
-        let c = document.querySelectorAll(".category-section"),
-          o = document.querySelectorAll(".sidebar-link");
-        if (!c.length) return;
-        let e = document.getElementById("home-page-container"),
-          t = new IntersectionObserver(
-            (t) => {
-              e.classList.contains("hidden") ||
-                t.forEach((e) => {
-                  if (e.isIntersecting) {
-                    let t = document.querySelector(
-                      `.sidebar-link[href="#${e.target.id}"]`
-                    );
-                    t &&
-                      (o.forEach((c) => c.classList.remove("active")),
-                      t.classList.add("active"));
+        // 延迟初始化，确保DOM完全渲染
+        setTimeout(() => {
+          const sections = document.querySelectorAll(".category-section");
+          const sidebarLinks = document.querySelectorAll(".sidebar-link");
+          const container = document.getElementById("home-page-container");
+          
+          if (!sections.length || !sidebarLinks.length || !container) {
+            console.warn('ScrollSpy: 未找到必要的DOM元素');
+            return;
+          }
+
+          console.log('ScrollSpy: 初始化完成，监听', sections.length, '个section');
+          
+          // 创建一个Map来快速查找对应的链接
+          const linkMap = new Map();
+          sidebarLinks.forEach(link => {
+            const href = link.getAttribute('href');
+            if (href && href.startsWith('#')) {
+              linkMap.set(href.substring(1), link);
+            }
+          });
+
+          // 当前激活的链接ID，用于防止重复设置
+          let currentActiveId = null;
+          // 防抖计时器
+          let activationTimeout = null;
+
+          // 设置当前活跃的链接（带防抖和重复检查）
+          function setActiveLink(targetId, immediate = false) {
+            // 如果已经是当前激活的链接，直接返回
+            if (currentActiveId === targetId && !immediate) {
+              return;
+            }
+
+            const activeLink = linkMap.get(targetId);
+            if (!activeLink) return;
+
+            // 清除之前的防抖计时器
+            if (activationTimeout) {
+              clearTimeout(activationTimeout);
+            }
+
+            // 使用防抖来避免快速切换
+            const delay = immediate ? 0 : 150;
+            activationTimeout = setTimeout(() => {
+              // 再次检查是否需要更新（防止在延迟期间状态已改变）
+              if (currentActiveId === targetId && !immediate) {
+                return;
+              }
+
+              // 移除所有active状态
+              sidebarLinks.forEach(link => link.classList.remove('active'));
+              // 添加active状态到当前链接
+              activeLink.classList.add('active');
+              currentActiveId = targetId;
+              console.log('ScrollSpy: 激活链接', targetId);
+            }, delay);
+          }
+
+          // 获取section在视口中的可见度分数
+          function getVisibilityScore(entry) {
+            const rect = entry.boundingClientRect;
+            const containerHeight = container.clientHeight;
+            
+            // 计算section在视口中的可见高度
+            const visibleTop = Math.max(0, -rect.top);
+            const visibleBottom = Math.min(rect.height, containerHeight - rect.top);
+            const visibleHeight = Math.max(0, visibleBottom - visibleTop);
+            
+            // 计算可见度百分比
+            const visibilityRatio = visibleHeight / rect.height;
+            
+            // 计算距离视口中心的距离（越近分数越高）
+            const centerDistance = Math.abs(rect.top + rect.height / 2 - containerHeight / 2);
+            const centerScore = Math.max(0, 1 - centerDistance / containerHeight);
+            
+            // 综合分数：可见度 * 0.7 + 中心距离分数 * 0.3
+            return visibilityRatio * 0.7 + centerScore * 0.3;
+          }
+
+          // 创建IntersectionObserver
+          const observer = new IntersectionObserver(
+            (entries) => {
+              // 只在主页容器可见时处理
+              if (container.classList.contains('hidden')) return;
+              
+              // 获取所有当前可见的sections
+              const allVisibleSections = [];
+              sections.forEach(section => {
+                const rect = section.getBoundingClientRect();
+                const containerRect = container.getBoundingClientRect();
+                
+                // 检查section是否在容器视口内
+                if (rect.bottom > containerRect.top && rect.top < containerRect.bottom) {
+                  const entry = { target: section, boundingClientRect: rect };
+                  const score = getVisibilityScore(entry);
+                  if (score > 0.1) { // 只考虑可见度超过10%的sections
+                    allVisibleSections.push({ section, score, id: section.id });
                   }
-                });
+                }
+              });
+              
+              if (allVisibleSections.length > 0) {
+                // 按分数排序，选择分数最高的section
+                allVisibleSections.sort((a, b) => b.score - a.score);
+                const bestSection = allVisibleSections[0];
+                
+                // 只有当分数明显高于当前激活的section时才切换
+                const currentSection = allVisibleSections.find(s => s.id === currentActiveId);
+                const scoreDiff = currentSection ? bestSection.score - currentSection.score : 1;
+                
+                if (scoreDiff > 0.15 || !currentActiveId) { // 需要15%的分数差异才切换
+                  setActiveLink(bestSection.id);
+                }
+              }
             },
-            { root: e, rootMargin: "-40% 0px -60% 0px" }
+            {
+              root: container,
+              rootMargin: '-5% 0px -5% 0px', // 减少边距，提高稳定性
+              threshold: [0, 0.25, 0.5, 0.75] // 减少阈值数量
+            }
           );
-        c.forEach((c) => t.observe(c));
+
+          // 开始观察所有sections
+          sections.forEach(section => {
+            observer.observe(section);
+            console.log('ScrollSpy: 开始观察', section.id);
+          });
+
+          // 添加滚动事件监听，处理边界情况
+          let scrollTimeout;
+          container.addEventListener('scroll', () => {
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+              const scrollTop = container.scrollTop;
+              const scrollHeight = container.scrollHeight;
+              const clientHeight = container.clientHeight;
+              
+              // 滚动到顶部时激活第一个链接
+              if (scrollTop <= 30) {
+                const firstSection = sections[0];
+                if (firstSection) {
+                  setActiveLink(firstSection.id, true);
+                }
+              }
+              // 滚动到底部时激活最后一个链接
+              else if (scrollTop + clientHeight >= scrollHeight - 30) {
+                const lastSection = sections[sections.length - 1];
+                if (lastSection) {
+                  setActiveLink(lastSection.id, true);
+                }
+              }
+            }, 100); // 增加防抖延迟
+          });
+
+          // 初始化时设置第一个链接为活跃状态
+          if (sections.length > 0) {
+            setActiveLink(sections[0].id, true);
+          }
+        }, 100); // 延迟100ms确保DOM完全渲染
       }
     </script>
   </body>
