@@ -34,7 +34,7 @@
         --accent-color: #58a6ff;
         --accent-glow: 0 0 15px rgba(88, 166, 255, 0.5),
           0 0 5px rgba(88, 166, 255, 0.8);
-        --sidebar-width: 260px;
+        --sidebar-width: 220px;
       }
 
       html,
@@ -124,22 +124,90 @@
       .sidebar {
         background-color: var(--sidebar-bg-color);
         border-right: 1px solid var(--border-color);
-        transition: transform 0.3s ease-in-out;
+        transition: all 0.3s ease-in-out;
+        overflow: hidden;
+      }
+      .sidebar header {
+        text-align: center;
+      }
+      .sidebar.collapsed {
+        width: 72px;
+      }
+      .sidebar.collapsed .sidebar-text {
+        display: none;
+      }
+      .sidebar.collapsed .sidebar-icon-only {
+        display: flex !important;
+      }
+      .sidebar-icon-only {
+        display: none !important;
+      }
+      .sidebar-icon-only > img {
+        margin: 0 auto;
+      }
+      .sidebar.collapsed header {
+        padding: 1rem 0.5rem;
+      }
+      .sidebar.collapsed nav {
+        padding: 1rem 0.25rem;
+      }
+      .sidebar.collapsed footer {
+        padding: 1rem 0.5rem;
+      }
+      .sidebar-text {
+        white-space: nowrap;
+        overflow: hidden;
+        line-height: 1.2;
+        min-height: 1.2em;
+        transition: opacity 0.2s ease;
+      }
+      .sidebar-toggle {
+        position: fixed;
+        top: 20px;
+        left: var(--sidebar-width);
+        z-index: 50;
+        background-color: var(--sidebar-bg-color);
+        border: 1px solid var(--border-color);
+        border-radius: 0 0.5rem 0.5rem 0;
+        padding: 0.5rem;
+        color: var(--text-secondary-color);
+        transition: all 0.3s ease-in-out;
+        cursor: pointer;
+        border-left: none;
+      }
+      .sidebar-toggle:hover {
+        color: var(--accent-color);
+        background-color: rgba(88, 166, 255, 0.1);
+      }
+      .sidebar.collapsed + .sidebar-toggle {
+        left: 72px;
+      }
+      .sidebar.collapsed ~ #mainContent {
+        margin-left: 72px;
+      }
+      .sidebar.collapsed .sidebar-link {
+        justify-content: center;
+        padding: 0.75rem;
+        margin: 0.25rem;
+        border-radius: 0.5rem;
+      }
+      .sidebar.collapsed footer {
+        justify-content: center;
+      }
+      .sidebar.collapsed footer .sidebar-text {
+        display: none;
       }
       .sidebar-link {
         transition: all 0.2s ease;
         color: var(--text-secondary-color);
-        border-left: 2px solid transparent;
       }
-      .sidebar-link:hover,
-      .sidebar-link.active {
+      .sidebar-link:hover {
         color: var(--text-color);
         background-color: rgba(88, 166, 255, 0.1);
-        transform: translateX(5px);
       }
       .sidebar-link.active {
-        border-left-color: var(--accent-color);
-        box-shadow: 0 0 10px rgba(88, 166, 255, 0.3);
+        color: var(--text-color);
+        background-color: rgba(88, 166, 255, 0.15);
       }
       #home-page-container {
         height: 100vh;
@@ -230,12 +298,18 @@
               id="logo-link"
               class="font-exo text-2xl font-bold tracking-wider"
               ><span
-                class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-cyan-300"
+                class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-cyan-300 sidebar-text"
                 id="sidebar-title"
                 >Tech-Tools</span
               ></a
             >
-            <p class="text-xs text-gray-500 mt-1" id="sidebar-description">
+            <div class="sidebar-icon-only flex justify-center">
+              <img src="./favicon.ico" alt="Logo" class="w-8 h-8" />
+            </div>
+            <p
+              class="text-xs text-gray-500 mt-1 sidebar-text"
+              id="sidebar-description"
+            >
               科技版在线工具箱
             </p>
           </header>
@@ -243,7 +317,7 @@
           <footer
             class="p-4 text-xs border-t border-t-[var(--border-color)] flex justify-between items-center"
           >
-            <p class="text-gray-500" id="sidebar-copyright">
+            <p class="text-gray-500 sidebar-text" id="sidebar-copyright">
               Powered by @AhYi8 ✨ &copy; 2025
             </p>
             <button
@@ -256,6 +330,13 @@
           </footer>
         </div>
       </aside>
+      <button
+        id="sidebar-toggle"
+        class="sidebar-toggle hidden md:block"
+        title="收起/展开侧边栏"
+      >
+        <i data-lucide="align-justify" class="w-4 h-4"></i>
+      </button>
       <main
         id="mainContent"
         class="w-full transition-all duration-300 md:ml-[var(--sidebar-width)]"
@@ -424,7 +505,7 @@
                 }
               }
             }
-            
+
             // 更新版权声明
             if (siteConfig.copyright) {
               document.getElementById("sidebar-copyright").innerHTML =
@@ -545,9 +626,9 @@
         (e.href = "#category-favorites"),
           (e.id = "favorites-link"),
           (e.className =
-            "sidebar-link flex items-center py-2 px-4 rounded-md mb-1 font-medium border-l-2 border-l-transparent"),
+            "sidebar-link flex items-center py-2 px-4 rounded-md mb-1 font-medium"),
           (e.innerHTML =
-            '<i data-lucide="star" class="w-4 h-4 mr-3 flex-shrink-0"></i> 收藏'),
+            '<i data-lucide="star" class="w-4 h-4 flex-shrink-0"></i><span class="sidebar-text ml-3">收藏</span>'),
           o.appendChild(e);
         const t = document.createElement("hr");
         (t.className = "border-t border-t-[var(--border-color)] my-2"),
@@ -558,17 +639,18 @@
           const n = document.createElement("a");
           (n.href = `#category-${d}`),
             (n.className =
-              "sidebar-link flex items-center py-2 px-4 rounded-md mb-1 font-medium border-l-2 border-l-transparent");
+              "sidebar-link flex items-center py-2 px-4 rounded-md mb-1 font-medium");
 
           // 添加图标
           const iconName = siteConfig.sidebar.categoryIcons[d] || "folder";
           const iconElement = document.createElement("i");
           iconElement.setAttribute("data-lucide", iconName);
-          iconElement.className = "w-4 h-4 mr-2";
+          iconElement.className = "w-4 h-4 flex-shrink-0";
           n.appendChild(iconElement);
 
           // 添加文本
           const textElement = document.createElement("span");
+          textElement.className = "sidebar-text ml-3";
           textElement.textContent = d;
           n.appendChild(textElement);
 
@@ -827,9 +909,37 @@
       }
       function initSidebar() {
         let c = document.getElementById("menu-toggle"),
-          o = document.getElementById("overlay");
+          o = document.getElementById("overlay"),
+          sidebarToggle = document.getElementById("sidebar-toggle");
+
+        // 移动端菜单切换
         c.addEventListener("click", () => toggleSidebar()),
           o.addEventListener("click", () => toggleSidebar(!1));
+
+        // 桌面端侧边栏收起/展开
+        sidebarToggle.addEventListener("click", () => toggleDesktopSidebar());
+
+        // 恢复侧边栏状态
+        restoreSidebarState();
+      }
+
+      function toggleDesktopSidebar() {
+        const sidebar = document.getElementById("sidebar");
+        sidebar.classList.toggle("collapsed");
+
+        // 保存状态到localStorage
+        const isCollapsed = sidebar.classList.contains("collapsed");
+        localStorage.setItem("sidebarCollapsed", isCollapsed.toString());
+      }
+
+      function restoreSidebarState() {
+        const sidebar = document.getElementById("sidebar");
+        const savedState = localStorage.getItem("sidebarCollapsed");
+
+        // 如果之前保存的状态是收起的，则恢复收起状态
+        if (savedState === "true") {
+          sidebar.classList.add("collapsed");
+        }
       }
       function toggleSidebar(c) {
         let o = document.getElementById("sidebar"),
@@ -846,19 +956,23 @@
           const sections = document.querySelectorAll(".category-section");
           const sidebarLinks = document.querySelectorAll(".sidebar-link");
           const container = document.getElementById("home-page-container");
-          
+
           if (!sections.length || !sidebarLinks.length || !container) {
-            console.warn('ScrollSpy: 未找到必要的DOM元素');
+            console.warn("ScrollSpy: 未找到必要的DOM元素");
             return;
           }
 
-          console.log('ScrollSpy: 初始化完成，监听', sections.length, '个section');
-          
+          console.log(
+            "ScrollSpy: 初始化完成，监听",
+            sections.length,
+            "个section"
+          );
+
           // 创建一个Map来快速查找对应的链接
           const linkMap = new Map();
-          sidebarLinks.forEach(link => {
-            const href = link.getAttribute('href');
-            if (href && href.startsWith('#')) {
+          sidebarLinks.forEach((link) => {
+            const href = link.getAttribute("href");
+            if (href && href.startsWith("#")) {
               linkMap.set(href.substring(1), link);
             }
           });
@@ -892,11 +1006,11 @@
               }
 
               // 移除所有active状态
-              sidebarLinks.forEach(link => link.classList.remove('active'));
+              sidebarLinks.forEach((link) => link.classList.remove("active"));
               // 添加active状态到当前链接
-              activeLink.classList.add('active');
+              activeLink.classList.add("active");
               currentActiveId = targetId;
-              console.log('ScrollSpy: 激活链接', targetId);
+              console.log("ScrollSpy: 激活链接", targetId);
             }, delay);
           }
 
@@ -904,19 +1018,27 @@
           function getVisibilityScore(entry) {
             const rect = entry.boundingClientRect;
             const containerHeight = container.clientHeight;
-            
+
             // 计算section在视口中的可见高度
             const visibleTop = Math.max(0, -rect.top);
-            const visibleBottom = Math.min(rect.height, containerHeight - rect.top);
+            const visibleBottom = Math.min(
+              rect.height,
+              containerHeight - rect.top
+            );
             const visibleHeight = Math.max(0, visibleBottom - visibleTop);
-            
+
             // 计算可见度百分比
             const visibilityRatio = visibleHeight / rect.height;
-            
+
             // 计算距离视口中心的距离（越近分数越高）
-            const centerDistance = Math.abs(rect.top + rect.height / 2 - containerHeight / 2);
-            const centerScore = Math.max(0, 1 - centerDistance / containerHeight);
-            
+            const centerDistance = Math.abs(
+              rect.top + rect.height / 2 - containerHeight / 2
+            );
+            const centerScore = Math.max(
+              0,
+              1 - centerDistance / containerHeight
+            );
+
             // 综合分数：可见度 * 0.7 + 中心距离分数 * 0.3
             return visibilityRatio * 0.7 + centerScore * 0.3;
           }
@@ -925,60 +1047,69 @@
           const observer = new IntersectionObserver(
             (entries) => {
               // 只在主页容器可见时处理
-              if (container.classList.contains('hidden')) return;
-              
+              if (container.classList.contains("hidden")) return;
+
               // 获取所有当前可见的sections
               const allVisibleSections = [];
-              sections.forEach(section => {
+              sections.forEach((section) => {
                 const rect = section.getBoundingClientRect();
                 const containerRect = container.getBoundingClientRect();
-                
+
                 // 检查section是否在容器视口内
-                if (rect.bottom > containerRect.top && rect.top < containerRect.bottom) {
+                if (
+                  rect.bottom > containerRect.top &&
+                  rect.top < containerRect.bottom
+                ) {
                   const entry = { target: section, boundingClientRect: rect };
                   const score = getVisibilityScore(entry);
-                  if (score > 0.1) { // 只考虑可见度超过10%的sections
+                  if (score > 0.1) {
+                    // 只考虑可见度超过10%的sections
                     allVisibleSections.push({ section, score, id: section.id });
                   }
                 }
               });
-              
+
               if (allVisibleSections.length > 0) {
                 // 按分数排序，选择分数最高的section
                 allVisibleSections.sort((a, b) => b.score - a.score);
                 const bestSection = allVisibleSections[0];
-                
+
                 // 只有当分数明显高于当前激活的section时才切换
-                const currentSection = allVisibleSections.find(s => s.id === currentActiveId);
-                const scoreDiff = currentSection ? bestSection.score - currentSection.score : 1;
-                
-                if (scoreDiff > 0.15 || !currentActiveId) { // 需要15%的分数差异才切换
+                const currentSection = allVisibleSections.find(
+                  (s) => s.id === currentActiveId
+                );
+                const scoreDiff = currentSection
+                  ? bestSection.score - currentSection.score
+                  : 1;
+
+                if (scoreDiff > 0.15 || !currentActiveId) {
+                  // 需要15%的分数差异才切换
                   setActiveLink(bestSection.id);
                 }
               }
             },
             {
               root: container,
-              rootMargin: '-5% 0px -5% 0px', // 减少边距，提高稳定性
-              threshold: [0, 0.25, 0.5, 0.75] // 减少阈值数量
+              rootMargin: "-5% 0px -5% 0px", // 减少边距，提高稳定性
+              threshold: [0, 0.25, 0.5, 0.75], // 减少阈值数量
             }
           );
 
           // 开始观察所有sections
-          sections.forEach(section => {
+          sections.forEach((section) => {
             observer.observe(section);
-            console.log('ScrollSpy: 开始观察', section.id);
+            console.log("ScrollSpy: 开始观察", section.id);
           });
 
           // 添加滚动事件监听，处理边界情况
           let scrollTimeout;
-          container.addEventListener('scroll', () => {
+          container.addEventListener("scroll", () => {
             clearTimeout(scrollTimeout);
             scrollTimeout = setTimeout(() => {
               const scrollTop = container.scrollTop;
               const scrollHeight = container.scrollHeight;
               const clientHeight = container.clientHeight;
-              
+
               // 滚动到顶部时激活第一个链接
               if (scrollTop <= 30) {
                 const firstSection = sections[0];

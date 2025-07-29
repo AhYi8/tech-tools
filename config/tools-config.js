@@ -51,6 +51,13 @@ let toolsData = {
       icon: 'braces',
       keywords: 'css',
       targetPage: './tools/convert/css-min-unmin.html' // 指向独立的HTML文件
+    },
+    {
+      name: 'Docker Run ↔ docker-compose',
+      desc: 'Docker Run 命令与 docker-compose.yml 文件相互转换',
+      icon: 'container',
+      keywords: 'docker run compose yaml container 容器 部署',
+      targetPage: './tools/convert/docker-run-to-compose.html'
     }
   ],
   '字符串工具': [

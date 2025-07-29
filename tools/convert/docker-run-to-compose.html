@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Docker Run 到 docker-compose 转换器</title>
+    <script src="../../vendor/js/tailwind.js"></script>
+    <link href="../../vendor/css/google-fonts.css" rel="stylesheet" />
+    <link href="../../css/common.css" rel="stylesheet" />
+    <style>
+      /* Page-specific styles */
+      .main-container {
+        position: relative;
+        border-radius: 1rem;
+      }
+
+      .main-container::before {
+        z-index: 0;
+      }
+
+      .dark-input {
+        resize: vertical;
+      }
+
+      .example-btn {
+        background: linear-gradient(45deg, rgba(88, 166, 255, 0.1), rgba(0, 255, 255, 0.1));
+        border: 1px solid rgba(88, 166, 255, 0.3);
+        transition: all 0.3s ease;
+      }
+
+      .example-btn:hover {
+        background: linear-gradient(45deg, rgba(88, 166, 255, 0.2), rgba(0, 255, 255, 0.2));
+        border-color: rgba(88, 166, 255, 0.5);
+        transform: translateY(-1px);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="background-container">
+      <div class="stars"></div>
+      <div class="stars2"></div>
+      <div class="stars3"></div>
+    </div>
+    <div id="notification-container"></div>
+
+    <div class="w-full max-w-7xl mx-auto p-4 sm:p-8 flex flex-col h-screen">
+      <header class="text-center mb-6 header-anim">
+        <h1
+          class="text-3xl sm:text-4xl font-bold text-cyan-400"
+          style="text-shadow: 0 0 10px rgba(0, 255, 255, 0.5)"
+        >
+          Docker Run ↔ docker-compose 转换器
+        </h1>
+        <p class="text-gray-400 mt-2">在任意一侧编辑，另一侧将实时同步转换</p>
+        <div class="flex flex-wrap justify-center gap-2 mt-4">
+          <button id="example-simple" class="example-btn text-xs px-3 py-1 rounded text-cyan-400">
+            简单示例
+          </button>
+          <button id="example-complex" class="example-btn text-xs px-3 py-1 rounded text-cyan-400">
+            复杂示例
+          </button>
+          <button id="example-web" class="example-btn text-xs px-3 py-1 rounded text-cyan-400">
+            Web应用示例
+          </button>
+        </div>
+      </header>
+
+      <main
+        class="main-container main-container-anim flex-grow flex flex-col p-4 sm:p-6"
+      >
+        <div class="flex-grow grid grid-cols-1 md:grid-cols-2 gap-4 min-h-0">
+          <div class="flex flex-col h-full min-h-0">
+            <div class="flex justify-between items-center mb-2 px-1">
+              <h2 class="text-lg text-cyan-400 tech-font">Docker Run 命令</h2>
+              <div>
+                <button
+                  id="copy-docker-run"
+                  class="text-gray-400 hover:text-white text-xs tech-font px-2"
+                >
+                  复制
+                </button>
+                <button
+                  id="clear-docker-run"
+                  class="text-gray-400 hover:text-white text-xs tech-font px-2"
+                >
+                  清空
+                </button>
+              </div>
+            </div>
+            <textarea
+              id="docker-run-area"
+              class="dark-input w-full h-full p-3 rounded-lg shadow-sm font-mono text-sm"
+              placeholder="在此处粘贴或编写 docker run 命令...
+
+示例:
+docker run -d \
+  --name my-app \
+  -p 8080:80 \
+  -v /host/data:/app/data \
+  -e NODE_ENV=production \
+  --restart unless-stopped \
+  nginx:latest"
+            ></textarea>
+          </div>
+
+          <div class="flex flex-col h-full min-h-0">
+            <div class="flex justify-between items-center mb-2 px-1">
+              <h2 class="text-lg text-cyan-400 tech-font">docker-compose.yml</h2>
+              <div>
+                <button
+                  id="copy-compose"
+                  class="text-gray-400 hover:text-white text-xs tech-font px-2"
+                >
+                  复制
+                </button>
+                <button
+                  id="clear-compose"
+                  class="text-gray-400 hover:text-white text-xs tech-font px-2"
+                >
+                  清空
+                </button>
+              </div>
+            </div>
+            <textarea
+              id="compose-area"
+              class="dark-input w-full h-full p-3 rounded-lg shadow-sm font-mono text-sm"
+              placeholder="docker-compose.yml 内容将显示在此处..."
+            ></textarea>
+          </div>
+        </div>
+      </main>
+
+      <footer class="text-center mt-8 text-gray-500 text-sm">
+        <p id="footer-copyright">Powered by @AhYi8 ✨ &copy; 2025</p>
+      </footer>
+    </div>
+
+    <script>
+      // 动态加载版权声明
+      function loadCopyright() {
+        try {
+          if (window.parent && window.parent.siteConfig && window.parent.siteConfig.copyright) {
+            document.getElementById('footer-copyright').innerHTML = window.parent.siteConfig.copyright;
+            return;
+          }
+        } catch (e) {
+          // 跨域或其他错误，忽略
+        }
+        
+        const script = document.createElement('script');
+        script.src = '../../config/tools-config.js';
+        script.onload = function() {
+          if (typeof siteConfig !== 'undefined' && siteConfig.copyright) {
+            document.getElementById('footer-copyright').innerHTML = siteConfig.copyright;
+          }
+        };
+        document.head.appendChild(script);
+      }
+
+      // DOM Element References
+      const dockerRunArea = document.getElementById("docker-run-area");
+      const composeArea = document.getElementById("compose-area");
+      const notificationContainer = document.getElementById("notification-container");
+
+      // Buttons
+      const copyDockerRunBtn = document.getElementById("copy-docker-run");
+      const clearDockerRunBtn = document.getElementById("clear-docker-run");
+      const copyComposeBtn = document.getElementById("copy-compose");
+      const clearComposeBtn = document.getElementById("clear-compose");
+
+      // Example buttons
+      const exampleSimpleBtn = document.getElementById("example-simple");
+      const exampleComplexBtn = document.getElementById("example-complex");
+      const exampleWebBtn = document.getElementById("example-web");
+
+      // State to prevent event loops
+      let isUpdating = false;
+
+      // --- Example Commands ---
+      const examples = {
+        simple: `docker run -d --name my-nginx -p 8080:80 nginx:latest`,
+        
+        complex: `docker run -d \\
+  --name my-app \\
+  -p 8080:80 \\
+  -p 8443:443 \\
+  -v /host/data:/app/data \\
+  -v /host/logs:/app/logs \\
+  -e NODE_ENV=production \\
+  -e DATABASE_URL=postgresql://user:pass@db:5432/mydb \\
+  -e REDIS_URL=redis://redis:6379 \\
+  --restart unless-stopped \\
+  --memory 512m \\
+  --cpus 0.5 \\
+  -w /app \\
+  --network my-network \\
+  my-app:latest npm start`,
+        
+        web: `docker run -d \\
+  --name wordpress \\
+  -p 80:80 \\
+  -v wordpress_data:/var/www/html \\
+  -e WORDPRESS_DB_HOST=db \\
+  -e WORDPRESS_DB_USER=wordpress \\
+  -e WORDPRESS_DB_PASSWORD=secret \\
+  -e WORDPRESS_DB_NAME=wordpress \\
+  --restart always \\
+  --link mysql-db:db \\
+  wordpress:latest`
+      };
+
+      // --- Utility Functions ---
+      function showNotification(message, type = "error") {
+        const notification = document.createElement("div");
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+        notificationContainer.appendChild(notification);
+
+        const removeNotif = () => {
+          notification.style.animation = "slideOut 0.5s forwards";
+          setTimeout(() => notification.remove(), 500);
+        };
+
+        notification.onclick = removeNotif;
+        setTimeout(() => {
+          if (notification.parentElement) removeNotif();
+        }, 3000);
+      }
+
+      function copyToClipboard(content, sourceName) {
+        if (!content) {
+          showNotification(`${sourceName}内容为空`, "error");
+          return;
+        }
+        navigator.clipboard.writeText(content).then(
+          () => {
+            showNotification(`已复制${sourceName}内容！`, "success");
+          },
+          () => {
+            showNotification("复制失败！请检查浏览器权限。", "error");
+          }
+        );
+      }
+
+      // --- Docker Run Parser ---
+      function parseDockerRun(command) {
+        if (!command.trim()) return null;
+
+        // 清理命令，移除多余的空白和换行
+        command = command.replace(/\\\s*\n\s*/g, ' ').replace(/\s+/g, ' ').trim();
+        
+        // 移除 'docker run' 前缀
+        command = command.replace(/^docker\s+run\s+/, '');
+        
+        const result = {
+          image: '',
+          container_name: '',
+          ports: [],
+          volumes: [],
+          environment: [],
+          networks: [],
+          restart: '',
+          memory: '',
+          cpus: '',
+          working_dir: '',
+          user: '',
+          command: '',
+          detach: false,
+          links: []
+        };
+
+        // 使用正则表达式解析各种参数
+        const patterns = {
+          name: /--name\s+([^\s]+)/,
+          port: /-p\s+([^\s]+)/g,
+          volume: /-v\s+([^\s]+)/g,
+          env: /-e\s+([^\s]+)/g,
+          network: /--network\s+([^\s]+)/,
+          restart: /--restart\s+([^\s]+)/,
+          memory: /--memory\s+([^\s]+)/,
+          cpus: /--cpus\s+([^\s]+)/,
+          workdir: /-w\s+([^\s]+)/,
+          user: /-u\s+([^\s]+)/,
+          detach: /-d\b/,
+          link: /--link\s+([^\s]+)/g
+        };
+
+        // 解析容器名称
+        const nameMatch = command.match(patterns.name);
+        if (nameMatch) result.container_name = nameMatch[1];
+
+        // 解析端口映射
+        let portMatch;
+        while ((portMatch = patterns.port.exec(command)) !== null) {
+          result.ports.push(portMatch[1]);
+        }
+
+        // 解析卷挂载
+        let volumeMatch;
+        while ((volumeMatch = patterns.volume.exec(command)) !== null) {
+          result.volumes.push(volumeMatch[1]);
+        }
+
+        // 解析环境变量
+        let envMatch;
+        while ((envMatch = patterns.env.exec(command)) !== null) {
+          result.environment.push(envMatch[1]);
+        }
+
+        // 解析链接
+        let linkMatch;
+        while ((linkMatch = patterns.link.exec(command)) !== null) {
+          result.links.push(linkMatch[1]);
+        }
+
+        // 解析其他单值参数
+        const networkMatch = command.match(patterns.network);
+        if (networkMatch) result.networks.push(networkMatch[1]);
+
+        const restartMatch = command.match(patterns.restart);
+        if (restartMatch) result.restart = restartMatch[1];
+
+        const memoryMatch = command.match(patterns.memory);
+        if (memoryMatch) result.memory = memoryMatch[1];
+
+        const cpusMatch = command.match(patterns.cpus);
+        if (cpusMatch) result.cpus = cpusMatch[1];
+
+        const workdirMatch = command.match(patterns.workdir);
+        if (workdirMatch) result.working_dir = workdirMatch[1];
+
+        const userMatch = command.match(patterns.user);
+        if (userMatch) result.user = userMatch[1];
+
+        result.detach = patterns.detach.test(command);
+
+        // 提取镜像名称和命令
+        // 移除所有已识别的参数
+        let cleanCommand = command
+          .replace(/--name\s+[^\s]+/g, '')
+          .replace(/-p\s+[^\s]+/g, '')
+          .replace(/-v\s+[^\s]+/g, '')
+          .replace(/-e\s+[^\s]+/g, '')
+          .replace(/--network\s+[^\s]+/g, '')
+          .replace(/--restart\s+[^\s]+/g, '')
+          .replace(/--memory\s+[^\s]+/g, '')
+          .replace(/--cpus\s+[^\s]+/g, '')
+          .replace(/-w\s+[^\s]+/g, '')
+          .replace(/-u\s+[^\s]+/g, '')
+          .replace(/--link\s+[^\s]+/g, '')
+          .replace(/-d\b/g, '')
+          .replace(/\s+/g, ' ')
+          .trim();
+
+        const parts = cleanCommand.split(' ');
+        if (parts.length > 0) {
+          result.image = parts[0];
+          if (parts.length > 1) {
+            result.command = parts.slice(1).join(' ');
+          }
+        }
+
+        return result;
+      }
+
+      // --- Docker Compose Generator ---
+      function generateDockerCompose(parsedData) {
+        if (!parsedData || !parsedData.image) {
+          return '';
+        }
+
+        const serviceName = parsedData.container_name || 'app';
+        let compose = `version: '3.8'\n\nservices:\n  ${serviceName}:\n`;
+        compose += `    image: ${parsedData.image}\n`;
+
+        if (parsedData.container_name) {
+          compose += `    container_name: ${parsedData.container_name}\n`;
+        }
+
+        if (parsedData.ports.length > 0) {
+          compose += `    ports:\n`;
+          parsedData.ports.forEach(port => {
+            compose += `      - "${port}"\n`;
+          });
+        }
+
+        if (parsedData.volumes.length > 0) {
+          compose += `    volumes:\n`;
+          parsedData.volumes.forEach(volume => {
+            compose += `      - ${volume}\n`;
+          });
+        }
+
+        if (parsedData.environment.length > 0) {
+          compose += `    environment:\n`;
+          parsedData.environment.forEach(env => {
+            if (env.includes('=')) {
+              const [key, value] = env.split('=', 2);
+              compose += `      ${key}: ${value}\n`;
+            } else {
+              compose += `      - ${env}\n`;
+            }
+          });
+        }
+
+        if (parsedData.restart) {
+          compose += `    restart: ${parsedData.restart}\n`;
+        }
+
+        if (parsedData.working_dir) {
+          compose += `    working_dir: ${parsedData.working_dir}\n`;
+        }
+
+        if (parsedData.user) {
+          compose += `    user: ${parsedData.user}\n`;
+        }
+
+        if (parsedData.command) {
+          compose += `    command: ${parsedData.command}\n`;
+        }
+
+        if (parsedData.networks.length > 0) {
+          compose += `    networks:\n`;
+          parsedData.networks.forEach(network => {
+            compose += `      - ${network}\n`;
+          });
+        }
+
+        if (parsedData.links.length > 0) {
+          compose += `    links:\n`;
+          parsedData.links.forEach(link => {
+            compose += `      - ${link}\n`;
+          });
+        }
+
+        // 添加资源限制
+        if (parsedData.memory || parsedData.cpus) {
+          compose += `    deploy:\n      resources:\n        limits:\n`;
+          if (parsedData.memory) {
+            compose += `          memory: ${parsedData.memory}\n`;
+          }
+          if (parsedData.cpus) {
+            compose += `          cpus: '${parsedData.cpus}'\n`;
+          }
+        }
+
+        // 如果有自定义网络，添加网络定义
+        if (parsedData.networks.length > 0) {
+          compose += `\nnetworks:\n`;
+          parsedData.networks.forEach(network => {
+            if (network !== 'default') {
+              compose += `  ${network}:\n    external: true\n`;
+            }
+          });
+        }
+
+        return compose;
+      }
+
+      // --- Basic Compose to Docker Run Converter ---
+      function parseDockerCompose(composeContent) {
+        if (!composeContent.trim()) return '';
+
+        try {
+          // 这是一个简化的解析器，实际应该使用 YAML 解析库
+          const lines = composeContent.split('\n');
+          let dockerRun = 'docker run';
+          let inService = false;
+          let serviceName = '';
+          let image = '';
+          
+          for (let line of lines) {
+            line = line.trim();
+            
+            if (line.match(/^\w+:$/) && !line.includes('version') && !line.includes('services') && !line.includes('networks') && !line.includes('volumes')) {
+              serviceName = line.replace(':', '');
+              inService = true;
+              continue;
+            }
+            
+            if (!inService) continue;
+            
+            if (line.startsWith('image:')) {
+              image = line.replace('image:', '').trim();
+            } else if (line.startsWith('container_name:')) {
+              const name = line.replace('container_name:', '').trim();
+              dockerRun += ` --name ${name}`;
+            } else if (line.startsWith('- "') && line.includes(':')) {
+              // 端口映射
+              const port = line.replace(/^- "/, '').replace(/"$/, '');
+              dockerRun += ` -p ${port}`;
+            } else if (line.startsWith('- ') && line.includes(':') && !line.includes('=')) {
+              // 卷挂载
+              const volume = line.replace(/^- /, '');
+              dockerRun += ` -v ${volume}`;
+            } else if (line.includes(':') && line.includes('=')) {
+              // 环境变量 (key: value 格式)
+              const env = line.replace(/^\s*/, '').replace(':', '=');
+              dockerRun += ` -e ${env}`;
+            } else if (line.startsWith('restart:')) {
+              const restart = line.replace('restart:', '').trim();
+              dockerRun += ` --restart ${restart}`;
+            } else if (line.startsWith('working_dir:')) {
+              const workdir = line.replace('working_dir:', '').trim();
+              dockerRun += ` -w ${workdir}`;
+            } else if (line.startsWith('user:')) {
+              const user = line.replace('user:', '').trim();
+              dockerRun += ` -u ${user}`;
+            }
+          }
+          
+          if (image) {
+            dockerRun += ` -d ${image}`;
+          }
+          
+          return dockerRun;
+        } catch (e) {
+          return '# 解析错误：请检查 docker-compose.yml 格式';
+        }
+      }
+
+      // --- Event Listeners ---
+      dockerRunArea.addEventListener("input", () => {
+        if (isUpdating) return;
+        isUpdating = true;
+        try {
+          const parsed = parseDockerRun(dockerRunArea.value);
+          if (parsed) {
+            composeArea.value = generateDockerCompose(parsed);
+          } else {
+            composeArea.value = '';
+          }
+        } catch (e) {
+          composeArea.value = '# 解析错误：请检查 docker run 命令格式';
+        }
+        isUpdating = false;
+      });
+
+      composeArea.addEventListener("input", () => {
+        if (isUpdating) return;
+        isUpdating = true;
+        try {
+          dockerRunArea.value = parseDockerCompose(composeArea.value);
+        } catch (e) {
+          dockerRunArea.value = '# 解析错误：请检查 docker-compose.yml 格式';
+        }
+        isUpdating = false;
+      });
+
+      // Button events
+      copyDockerRunBtn.addEventListener("click", () => {
+        copyToClipboard(dockerRunArea.value, "Docker Run 命令");
+      });
+
+      copyComposeBtn.addEventListener("click", () => {
+        copyToClipboard(composeArea.value, "docker-compose.yml");
+      });
+
+      clearDockerRunBtn.addEventListener("click", () => {
+        dockerRunArea.value = "";
+        dockerRunArea.dispatchEvent(new Event("input", { bubbles: true }));
+        dockerRunArea.focus();
+      });
+
+      clearComposeBtn.addEventListener("click", () => {
+        composeArea.value = "";
+        composeArea.dispatchEvent(new Event("input", { bubbles: true }));
+        composeArea.focus();
+      });
+
+      // Example button events
+      exampleSimpleBtn.addEventListener("click", () => {
+        dockerRunArea.value = examples.simple;
+        dockerRunArea.dispatchEvent(new Event("input", { bubbles: true }));
+      });
+
+      exampleComplexBtn.addEventListener("click", () => {
+        dockerRunArea.value = examples.complex;
+        dockerRunArea.dispatchEvent(new Event("input", { bubbles: true }));
+      });
+
+      exampleWebBtn.addEventListener("click", () => {
+        dockerRunArea.value = examples.web;
+        dockerRunArea.dispatchEvent(new Event("input", { bubbles: true }));
+      });
+
+      // 页面加载完成后执行
+      document.addEventListener('DOMContentLoaded', () => {
+        loadCopyright();
+      });
+    </script>
+  </body>
+</html>
